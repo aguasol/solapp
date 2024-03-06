@@ -1,20 +1,17 @@
-import 'dart:typed_data';
-
-class Ruta {
+class RutaModel {
   final int id;
   final int conductorID;
   final int vehiculoID;
+  final String fechaCreacion;
+  final String nombreVehiculo;
+  final String placaVehiculo;
 
-  List<Point> puntos;
-  String? departamento;
-  String? provincia;
-
-  Ruta({
+  RutaModel({
     required this.id,
-    required this.nombre,
-    required this.poligono,
-    this.departamento = '',
-    this.provincia = '',
-    List<Point>? puntos,
-  }) : puntos = puntos ?? [];
+    required this.conductorID,
+    required this.vehiculoID,
+    required this.fechaCreacion,
+    required this.nombreVehiculo,
+    required this.placaVehiculo,
+  });
 }

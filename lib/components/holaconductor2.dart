@@ -18,6 +18,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:appsol_final/models/producto_model.dart';
+import 'package:appsol_final/models/pedido_conductor_model.dart';
+import 'package:appsol_final/models/pedido_detalle_model.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -26,60 +28,6 @@ extension StringExtension on String {
     }
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
-}
-
-class Pedido {
-  final int id;
-  final double montoTotal;
-  final String tipo;
-  final String fecha;
-  String estado;
-  String? tipoPago;
-
-  ///REVISAR EN QUÈ FORMATO SE RECIVE LA FECHA
-  final String nombre;
-  final String apellidos;
-  final String telefono;
-  //final String ubicacion;
-  final double latitud;
-  final double longitud;
-  final String direccion;
-  String comentario;
-
-  Pedido({
-    Key? key,
-    required this.id,
-    required this.montoTotal,
-    required this.tipo,
-    required this.fecha,
-    required this.nombre,
-    required this.apellidos,
-    required this.telefono,
-    //required this.ubicacion,
-    required this.direccion,
-    required this.latitud,
-    required this.longitud,
-    this.estado = 'en proceso',
-    this.comentario = '',
-    this.tipoPago,
-  });
-}
-
-class DetallePedido {
-  final int pedidoID;
-  final int productoID;
-  final String productoNombre;
-  final int cantidadProd;
-  final int? promocionID;
-
-  const DetallePedido({
-    Key? key,
-    required this.pedidoID,
-    required this.productoID,
-    required this.productoNombre,
-    required this.cantidadProd,
-    required this.promocionID,
-  });
 }
 
 class HolaConductor2 extends StatefulWidget {
@@ -490,9 +438,10 @@ class _HolaConductor2State extends State<HolaConductor2> {
             return DetallePedido(
               pedidoID: mapa['pedido_id'],
               productoID: mapa['producto_id'],
-              productoNombre: mapa['nombre'],
+              productoNombre: mapa['nombre_prod'],
               cantidadProd: mapa['cantidad'],
               promocionID: mapa['promocion_id'],
+              promocionNombre: mapa['nombre_prom'],
             );
           }).toList();
 

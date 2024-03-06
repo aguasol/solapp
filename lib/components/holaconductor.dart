@@ -1,4 +1,5 @@
 import 'package:appsol_final/components/actualizado_stock.dart';
+import 'package:appsol_final/models/ruta_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,7 +9,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:appsol_final/provider/user_provider.dart';
-import 'dart:io';
 import 'package:lottie/lottie.dart';
 
 extension StringExtension on String {
@@ -33,6 +33,7 @@ class _HolaConductorState extends State<HolaConductor> {
   late io.Socket socket;
   String apiUrl = dotenv.env['API_URL'] ?? '';
   String apiPedidosConductor = '/api/pedido_conductor/';
+  String apiLastRutaCond = '/api/rutakastcond/';
   String apiDetallePedido = '/api/detallepedido/';
   String mensaje =
       'El día de hoy todavía no te han asignado una ruta, espera un momento ;)';
@@ -40,7 +41,7 @@ class _HolaConductorState extends State<HolaConductor> {
   int numerodePedidosExpress = 0;
   int numPedidoActual = 1;
   int pedidoIDActual = 0;
-  bool tengoruta = true;
+  bool tengoruta = false;
   Color colorProgreso = Colors.transparent;
   Color colorBotonesAzul = const Color.fromRGBO(0, 106, 252, 1.000);
   Color colorTexto = const Color.fromARGB(255, 75, 75, 75);
@@ -49,6 +50,9 @@ class _HolaConductorState extends State<HolaConductor> {
   int? conductorIDpref = 0;
   int cantidad = 0;
   List<int> idpedidos = [];
+  DateTime fechaHoy = DateTime.now();
+  String nombreCamion = '';
+  String placa = '';
 
   //CREAR UN FUNCION QUE LLAME EL ENDPOINT EN EL QUE SE VERIFICA QUE EL CONDUCTOR
   //TIENE UNA RUTA ASIGNADA PARA ESE DÍA
@@ -85,34 +89,47 @@ class _HolaConductorState extends State<HolaConductor> {
     print('1) INITIALIZE-------------');
     print('2) esta es mi ruta Preferencia ------- $rutaIDpref');
     await _cargarPreferencias();
+    await getRutas();
     print('5) esta es mi ruta Preferencia ACT---- $rutaIDpref');
   }
 
   Future<dynamic> getRutas() async {
     var res = await http.get(
-      Uri.parse("$apiUrl/api/products"),
+      Uri.parse(apiUrl + apiLastRutaCond + conductorIDpref.toString()),
       headers: {"Content-type": "application/json"},
     );
     try {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
-        List<Producto> tempProducto = data.map<Producto>((mapa) {
-          return Producto(
-            id: mapa['id'],
-            nombre: mapa['nombre'],
-            precio: mapa['precio'].toDouble(), //?,
-            descripcion: mapa['descripcion'],
-            promoID: null,
-            foto: '$apiUrl/images/${mapa['foto']}',
-          );
-        }).toList();
-
-        setState(() {
-          listProducto = tempProducto;
-          //conductores = tempConductor;
-        });
-        print("....lista productos");
-        print(listProducto);
+        print("ESTA ES LA DATA !!!! $data");
+        RutaModel tempRutaModel = RutaModel(
+            id: data['id'],
+            conductorID: data['conductor_id'],
+            vehiculoID: data['vehiculo_id'],
+            fechaCreacion: data['fecha_creacion'],
+            nombreVehiculo: data['nombre_modelo'],
+            placaVehiculo: data['placa']);
+        print("ESTA ES LA FECHA DE CREACION ${tempRutaModel.fechaCreacion}");
+        DateTime fechaCreacion = DateTime.parse(tempRutaModel.fechaCreacion);
+        if (fechaCreacion.day == fechaHoy.day &&
+            fechaCreacion.month == fechaHoy.month &&
+            fechaCreacion.year == fechaHoy.year) {
+          //si la fecha de creacion es de hoy entonces esta es la ruta del dia!!
+          SharedPreferences rutaPreference =
+              await SharedPreferences.getInstance();
+          SharedPreferences vehiculoPreference =
+              await SharedPreferences.getInstance();
+          setState(() {
+            rutaID = tempRutaModel.id;
+            nombreCamion = tempRutaModel.nombreVehiculo;
+            placa = tempRutaModel.placaVehiculo;
+          });
+          rutaPreference.setInt("Ruta", rutaID);
+          vehiculoPreference.setInt("carID", tempRutaModel.vehiculoID);
+          mensaje =
+              'Tu ruta hoy es la Nº $rutaID, en el vehículo $nombreCamion con placa $placa\n ¡EXITOS!';
+          tengoruta = true;
+        }
       }
     } catch (e) {
       print('Error en la solicitud: $e');
@@ -151,10 +168,12 @@ class _HolaConductorState extends State<HolaConductor> {
       (data) {
         print("------esta es lA RUTA");
         print(data['id']);
+        //ca
 
         setState(() {
           rutaID = data['id'];
           rutaPreference.setInt("Ruta", rutaID);
+          rutaPreference.setInt("Ruta", data['vehiculo_id']);
           mensaje = 'Tu ruta hoy es la ruta Nº $rutaID :D';
           tengoruta = true;
         });
@@ -184,7 +203,6 @@ class _HolaConductorState extends State<HolaConductor> {
   @override
   void initState() {
     super.initState();
-
     _initialize();
     connectToServer();
   }
@@ -253,7 +271,7 @@ class _HolaConductorState extends State<HolaConductor> {
                       ),
                     ),
                     SizedBox(
-                      height: largoActual * 0.1,
+                      height: largoActual * 0.08,
                     ),
                     //BOTON DE COMENZAR RUTA QUE APARECE SOLO SI EL CONDUCTOR TIENE UNA RUTA DE ESE DÍA
                     SizedBox(
@@ -270,7 +288,22 @@ class _HolaConductorState extends State<HolaConductor> {
                                 );
                                 //QUE LO LLEVE A LA VISTA DE FORMULARIO DE LLENADO DE STOCK
                               },
-                              child: Text('¡Comenzar!'))
+                              style: ButtonStyle(
+                                surfaceTintColor: MaterialStateProperty.all(
+                                    Color.fromRGBO(83, 176, 68, 1.000)),
+                                elevation: MaterialStateProperty.all(10),
+                                minimumSize: MaterialStatePropertyAll(Size(
+                                    anchoActual * 0.28, largoActual * 0.054)),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color.fromRGBO(83, 176, 68, 1.000)),
+                              ),
+                              child: Text(
+                                '¡Comenzar!',
+                                style: TextStyle(
+                                    fontSize: largoActual * 0.021,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white),
+                              ))
                           : Expanded(child: Container()),
                     ),
                     Expanded(child: Container()),
