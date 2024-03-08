@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:appsol_final/provider/user_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:path/path.dart' as path;
+import 'package:lottie/lottie.dart';
 
 class Pdf extends StatefulWidget {
   final int? rutaID;
@@ -36,6 +40,7 @@ class Pdf extends StatefulWidget {
 
 class _PdfState extends State<Pdf> {
   String pathh = "";
+  Color colorBotonesAzul = const Color.fromRGBO(0, 106, 252, 1.000);
 
   Future openFile(File file) async {
     final url = file.path;
@@ -218,28 +223,108 @@ class _PdfState extends State<Pdf> {
 
   @override
   Widget build(BuildContext context) {
+    final anchoActual = MediaQuery.of(context).size.width;
+    final largoActual = MediaQuery.of(context).size.height;
+    final userProvider = context.watch<UserProvider>();
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Column(children: [
-            Container(
-              child: const Text("s"),
-            ),
-            Container(
-              child: Text("path ${pathh}"),
-            ),
-            Container(
-              child: ElevatedButton(
-                onPressed: () async {
-                  final pdfFile = await _createPDF('Sample Text');
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) {
+            return;
+          }
+        },
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Color.fromRGBO(0, 106, 252, 1.000),
+            Color.fromRGBO(0, 106, 252, 1.000),
+            Colors.white,
+            Colors.white,
+          ], begin: Alignment.topLeft, end: Alignment.bottomCenter)),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: Container()),
+                    Text(
+                      '¡Felicidades,\n${userProvider.user?.nombre}!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: largoActual * 0.04),
+                    ),
+                    Text(
+                      'Ya puedes regresar al almacen para cuadrar tus ventas.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: largoActual * 0.025),
+                    ),
+                    Stack(children: [
+                      Positioned(
+                        left: anchoActual * 0.15,
+                        height: largoActual * 0.4,
+                        child: Lottie.asset('lib/imagenes/anim_1.json'),
+                      ),
+                      SizedBox(
+                        height: largoActual * 0.35,
+                        child: Lottie.asset('lib/imagenes/anim_23.json'),
+                      ),
+                      Positioned(
+                        left: anchoActual * 0.11,
+                        height: largoActual * 0.35,
+                        child: Lottie.asset('lib/imagenes/brazo.json'),
+                      ),
+                    ]),
+                    SizedBox(
+                      height: largoActual * 0.05,
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final pdfFile = await _createPDF('Sample Text');
 
-                  openFile(pdfFile);
-                },
-                child: Text("DESCARGAR"),
-              ),
-            )
-          ]),
+                        openFile(pdfFile);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(colorBotonesAzul),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons
+                                .download_rounded, // Reemplaza con el icono que desees
+                            size: largoActual * 0.028,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                              width: anchoActual *
+                                  0.01), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                          Text(
+                            " Descargar",
+                            style: TextStyle(
+                                fontSize: largoActual * 0.025,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: largoActual * 0.17,
+                    ),
+                  ]),
+            ),
+          ),
         ),
       ),
     );

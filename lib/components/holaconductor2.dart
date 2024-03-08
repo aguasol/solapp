@@ -808,91 +808,141 @@ class _HolaConductor2State extends State<HolaConductor2> {
                             if (numPedidoActual == numeroTotalPedidos) {
                               showModalBottomSheet(
                                   context: context,
+                                  backgroundColor: Colors.transparent,
+                                  isScrollControlled: true,
                                   builder: (context) {
-                                    return Container(
-                                      margin: EdgeInsets.only(
-                                          left: anchoActual * 0.08,
-                                          right: anchoActual * 0.08,
-                                          top: largoActual * 0.05,
-                                          bottom: largoActual * 0.05),
-                                      child: Column(children: [
-                                        Container(
-                                            margin:
-                                                const EdgeInsets.only(left: 15),
-                                            child: Text(
-                                              "¡Terminaste de entregar los pedidos de tu ruta!",
-                                              style: TextStyle(
-                                                  color: colorTexto,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w500),
-                                            )),
-                                        Container(
-                                            margin:
-                                                const EdgeInsets.only(left: 15),
-                                            child: Text(
-                                              "Aquí puedes generar el pdf con el reporte de tu ruta ;) ",
-                                              style: TextStyle(
-                                                  color: colorTexto,
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w500),
-                                            )),
-                                        SizedBox(
-                                          width: anchoActual,
-                                          height: 19,
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => Pdf(
-                                                          rutaID: rutaIDpref,
-                                                          pedidos:
-                                                              totalPendiente,
-                                                          totalMonto:
-                                                              totalMonto,
-                                                          totalYape: totalYape,
-                                                          totalPlin: totalPlin,
-                                                          totalEfectivo:
-                                                              totalEfectivo,
-                                                          pedidosEntregados:
-                                                              totalEntregado,
-                                                          idpedidos: idpedidos,
-                                                          pedidosTruncados:
-                                                              totalTruncado,
-                                                        )),
-                                              );
-                                            },
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      colorBotonesAzul),
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                              .viewInsets
+                                              .bottom),
+                                      child: Container(
+                                        height: largoActual * 0.3,
+                                        width: anchoActual,
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(50),
+                                              topRight: Radius.circular(50),
                                             ),
-                                            child: const Row(
+                                            gradient: LinearGradient(
+                                                colors: [
+                                                  Color.fromRGBO(
+                                                      0, 82, 164, 1.000),
+                                                  Colors.white,
+                                                ],
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomRight)),
+                                        child: Container(
+                                          margin: EdgeInsets.all(
+                                              anchoActual * 0.06),
+                                          child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                Icon(
-                                                  Icons
-                                                      .picture_as_pdf_outlined, // Reemplaza con el icono que desees
-                                                  size: 10,
-                                                  color: Colors.white,
+                                                SizedBox(
+                                                  height: largoActual * 0.02,
                                                 ),
                                                 SizedBox(
-                                                    width:
-                                                        3), // Ajusta el espacio entre el icono y el texto según tus preferencias
-                                                Text(
-                                                  "Crear informe",
-                                                  style: TextStyle(
-                                                      fontSize: 10,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color: Colors.white),
+                                                  width: anchoActual * 0.7,
+                                                  child: Text(
+                                                    "¡Terminaste de entregar los pedidos de tu ruta!",
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize:
+                                                            largoActual * 0.023,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
-                                          ),
+                                                Text(
+                                                  "Aquí puedes generar el pdf con el reporte de tu ruta ;) ",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          largoActual * 0.02,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                SizedBox(
+                                                  height: largoActual * 0.02,
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual,
+                                                  height: largoActual * 0.05,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    Pdf(
+                                                                      rutaID:
+                                                                          rutaIDpref,
+                                                                      pedidos:
+                                                                          totalPendiente,
+                                                                      totalMonto:
+                                                                          totalMonto,
+                                                                      totalYape:
+                                                                          totalYape,
+                                                                      totalPlin:
+                                                                          totalPlin,
+                                                                      totalEfectivo:
+                                                                          totalEfectivo,
+                                                                      pedidosEntregados:
+                                                                          totalEntregado,
+                                                                      idpedidos:
+                                                                          idpedidos,
+                                                                      pedidosTruncados:
+                                                                          totalTruncado,
+                                                                    )),
+                                                      );
+                                                    },
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          MaterialStateProperty.all(
+                                                              colorBotonesAzul),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .picture_as_pdf_outlined, // Reemplaza con el icono que desees
+                                                          size: largoActual *
+                                                              0.025,
+                                                          color: Colors.white,
+                                                        ),
+                                                        SizedBox(
+                                                            width:
+                                                                3), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                                                        Text(
+                                                          " Crear informe",
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                                  largoActual *
+                                                                      0.02,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]),
                                         ),
-                                      ]),
+                                      ),
                                     );
                                   });
                             } else {
@@ -924,7 +974,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                 end: Alignment.bottomRight)),
                                         child: Container(
                                           margin: EdgeInsets.all(
-                                              anchoActual * 0.07),
+                                              anchoActual * 0.06),
                                           child: Column(children: [
                                             Text(
                                               "Pedido ${numPedidoActual + 1}/$numeroTotalPedidos",
@@ -937,102 +987,151 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                               height: largoActual * 0.02,
                                             ),
                                             Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
                                               children: [
-                                                SizedBox(
-                                                  width: anchoActual * 0.06,
-                                                  child: Icon(
-                                                    Icons.water_drop_rounded,
-                                                    color: colorTexto,
-                                                    size: anchoActual * 0.05,
+                                                Card(
+                                                  surfaceTintColor:
+                                                      Colors.white,
+                                                  color: Colors.white,
+                                                  elevation: 8,
+                                                  child: Container(
+                                                    margin: EdgeInsets.all(
+                                                        anchoActual * 0.02),
+                                                    height: largoActual * 0.05,
+                                                    width: anchoActual * 0.30,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  8)),
+                                                    ),
+                                                    child: Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        SizedBox(
+                                                          width: anchoActual *
+                                                              0.06,
+                                                          child: Icon(
+                                                            Icons.money_rounded,
+                                                            color: colorTexto,
+                                                            size: anchoActual *
+                                                                0.06,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: anchoActual *
+                                                              0.006,
+                                                        ),
+                                                        Text(
+                                                          "S/. ${pedidoTrabajo.montoTotal}",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              fontSize:
+                                                                  largoActual *
+                                                                      0.023,
+                                                              color:
+                                                                  colorTexto),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  width: anchoActual * 0.009,
-                                                ),
-                                                SizedBox(
-                                                  width: anchoActual * 0.25,
-                                                  child: Text(
-                                                    "Productos",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize:
-                                                            largoActual * 0.019,
-                                                        color: colorTexto),
+                                                Card(
+                                                  surfaceTintColor:
+                                                      Colors.white,
+                                                  color: Colors.white,
+                                                  elevation: 8,
+                                                  child: Container(
+                                                    margin: EdgeInsets.all(
+                                                        anchoActual * 0.03),
+                                                    //height: largoActual * 0.1,
+                                                    width: anchoActual * 0.43,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  8)),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .water_drop_rounded,
+                                                              color: colorTexto,
+                                                              size:
+                                                                  anchoActual *
+                                                                      0.05,
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  anchoActual *
+                                                                      0.009,
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  anchoActual *
+                                                                      0.25,
+                                                              child: Text(
+                                                                "Productos",
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontSize:
+                                                                        largoActual *
+                                                                            0.019,
+                                                                    color:
+                                                                        colorTexto),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: largoActual *
+                                                              0.001,
+                                                        ),
+                                                        Text(
+                                                          productosYCantidades,
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              fontSize:
+                                                                  largoActual *
+                                                                      0.019,
+                                                              color:
+                                                                  colorTexto),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                Text(
-                                                  ":   ",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize:
-                                                          largoActual * 0.019,
-                                                      color: colorTexto),
-                                                ),
-                                                Text(
-                                                  productosYCantidades,
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize:
-                                                          largoActual * 0.019,
-                                                      color: colorTexto),
-                                                )
                                               ],
                                             ),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                SizedBox(
-                                                  width: anchoActual * 0.06,
-                                                  child: Icon(
-                                                    Icons.money_rounded,
-                                                    color: colorTexto,
-                                                    size: anchoActual * 0.05,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: anchoActual * 0.006,
-                                                ),
-                                                SizedBox(
-                                                  width: anchoActual * 0.25,
-                                                  child: Text(
-                                                    "Monto",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize:
-                                                            largoActual * 0.019,
-                                                        color: colorTexto),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  ":   ",
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          largoActual * 0.019,
-                                                      color: colorTexto),
-                                                ),
-                                                Text(
-                                                  "S/. ${pedidoTrabajo.montoTotal}",
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize:
-                                                          largoActual * 0.019,
-                                                      color: colorTexto),
-                                                ),
-                                              ],
+                                            SizedBox(
+                                              height: largoActual * 0.01,
                                             ),
-
                                             Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -1136,7 +1235,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                               style: TextStyle(
                                                   fontSize: largoActual * 0.025,
                                                   fontWeight: FontWeight.w800,
-                                                  color: colorTexto),
+                                                  color: Colors.white),
                                             ),
                                             SizedBox(
                                               height: largoActual * 0.02,
@@ -1363,8 +1462,8 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                         });
                                                                         await _initialize();
                                                                         // ignore: use_build_context_synchronously
-                                                                        Navigator.pop(
-                                                                            context);
+                                                                        Navigator.of(context)
+                                                                            .pop();
                                                                         // ignore: use_build_context_synchronously
                                                                         Navigator.of(context)
                                                                             .pop();
@@ -1618,54 +1717,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                     ],
                                                   )),
                                             ),
-
-                                            /*SizedBox(
-                                                                width: anchoActual,
-                                                                height: 19,
-                                                                child: ElevatedButton(
-                                                                  onPressed: () async {
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) => Pdf(
-                                          rutaID: rutaIDpref,
-                                          pedidos: totalPendiente,
-                                          totalMonto: totalMonto,
-                                          totalYape: totalYape,
-                                          totalPlin: totalPlin,
-                                          totalEfectivo: totalEfectivo,
-                                          pedidosEntregados: totalProceso,
-                                                                              )),
-                                                                    );
-                                                                  },
-                                                                  style: ButtonStyle(
-                                                                    backgroundColor: MaterialStateProperty.all(
-                                                                        const Color.fromARGB(255, 2, 86, 155)),
-                                                                  ),
-                                                                  child: const Row(
-                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                    children: [
-                                                                      Icon(
-                                                                        Icons
-                                                                            .picture_as_pdf_outlined, // Reemplaza con el icono que desees
-                                                                        size: 10,
-                                                                        color: Colors.white,
-                                                                      ),
-                                                                      SizedBox(
-                                                                          width:
-                                                                              3), // Ajusta el espacio entre el icono y el texto según tus preferencias
-                                                                      Text(
-                                                                        "Crear informe",
-                                                                        style: TextStyle(
-                                                                            fontSize: 10,
-                                                                            fontWeight: FontWeight.w400,
-                                                                            color: Colors.white),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                         */
                                           ]),
                                         ),
                                       ),
