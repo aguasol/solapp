@@ -29,10 +29,13 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
   String apiUrl = dotenv.env['API_URL'] ?? '';
   String apiPedidosConductor = '/api/pedido_conductor/';
   String apiDetallePedido = '/api/detallepedidoRuta/';
+  String apiStock = '/api/vehiculo_producto_conductor/';
   String apiDetalleVehiculo = '/api/vehiculo_producto/';
   String mensaje =
       'El día de hoy todavía no te han asignado una ruta, espera un momento ;)';
   bool puedoLlamar = false;
+  bool puedoPasarAHola2 = false;
+
   int numerodePedidosExpress = 0;
   List<Pedido> listPedidosbyRuta = [];
   List<Producto> listProducto = [];
@@ -52,10 +55,20 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
 
   //CREAR UN FUNCION QUE LLAME EL ENDPOINT EN EL QUE SE VERIFICA QUE EL CONDUCTOR
   //TIENE UNA RUTA ASIGNADA PARA ESE DÍA
+  Future<dynamic> updateStock(stock, productoID) async {
+    try {
+      await http.put(Uri.parse(apiUrl + apiStock + vehiculoIDpref.toString()),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode(
+              {"stock_movil_conductor": stock, "producto_id": productoID}));
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
 
   Future<dynamic> getProductosVehiculo() async {
     print('----------------------------------');
-    print('16) Dentro de detalle de Vehiculo');
+    print('4) Dentro de detalle de Vehiculo');
     print('vehiculo ID: $vehiculoIDpref');
     if (vehiculoIDpref != 0) {
       var res = await http.get(
@@ -70,13 +83,12 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
               pedidoID: mapa['id'],
               productoID: mapa['producto_id'],
               productoNombre: '',
-              cantidadProd: mapa['stock_movil'],
+              cantidadProd: mapa['stock'],
               promocionID: 0,
               promocionNombre: '',
             );
           }).toList();
-          print('esta es la lista de detallesss');
-          print(listTemporal);
+
           for (var j = 0; j < listProducto.length; j++) {
             for (var i = 0; i < listTemporal.length; i++) {
               if (listProducto[j].id == listTemporal[i].productoID) {
@@ -93,16 +105,19 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                       listProducto[j].cantidadActual;
             });
           }
+          print('4.1) esta es la lista de con cantidad actualllll');
+          print(listProducto);
           setState(() {
             listProducto.sort((element2, element1) => (element1.cantidadFaltante
                 .compareTo(element2.cantidadFaltante)));
           });
-
+          print('4.2) esta es la lista sorteada');
+          print(listProducto);
           for (var j = 0; j < listProducto.length; j++) {
-            if (listProducto[j].cantidadFaltante < 0) {
+            if (listProducto[j].cantidadFaltante <= 0) {
               //sobran  productos
               setState(() {
-                listProducto[j].tesobraTefalta = 'Stock suficiente:';
+                listProducto[j].tesobraTefalta = 'Stock sobrante:';
                 listProducto[j].signo = '+';
                 listProducto[j].cantidadFaltante =
                     listProducto[j].cantidadFaltante * (-1);
@@ -123,7 +138,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
 
   Future<dynamic> getProductosRuta() async {
     print('----------------------------------');
-    print('14) Dentro de Detalles');
+    print('3) Dentro de productos rutaaaaaa');
     print('ruta ID: $rutaIDpref');
     if (rutaIDpref != 0) {
       var res = await http.get(
@@ -143,8 +158,6 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
               promocionNombre: mapa['nombre_prom'],
             );
           }).toList();
-          print('esta es la lista de detallesss');
-          print(listTemporal);
           setState(() {
             for (var j = 0; j < listProducto.length; j++) {
               for (var i = 0; i < listTemporal.length; i++) {
@@ -158,6 +171,8 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
               }
             }
           });
+          print('3.1) esta es la lista de productos de la ruta');
+          print(listTemporal);
         }
       } catch (e) {
         print('Error en la solicitud: $e');
@@ -249,9 +264,46 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
     await _cargarPreferencias();
     await getProducts();
     print('2) esta es mi ruta Preferencia ------- $rutaIDpref');
-    print('5) esta es mi ruta Preferencia ACT---- $rutaIDpref');
     await getProductosRuta();
     await getProductosVehiculo();
+  }
+
+  void dialogo(titulo, largo, contenido) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          title: Text(
+            titulo,
+            style: TextStyle(
+                fontSize: largo * 0.026,
+                fontWeight: FontWeight.w400,
+                color: Colors.black),
+          ),
+          content: Text(
+            contenido,
+            style:
+                TextStyle(fontSize: largo * 0.018, fontWeight: FontWeight.w400),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el AlertDialog
+              },
+              child: Text(
+                'OK',
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: largo * 0.02,
+                    color: Colors.black),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -455,23 +507,6 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                       child: TextFormField(
                                         controller: producto.cantidadStock,
                                         keyboardType: TextInputType.number,
-                                        validator: (value) {
-                                          if (producto.signo == '') {
-                                            //faltan
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Debes subir más productos';
-                                            } else {
-                                              int valor = int.parse(value);
-                                              if (valor <
-                                                  producto.cantidadFaltante) {
-                                                return 'Debes ingresar más producto para completar tu ruta';
-                                              }
-                                            }
-                                          }
-
-                                          return null;
-                                        },
                                         inputFormatters: [
                                           FilteringTextInputFormatter.allow(
                                               RegExp(r'^\d+'))
@@ -482,6 +517,20 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                             0, 106, 252, 1.000),
                                         enableInteractiveSelection: false,
                                         textAlign: TextAlign.center,
+                                        onChanged: (value) {
+                                          print("valor detectado: $value");
+                                          print('tipo ${value.runtimeType}');
+                                          // SETEAR DE LA LISTA MIXTA(PROD Y PROMO)
+                                          setState(() {
+                                            producto.cantidadStock.text = value;
+                                          });
+                                          if (value.isNotEmpty) {
+                                            setState(() {
+                                              producto.cantidad = int.parse(
+                                                  producto.cantidadStock.text);
+                                            });
+                                          }
+                                        },
                                         decoration: InputDecoration(
                                           filled: true,
                                           fillColor: const Color.fromARGB(
@@ -509,16 +558,67 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                       SizedBox(
                           child: ElevatedButton(
                               onPressed: () async {
-                                if (formKey.currentState!.validate()) {
-                                  await Navigator.push(
+                                for (var i = 0; i < listProducto.length; i++) {
+                                  var cantidad =
+                                      listProducto[i].cantidadStock.text;
+                                  if (listProducto[i].signo == '') {
+                                    if (cantidad.isEmpty) {
+                                      //faltan producto
+                                      dialogo('Falta llenar', largoActual,
+                                          'Por favor, actualiza los datos en los productos con "Stock faltante", con estos datos podrás hacer tu cierre de ventas más facil ;)');
+                                    } else {
+                                      if (int.parse(cantidad) <
+                                          listProducto[i].cantidadFaltante) {
+//faltan producto
+                                        dialogo('Ups!', largoActual,
+                                            'La cantidad de Stock que subas al carro, debe ser mayor o igual al Stock faltante para que puedas cumplir tu ruta');
+                                      } else {
+                                        setState(() {
+                                          puedoPasarAHola2 = true;
+                                        });
+                                      }
+                                    }
+                                  }
+                                }
+                                if (puedoPasarAHola2) {
+                                  print(
+                                      ".........................................");
+                                  print(listProducto);
+                                  for (var j = 0;
+                                      j < listProducto.length;
+                                      j++) {
+                                    Producto producto = listProducto[j];
+
+                                    print("");
+                                    print("");
+                                    print(
+                                        ".........................................");
+                                    print(
+                                        "El producto ${producto.nombre} id ${producto.id}");
+
+                                    if (producto.cantidad > 0) {
+                                      print(
+                                          "Tiene un stock adicional de  TEXT${producto.cantidadStock.text}");
+                                      print(
+                                          "Tiene un stock adicional de  INT${producto.cantidad}");
+                                      print(
+                                          "Tiene un stock nuevo de ${producto.cantidad + producto.cantidadActual}");
+                                      await updateStock(
+                                          producto.cantidad +
+                                              producto.cantidadActual,
+                                          producto.id);
+                                    }
+                                  }
+                                  Navigator.push(
+                                    // ignore: use_build_context_synchronously
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const HolaConductor2()),
+                                            const HolaConductor2()
+                                        //const Promos()
+                                        ),
                                   );
                                 }
-
-                                //QUE LO LLEVE A LA VISTA DE FORMULARIO DE LLENADO DE STOCK
                               },
                               style: ButtonStyle(
                                 surfaceTintColor: MaterialStateProperty.all(

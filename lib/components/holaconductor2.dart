@@ -898,6 +898,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                             } else {
                               showModalBottomSheet(
                                   context: context,
+                                  backgroundColor: Colors.transparent,
                                   isScrollControlled: true,
                                   builder: (context) {
                                     return Padding(
@@ -906,303 +907,522 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                               .viewInsets
                                               .bottom),
                                       child: Container(
-                                        height: largoActual * 0.45,
+                                        height: largoActual * 0.54,
                                         width: anchoActual,
-                                        margin: EdgeInsets.only(
-                                            left: anchoActual * 0.08,
-                                            right: anchoActual * 0.08,
-                                            top: largoActual * 0.05,
-                                            bottom: largoActual * 0.05),
-                                        child: Column(children: [
-                                          Text(
-                                            "Pedido ${numPedidoActual + 1}/$numeroTotalPedidos",
-                                            style: TextStyle(
-                                                color: colorTexto,
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          SizedBox(
-                                            height: largoActual * 0.02,
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                width: 85,
-                                                child: Text(
-                                                  "Productos",
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: colorTexto),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                ":   ",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                              Text(
-                                                productosYCantidades,
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              )
-                                            ],
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                width: 85,
-                                                child: Text(
-                                                  "Cliente",
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: colorTexto),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                ":   ",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                              Text(
-                                                "$nombreCliente $apellidoCliente",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                width: 85,
-                                                child: Text(
-                                                  "Monto",
-                                                  style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: colorTexto),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                ":   ",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                              Text(
-                                                "S/. ${pedidoTrabajo.montoTotal}",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                            ],
-                                          ),
-
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              SizedBox(
-                                                width: 85,
-                                                child: Text(
-                                                  "Comentarios",
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
+                                        decoration: const BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(50),
+                                              topRight: Radius.circular(50),
+                                            ),
+                                            gradient: LinearGradient(
+                                                colors: [
+                                                  Color.fromRGBO(
+                                                      0, 82, 164, 1.000),
+                                                  Colors.white,
+                                                ],
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomRight)),
+                                        child: Container(
+                                          margin: EdgeInsets.all(
+                                              anchoActual * 0.07),
+                                          child: Column(children: [
+                                            Text(
+                                              "Pedido ${numPedidoActual + 1}/$numeroTotalPedidos",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: largoActual * 0.025,
+                                                  fontWeight: FontWeight.w800),
+                                            ),
+                                            SizedBox(
+                                              height: largoActual * 0.02,
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  width: anchoActual * 0.06,
+                                                  child: Icon(
+                                                    Icons.water_drop_rounded,
                                                     color: colorTexto,
+                                                    size: anchoActual * 0.05,
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                ":   ",
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: colorTexto),
-                                              ),
-                                              SizedBox(
-                                                width: anchoActual * 0.55,
-                                                child: Text(
-                                                  observacionCliente,
-                                                  textAlign: TextAlign.justify,
+                                                SizedBox(
+                                                  width: anchoActual * 0.009,
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.25,
+                                                  child: Text(
+                                                    "Productos",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            largoActual * 0.019,
+                                                        color: colorTexto),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  ":   ",
                                                   style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize:
+                                                          largoActual * 0.019,
                                                       color: colorTexto),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          const Expanded(child: SizedBox()),
-                                          Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 15),
-                                              child: Text(
-                                                "Tipo de pago",
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: colorTexto),
-                                              )),
-                                          SizedBox(
-                                            height: largoActual * 0.02,
-                                          ),
-                                          //BOTONES YAPE Y EFECTIVO
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              //BOTON YAPE PLIN
-                                              Container(
-                                                width:
-                                                    anchoActual * (164.5 / 400),
-                                                height: largoActual * 0.05,
-                                                child: ElevatedButton(
-                                                    onPressed: () async {
-                                                      await _takePicture(
-                                                          'pago');
-                                                      if (flag) {
-                                                        showModalBottomSheet(
-                                                            isDismissible:
-                                                                false,
-                                                            backgroundColor:
-                                                                const Color
-                                                                    .fromRGBO(
+                                                Text(
+                                                  productosYCantidades,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  width: anchoActual * 0.06,
+                                                  child: Icon(
+                                                    Icons.money_rounded,
+                                                    color: colorTexto,
+                                                    size: anchoActual * 0.05,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.006,
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.25,
+                                                  child: Text(
+                                                    "Monto",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            largoActual * 0.019,
+                                                        color: colorTexto),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  ":   ",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                ),
+                                                Text(
+                                                  "S/. ${pedidoTrabajo.montoTotal}",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                ),
+                                              ],
+                                            ),
+
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  width: anchoActual * 0.06,
+                                                  child: Icon(
+                                                    Icons.person,
+                                                    color: colorTexto,
+                                                    size: anchoActual * 0.05,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.009,
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.25,
+                                                  child: Text(
+                                                    "Cliente",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            largoActual * 0.019,
+                                                        color: colorTexto),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  ":   ",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                ),
+                                                Text(
+                                                  "$nombreCliente $apellidoCliente",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                ),
+                                              ],
+                                            ),
+
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  width: anchoActual * 0.06,
+                                                  child: Icon(
+                                                    Icons.message_rounded,
+                                                    color: colorTexto,
+                                                    size: anchoActual * 0.05,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.009,
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.25,
+                                                  child: Text(
+                                                    "Comentarios",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  ":   ",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          largoActual * 0.019,
+                                                      color: colorTexto),
+                                                ),
+                                                SizedBox(
+                                                  width: anchoActual * 0.50,
+                                                  child: Text(
+                                                    observacionCliente,
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            largoActual * 0.019,
+                                                        color: colorTexto),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const Expanded(child: SizedBox()),
+                                            Text(
+                                              "Tipo de pago",
+                                              style: TextStyle(
+                                                  fontSize: largoActual * 0.025,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: colorTexto),
+                                            ),
+                                            SizedBox(
+                                              height: largoActual * 0.02,
+                                            ),
+                                            //BOTONES YAPE Y EFECTIVO
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                //BOTON YAPE PLIN
+                                                Container(
+                                                  width: anchoActual *
+                                                      (164.5 / 400),
+                                                  height: largoActual * 0.05,
+                                                  child: ElevatedButton(
+                                                      onPressed: () async {
+                                                        await _takePicture(
+                                                            'pago');
+                                                        if (flag) {
+                                                          showModalBottomSheet(
+                                                              isDismissible:
+                                                                  false,
+                                                              backgroundColor:
+                                                                  const Color
+                                                                      .fromRGBO(
+                                                                      0,
+                                                                      106,
+                                                                      252,
+                                                                      1.000),
+                                                              // ignore: use_build_context_synchronously
+                                                              context: context,
+                                                              isScrollControlled:
+                                                                  true,
+                                                              builder:
+                                                                  (context) {
+                                                                return Padding(
+                                                                  padding: EdgeInsets.only(
+                                                                      bottom: MediaQuery.of(
+                                                                              context)
+                                                                          .viewInsets
+                                                                          .bottom),
+                                                                  child:
+                                                                      Container(
+                                                                    height:
+                                                                        largoActual *
+                                                                            0.15,
+                                                                    margin: EdgeInsets.only(
+                                                                        left: anchoActual *
+                                                                            0.08,
+                                                                        right: anchoActual *
+                                                                            0.08,
+                                                                        top: largoActual *
+                                                                            0.05,
+                                                                        bottom: largoActual *
+                                                                            0.05),
+                                                                    child:
+                                                                        Column(
+                                                                      children: [
+                                                                        Column(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.center,
+                                                                            children: [
+                                                                              Container(
+                                                                                decoration: BoxDecoration(
+                                                                                  color: Colors.white,
+                                                                                  borderRadius: BorderRadius.circular(8.0),
+                                                                                  border: Border.all(
+                                                                                    color: Colors.grey,
+                                                                                    width: 0.5,
+                                                                                  ),
+                                                                                ),
+                                                                                child: TextField(
+                                                                                  decoration: InputDecoration(hintText: comentario),
+                                                                                  controller: comentarioConductor,
+                                                                                ),
+                                                                              )
+                                                                            ]),
+                                                                        const SizedBox(
+                                                                          height:
+                                                                              20,
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          children: [
+                                                                            SizedBox(
+                                                                              height: 40,
+                                                                              width: anchoActual * 0.83,
+                                                                              child: ElevatedButton(
+                                                                                  onPressed: () {
+                                                                                    updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
+                                                                                    Navigator.push(
+                                                                                      context,
+                                                                                      //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
+                                                                                      MaterialPageRoute(builder: (context) => const HolaConductor2()),
+                                                                                    );
+                                                                                  },
+                                                                                  style: ButtonStyle(elevation: MaterialStateProperty.all(8), surfaceTintColor: MaterialStateProperty.all(Colors.white), backgroundColor: MaterialStateProperty.all(Colors.white)),
+                                                                                  child: const Row(
+                                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        "Listo",
+                                                                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 106, 252, 1.000)),
+                                                                                      ),
+                                                                                      SizedBox(width: 8),
+                                                                                      Icon(
+                                                                                        Icons.arrow_forward, // Reemplaza con el icono que desees
+                                                                                        size: 24,
+                                                                                        color: Color.fromRGBO(0, 106, 252, 1.000),
+                                                                                      ),
+                                                                                    ],
+                                                                                  )),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              });
+                                                        } else {
+                                                          print(
+                                                              "Todavia no se ha tomado una foto");
+                                                        }
+                                                        setState(() {
+                                                          flag = false;
+                                                        });
+                                                      },
+                                                      style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all(
+                                                                      colorBotonesAzul)),
+                                                      child: const Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .camera_alt, // Reemplaza con el icono que desees
+                                                            size: 18,
+                                                            color: Colors.white,
+                                                          ),
+                                                          SizedBox(width: 3),
+                                                          Text(
+                                                            "Yape/Plin",
+                                                            style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Colors
+                                                                    .white),
+                                                          )
+                                                        ],
+                                                      )),
+                                                ),
+                                                //BOTON EFECTIVO
+                                                Container(
+                                                  width: anchoActual *
+                                                      (164.5 / 400),
+                                                  height: largoActual * 0.05,
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            surfaceTintColor:
+                                                                Color.fromRGBO(
                                                                     0,
                                                                     106,
                                                                     252,
                                                                     1.000),
-                                                            // ignore: use_build_context_synchronously
-                                                            context: context,
-                                                            isScrollControlled:
-                                                                true,
-                                                            builder: (context) {
-                                                              return Padding(
-                                                                padding: EdgeInsets.only(
-                                                                    bottom: MediaQuery.of(
-                                                                            context)
-                                                                        .viewInsets
-                                                                        .bottom),
-                                                                child:
-                                                                    Container(
-                                                                  height:
-                                                                      largoActual *
-                                                                          0.15,
-                                                                  margin: EdgeInsets.only(
-                                                                      left: anchoActual *
-                                                                          0.08,
-                                                                      right: anchoActual *
-                                                                          0.08,
-                                                                      top: largoActual *
-                                                                          0.05,
-                                                                      bottom: largoActual *
-                                                                          0.05),
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Column(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.center,
-                                                                          children: [
-                                                                            Container(
-                                                                              decoration: BoxDecoration(
-                                                                                color: Colors.white,
-                                                                                borderRadius: BorderRadius.circular(8.0),
-                                                                                border: Border.all(
-                                                                                  color: Colors.grey,
-                                                                                  width: 0.5,
-                                                                                ),
-                                                                              ),
-                                                                              child: TextField(
-                                                                                decoration: InputDecoration(hintText: comentario),
-                                                                                controller: comentarioConductor,
-                                                                              ),
-                                                                            )
-                                                                          ]),
-                                                                      const SizedBox(
-                                                                        height:
-                                                                            20,
-                                                                      ),
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        children: [
-                                                                          SizedBox(
-                                                                            height:
-                                                                                40,
-                                                                            width:
-                                                                                anchoActual * 0.83,
-                                                                            child: ElevatedButton(
-                                                                                onPressed: () {
-                                                                                  updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
-                                                                                  Navigator.push(
-                                                                                    context,
-                                                                                    //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
-                                                                                    MaterialPageRoute(builder: (context) => const HolaConductor2()),
-                                                                                  );
-                                                                                },
-                                                                                style: ButtonStyle(elevation: MaterialStateProperty.all(8), surfaceTintColor: MaterialStateProperty.all(Colors.white), backgroundColor: MaterialStateProperty.all(Colors.white)),
-                                                                                child: const Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                                  children: [
-                                                                                    Text(
-                                                                                      "Listo",
-                                                                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 106, 252, 1.000)),
-                                                                                    ),
-                                                                                    SizedBox(width: 8),
-                                                                                    Icon(
-                                                                                      Icons.arrow_forward, // Reemplaza con el icono que desees
-                                                                                      size: 24,
-                                                                                      color: Color.fromRGBO(0, 106, 252, 1.000),
-                                                                                    ),
-                                                                                  ],
-                                                                                )),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            });
-                                                      } else {
-                                                        print(
-                                                            "Todavia no se ha tomado una foto");
-                                                      }
-                                                      setState(() {
-                                                        flag = false;
-                                                      });
+                                                            elevation: 20,
+                                                            title: const Text(
+                                                              'TERMINE MI PEDIDO',
+                                                              style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Color
+                                                                      .fromRGBO(
+                                                                          0,
+                                                                          106,
+                                                                          252,
+                                                                          1.000)),
+                                                            ),
+                                                            content: const Text(
+                                                              '¿Entregaste el pedido?',
+                                                              style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                            actions: <Widget>[
+                                                              Row(
+                                                                children: [
+                                                                  ElevatedButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        print(
+                                                                            "print CHIIIII");
+                                                                        print(pedidoTrabajo
+                                                                            .id);
+                                                                        await updateEstadoPedido(
+                                                                            'entregado',
+                                                                            null,
+                                                                            "",
+                                                                            'efectivo',
+                                                                            pedidoTrabajo.id);
+                                                                        setState(
+                                                                            () {
+                                                                          listProducto =
+                                                                              [];
+                                                                          productosYCantidades =
+                                                                              '';
+                                                                        });
+                                                                        await _initialize();
+                                                                        // ignore: use_build_context_synchronously
+                                                                        Navigator.pop(
+                                                                            context);
+                                                                        // ignore: use_build_context_synchronously
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        '     Si     ',
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                16,
+                                                                            color: Color.fromRGBO(
+                                                                                0,
+                                                                                106,
+                                                                                252,
+                                                                                1.000)),
+                                                                      )),
+                                                                  const Expanded(
+                                                                      child:
+                                                                          SizedBox()),
+                                                                  ElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop(); // Cierra el AlertDialog
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        '     No     ',
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                16,
+                                                                            color: Color.fromRGBO(
+                                                                                0,
+                                                                                106,
+                                                                                252,
+                                                                                1.000)),
+                                                                      )),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
                                                     },
                                                     style: ButtonStyle(
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all(
-                                                                    colorBotonesAzul)),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(const Color
+                                                                  .fromRGBO(
+                                                                  0,
+                                                                  106,
+                                                                  252,
+                                                                  1.000)),
+                                                    ),
                                                     child: const Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -1210,13 +1430,15 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                       children: [
                                                         Icon(
                                                           Icons
-                                                              .camera_alt, // Reemplaza con el icono que desees
+                                                              .money, // Reemplaza con el icono que desees
                                                           size: 18,
                                                           color: Colors.white,
                                                         ),
-                                                        SizedBox(width: 3),
+                                                        SizedBox(
+                                                            width:
+                                                                8), // Ajusta el espacio entre el icono y el texto según tus preferencias
                                                         Text(
-                                                          "Yape/Plin",
+                                                          "Efectivo",
                                                           style: TextStyle(
                                                               fontSize: 14,
                                                               fontWeight:
@@ -1224,139 +1446,149 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                       .w400,
                                                               color:
                                                                   Colors.white),
-                                                        )
+                                                        ),
                                                       ],
-                                                    )),
-                                              ),
-                                              //BOTON EFECTIVO
-                                              Container(
-                                                width:
-                                                    anchoActual * (164.5 / 400),
-                                                height: largoActual * 0.05,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          surfaceTintColor:
-                                                              Color.fromRGBO(
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                            //BOTON DE PROBLEMASS
+                                            Container(
+                                              width: anchoActual,
+                                              height: largoActual * 0.05,
+                                              child: ElevatedButton(
+                                                  onPressed: () async {
+                                                    await _takePicture(
+                                                        'problemas');
+                                                    if (flag) {
+                                                      showModalBottomSheet(
+                                                          isDismissible: false,
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromRGBO(
                                                                   0,
                                                                   106,
                                                                   252,
                                                                   1.000),
-                                                          elevation: 20,
-                                                          title: const Text(
-                                                            'TERMINE MI PEDIDO',
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Color
-                                                                    .fromRGBO(
-                                                                        0,
-                                                                        106,
-                                                                        252,
-                                                                        1.000)),
-                                                          ),
-                                                          content: const Text(
-                                                            '¿Entregaste el pedido?',
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400),
-                                                          ),
-                                                          actions: <Widget>[
-                                                            Row(
-                                                              children: [
-                                                                ElevatedButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      print(
-                                                                          "print CHIIIII");
-                                                                      print(pedidoTrabajo
-                                                                          .id);
-                                                                      await updateEstadoPedido(
-                                                                          'entregado',
-                                                                          null,
-                                                                          "",
-                                                                          'efectivo',
-                                                                          pedidoTrabajo
-                                                                              .id);
-                                                                      setState(
-                                                                          () {
-                                                                        listProducto =
-                                                                            [];
-                                                                        productosYCantidades =
-                                                                            '';
-                                                                      });
-                                                                      await _initialize();
-                                                                      // ignore: use_build_context_synchronously
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      // ignore: use_build_context_synchronously
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                    child:
-                                                                        const Text(
-                                                                      '     Si     ',
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          fontSize:
-                                                                              16,
-                                                                          color: Color.fromRGBO(
-                                                                              0,
-                                                                              106,
-                                                                              252,
-                                                                              1.000)),
-                                                                    )),
-                                                                const Expanded(
-                                                                    child:
-                                                                        SizedBox()),
-                                                                ElevatedButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop(); // Cierra el AlertDialog
-                                                                    },
-                                                                    child:
-                                                                        const Text(
-                                                                      '     No     ',
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          fontSize:
-                                                                              16,
-                                                                          color: Color.fromRGBO(
-                                                                              0,
-                                                                              106,
-                                                                              252,
-                                                                              1.000)),
-                                                                    )),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
+                                                          // ignore: use_build_context_synchronously
+                                                          context: context,
+                                                          isScrollControlled:
+                                                              true,
+                                                          builder: (context) {
+                                                            return Padding(
+                                                              padding: EdgeInsets.only(
+                                                                  bottom: MediaQuery.of(
+                                                                          context)
+                                                                      .viewInsets
+                                                                      .bottom),
+                                                              child: Container(
+                                                                height:
+                                                                    largoActual *
+                                                                        0.15,
+                                                                margin: EdgeInsets.only(
+                                                                    left:
+                                                                        anchoActual *
+                                                                            0.08,
+                                                                    right:
+                                                                        anchoActual *
+                                                                            0.08,
+                                                                    top: largoActual *
+                                                                        0.05,
+                                                                    bottom:
+                                                                        largoActual *
+                                                                            0.05),
+                                                                child: Column(
+                                                                  children: [
+                                                                    Column(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Container(
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              color: Colors.white,
+                                                                              borderRadius: BorderRadius.circular(8.0),
+                                                                              border: Border.all(
+                                                                                color: Colors.grey,
+                                                                                width: 0.5,
+                                                                              ),
+                                                                            ),
+                                                                            child:
+                                                                                TextField(
+                                                                              decoration: InputDecoration(hintText: comentario),
+                                                                              controller: comentarioConductor,
+                                                                            ),
+                                                                          )
+                                                                        ]),
+                                                                    const SizedBox(
+                                                                      height:
+                                                                          20,
+                                                                    ),
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          height:
+                                                                              40,
+                                                                          width:
+                                                                              anchoActual * 0.83,
+                                                                          child: ElevatedButton(
+                                                                              onPressed: () {
+                                                                                updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
+                                                                                Navigator.push(
+                                                                                  context,
+                                                                                  //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
+                                                                                  MaterialPageRoute(builder: (context) => const HolaConductor2()),
+                                                                                );
+                                                                              },
+                                                                              style: ButtonStyle(elevation: MaterialStateProperty.all(8), surfaceTintColor: MaterialStateProperty.all(Colors.white), backgroundColor: MaterialStateProperty.all(Colors.white)),
+                                                                              child: const Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  Text(
+                                                                                    "Listo",
+                                                                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 106, 252, 1.000)),
+                                                                                  ),
+                                                                                  SizedBox(width: 8),
+                                                                                  Icon(
+                                                                                    Icons.arrow_forward, // Reemplaza con el icono que desees
+                                                                                    size: 24,
+                                                                                    color: Color.fromRGBO(0, 106, 252, 1.000),
+                                                                                  ),
+                                                                                ],
+                                                                              )),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            );
+                                                          });
+                                                    } else {
+                                                      print(
+                                                          "Todavia no se ha tomado una foto");
+                                                    }
+
+                                                    setState(() {
+                                                      flag = false;
+                                                    });
                                                   },
                                                   style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(const Color
-                                                                .fromRGBO(
-                                                                0,
-                                                                106,
-                                                                252,
-                                                                1.000)),
-                                                  ),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .all(const Color
+                                                                  .fromRGBO(
+                                                                  230,
+                                                                  230,
+                                                                  230,
+                                                                  1))),
                                                   child: const Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -1364,196 +1596,30 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                     children: [
                                                       Icon(
                                                         Icons
-                                                            .money, // Reemplaza con el icono que desees
+                                                            .camera_alt, // Reemplaza con el icono que desees
                                                         size: 18,
-                                                        color: Colors.white,
+                                                        color: Color.fromARGB(
+                                                            255, 119, 119, 119),
                                                       ),
-                                                      SizedBox(
-                                                          width:
-                                                              8), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                                                      SizedBox(width: 3),
                                                       Text(
-                                                        "Efectivo",
+                                                        "¿Problemas?",
                                                         style: TextStyle(
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             color:
-                                                                Colors.white),
-                                                      ),
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    119,
+                                                                    119,
+                                                                    119)),
+                                                      )
                                                     ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 3,
-                                          ),
-                                          //BOTON DE PROBLEMASS
-                                          Container(
-                                            width: anchoActual,
-                                            height: largoActual * 0.05,
-                                            child: ElevatedButton(
-                                                onPressed: () async {
-                                                  await _takePicture(
-                                                      'problemas');
-                                                  if (flag) {
-                                                    showModalBottomSheet(
-                                                        isDismissible: false,
-                                                        backgroundColor:
-                                                            const Color
-                                                                .fromRGBO(
-                                                                0,
-                                                                106,
-                                                                252,
-                                                                1.000),
-                                                        // ignore: use_build_context_synchronously
-                                                        context: context,
-                                                        isScrollControlled:
-                                                            true,
-                                                        builder: (context) {
-                                                          return Padding(
-                                                            padding: EdgeInsets.only(
-                                                                bottom: MediaQuery.of(
-                                                                        context)
-                                                                    .viewInsets
-                                                                    .bottom),
-                                                            child: Container(
-                                                              height:
-                                                                  largoActual *
-                                                                      0.15,
-                                                              margin: EdgeInsets.only(
-                                                                  left:
-                                                                      anchoActual *
-                                                                          0.08,
-                                                                  right:
-                                                                      anchoActual *
-                                                                          0.08,
-                                                                  top:
-                                                                      largoActual *
-                                                                          0.05,
-                                                                  bottom:
-                                                                      largoActual *
-                                                                          0.05),
-                                                              child: Column(
-                                                                children: [
-                                                                  Column(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(8.0),
-                                                                            border:
-                                                                                Border.all(
-                                                                              color: Colors.grey,
-                                                                              width: 0.5,
-                                                                            ),
-                                                                          ),
-                                                                          child:
-                                                                              TextField(
-                                                                            decoration:
-                                                                                InputDecoration(hintText: comentario),
-                                                                            controller:
-                                                                                comentarioConductor,
-                                                                          ),
-                                                                        )
-                                                                      ]),
-                                                                  const SizedBox(
-                                                                    height: 20,
-                                                                  ),
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      SizedBox(
-                                                                        height:
-                                                                            40,
-                                                                        width: anchoActual *
-                                                                            0.83,
-                                                                        child: ElevatedButton(
-                                                                            onPressed: () {
-                                                                              updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
-                                                                              Navigator.push(
-                                                                                context,
-                                                                                //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
-                                                                                MaterialPageRoute(builder: (context) => const HolaConductor2()),
-                                                                              );
-                                                                            },
-                                                                            style: ButtonStyle(elevation: MaterialStateProperty.all(8), surfaceTintColor: MaterialStateProperty.all(Colors.white), backgroundColor: MaterialStateProperty.all(Colors.white)),
-                                                                            child: const Row(
-                                                                              mainAxisAlignment: MainAxisAlignment.center,
-                                                                              children: [
-                                                                                Text(
-                                                                                  "Listo",
-                                                                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Color.fromRGBO(0, 106, 252, 1.000)),
-                                                                                ),
-                                                                                SizedBox(width: 8),
-                                                                                Icon(
-                                                                                  Icons.arrow_forward, // Reemplaza con el icono que desees
-                                                                                  size: 24,
-                                                                                  color: Color.fromRGBO(0, 106, 252, 1.000),
-                                                                                ),
-                                                                              ],
-                                                                            )),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          );
-                                                        });
-                                                  } else {
-                                                    print(
-                                                        "Todavia no se ha tomado una foto");
-                                                  }
+                                                  )),
+                                            ),
 
-                                                  setState(() {
-                                                    flag = false;
-                                                  });
-                                                },
-                                                style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all(const Color
-                                                                .fromRGBO(230,
-                                                                230, 230, 1))),
-                                                child: const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .camera_alt, // Reemplaza con el icono que desees
-                                                      size: 18,
-                                                      color: Color.fromARGB(
-                                                          255, 119, 119, 119),
-                                                    ),
-                                                    SizedBox(width: 3),
-                                                    Text(
-                                                      "¿Problemas?",
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              119,
-                                                              119,
-                                                              119)),
-                                                    )
-                                                  ],
-                                                )),
-                                          ),
-
-                                          /*SizedBox(
+                                            /*SizedBox(
                                                                 width: anchoActual,
                                                                 height: 19,
                                                                 child: ElevatedButton(
@@ -1600,7 +1666,8 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                 ),
                                                               ),
                                                          */
-                                        ]),
+                                          ]),
+                                        ),
                                       ),
                                     );
                                   });
