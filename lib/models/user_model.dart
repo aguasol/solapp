@@ -6,20 +6,21 @@ class UserModel {
   String? codigocliente;
   String? fechaCreacionCuenta;
   String? suscripcion;
+  bool esNuevo;
 
   // Agrega más atributos según sea necesario
 
-  UserModel(
-      {required this.id,
-      required this.nombre,
-      required this.apellidos,
-      this.saldoBeneficio,
-      this.codigocliente,
-      this.fechaCreacionCuenta,
-      this.suscripcion
-
-      // Agrega más parámetros según sea necesario
-      });
+  UserModel({
+    required this.id,
+    required this.nombre,
+    required this.apellidos,
+    this.saldoBeneficio,
+    this.codigocliente,
+    this.fechaCreacionCuenta,
+    this.suscripcion,
+    this.esNuevo = false,
+    // Agrega más parámetros según sea necesario
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

@@ -25,6 +25,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   double opacity = 0.0;
   String apiLogin = '/api/login';
+  String apiLastPedido = '/api/pedido_last/';
   String apiUrl = dotenv.env['API_URL'] ?? '';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _usuario = TextEditingController();
@@ -34,6 +35,7 @@ class _LoginState extends State<Login> {
   late int id = 0;
   late UserModel userData;
   bool yaTieneUbicaciones = false;
+  bool noTienePedidosEsNuevo = false;
 
   @override
   void initState() {
@@ -169,6 +171,33 @@ class _LoginState extends State<Login> {
             yaTieneUbicaciones = true;
           }
         });
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
+
+  Future<dynamic> tienePedidos(clienteID) async {
+    print("-------get pedidossss---------");
+    var res = await http.get(
+      Uri.parse(apiUrl + apiLastPedido + clienteID.toString()),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        print("-------entro al try de get pedidossss---------");
+        var data = json.decode(res.body);
+        print(data);
+        if (data == null) {
+          setState(() {
+            noTienePedidosEsNuevo = true;
+          });
+        } else {
+          setState(() {
+            noTienePedidosEsNuevo = false;
+          });
+        }
       }
     } catch (e) {
       print('Error en la solicitud: $e');
@@ -318,6 +347,16 @@ class _LoginState extends State<Login> {
                               //SI ES CLIENTE
                               if (rol == 4) {
                                 await tieneUbicaciones(userData.id);
+                                await tienePedidos(userData.id);
+                                if (noTienePedidosEsNuevo) {
+                                  setState(() {
+                                    userData.esNuevo = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    userData.esNuevo = false;
+                                  });
+                                }
                                 //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
                                 if (yaTieneUbicaciones == true) {
                                   print("YA tiene unibicaciones");

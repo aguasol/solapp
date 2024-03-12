@@ -66,6 +66,8 @@ class _PedidoState extends State<Pedido> {
   bool existe = false;
   bool buscandoCodigo = false;
   bool hayBidon = false;
+  bool esPrimeraCompra = false;
+  double dctoPrimeraCompra = 0.2;
   int cantidadBidones = 0;
   String? fechaLimiteString = '';
   DateTime fechaLimite = DateTime.now();
@@ -179,7 +181,7 @@ class _PedidoState extends State<Pedido> {
         for (var i = 0; i < seleccionadosTodos.length; i++) {
           //si hay un bidon nuevo en los productos de la lista, solo productos
           //no promociones
-          if (seleccionadosTodos[i].id == 4) {
+          if (seleccionadosTodos[i].id == 2) {
             setState(() {
               hayBidon = true;
               cantidadBidones = seleccionadosTodos[i].cantidad;
@@ -272,6 +274,21 @@ class _PedidoState extends State<Pedido> {
     });
   }
 
+  void descuentoPrimeraCompra(bool? esnuevo) {
+    if (esnuevo == true && hayBidon) {
+      setState(() {
+        dctoPrimeraCompra = 10;
+        ahorro = dctoPrimeraCompra * cantidadBidones;
+        totalVenta = totalProvider - ahorro;
+      });
+    } else {
+      setState(() {
+        dctoPrimeraCompra = 0;
+        ahorro = 0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final anchoActual = MediaQuery.of(context).size.width;
@@ -281,14 +298,14 @@ class _PedidoState extends State<Pedido> {
     final ubicacionProvider = context.watch<UbicacionProvider>();
     fechaLimiteCliente = mesyAnio(userProvider.user?.fechaCreacionCuenta);
     esUbicacion(ubicacionProvider.ubicacion);
-    tamanoTitulos = largoActual * 0.021;
+    tamanoTitulos = largoActual * 0.02;
     tamanoTitulosDialogs = largoActual * 0.021;
     tamanoContenidoDialogs = largoActual * 0.018;
-
     setState(() {
       seleccionadosTodos = [];
     });
     esVacio(pedidoProvider.pedido);
+    descuentoPrimeraCompra(userProvider.user?.esNuevo);
     print("SELECCIONADOS TODOS");
     print(seleccionadosTodos);
     if (totalProvider != 0) {
@@ -442,7 +459,7 @@ class _PedidoState extends State<Pedido> {
                       //TU PEDIDO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
+                            bottom: largoActual * 0.008,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Tu pedido",
@@ -575,7 +592,7 @@ class _PedidoState extends State<Pedido> {
                       //CUPONES
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
+                            bottom: largoActual * 0.008,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Cupones",
@@ -643,114 +660,144 @@ class _PedidoState extends State<Pedido> {
                                 setState(() {
                                   buscandoCodigo = true;
                                 });
-                                await cuponExist(_cupon.text);
-                                setState(() {
-                                  fechaLimite = mesyAnio(fechaLimiteString)
-                                      .add(const Duration(days: (30 * 3)));
-                                  ;
-                                });
-                                print(fechaLimite);
-                                if (existe) {
-                                  //EXISTE EL CODIGO
-                                  print("codigo válido");
-                                  if (fechaLimite.day <= DateTime.now().day &&
-                                      fechaLimite.month <=
-                                          DateTime.now().month &&
-                                      fechaLimite.year <= DateTime.now().year) {
-                                    print("el codigo ya expiro");
-                                    // ignore: use_build_context_synchronously
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            backgroundColor: Colors.white,
-                                            surfaceTintColor: Colors.white,
-                                            title: Text(
-                                              'El código que estas usando ya expiró :(',
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      tamanoTitulosDialogs),
-                                            ),
-                                            content: Text(
-                                              'Pero todavìa puedes compartir tu codigo con tus amigos para recibir beneficios',
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      tamanoContenidoDialogs),
-                                            ),
-                                          );
-                                        });
-                                  } else {
-                                    print('el codigo esta vigentee');
-                                    if (hayBidon) {
-                                      //SI HAY BIDONES NUEVOS EN LA LISTA DE PRODUCTOS
-                                      print('hay bidones nuevos');
-                                      setState(() {
-                                        buscandoCodigo = false;
-                                        colorCupon = const Color.fromRGBO(
-                                            255, 0, 93, 1.000);
-                                        ahorro = 4.0 * cantidadBidones;
-                                        totalVenta =
-                                            envio + totalProvider - ahorro;
-                                      });
-                                    } else {
-                                      print('no hay bidones');
-                                      setState(() {
-                                        buscandoCodigo = false;
-                                        colorCupon = Colors.white;
-                                      });
-                                      // ignore: use_build_context_synchronously
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              backgroundColor: Colors.white,
-                                              surfaceTintColor: Colors.white,
-                                              title: Text(
-                                                'Este codigo solo es valido para compras de Bidones Nuevos',
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        tamanoTitulosDialogs),
-                                              ),
-                                              content: Text(
-                                                'Agrega un bidón nuevo a tu carrito para acceder a tu descuento ;)',
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        tamanoContenidoDialogs),
-                                              ),
-                                            );
-                                          });
-                                      //PONER SEÑAL DE QUE EL CODIGO SOLO EL VALIDO
-                                      //DESUCENTO EN BIDONES NUEVOS
-                                    }
-                                  }
-                                } else {
-                                  //PONER UNA SEÑAL DE
-                                  //QUE EL CODIGO NO EXISTE
-                                  print("no existe el codigo");
-                                  setState(() {
-                                    buscandoCodigo = false;
-                                    colorCupon = Colors.white;
-                                  });
-                                  // ignore: use_build_context_synchronously
+                                if (_cupon.text ==
+                                    userProvider.user?.codigocliente) {
+                                  //si es mi codigo
                                   showDialog(
+                                      // ignore: use_build_context_synchronously
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           backgroundColor: Colors.white,
                                           surfaceTintColor: Colors.white,
                                           title: Text(
-                                            'El codigo que ingresaste no existe :(',
+                                            'No puedes usar tu propio código :(',
                                             style: TextStyle(
                                                 fontSize: tamanoTitulosDialogs),
                                           ),
                                           content: Text(
-                                            'Pruba ',
+                                            'Pero todavía puedes compartir tu codigo con tus amigos para recibir beneficios',
                                             style: TextStyle(
                                                 fontSize:
                                                     tamanoContenidoDialogs),
                                           ),
                                         );
                                       });
+                                } else {
+                                  //si no es mi codigfo
+                                  await cuponExist(_cupon.text);
+                                  setState(() {
+                                    fechaLimite = mesyAnio(fechaLimiteString)
+                                        .add(const Duration(days: (30 * 3)));
+                                  });
+                                  print(fechaLimite);
+                                  if (existe) {
+                                    //EXISTE EL CODIGO
+                                    print("codigo válido");
+                                    if (fechaLimite.day <= DateTime.now().day &&
+                                        fechaLimite.month <=
+                                            DateTime.now().month &&
+                                        fechaLimite.year <=
+                                            DateTime.now().year) {
+                                      print("el codigo ya expiro");
+                                      // ignore: use_build_context_synchronously
+                                      showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              backgroundColor: Colors.white,
+                                              surfaceTintColor: Colors.white,
+                                              title: Text(
+                                                'El código que estas usando ya expiró :(',
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        tamanoTitulosDialogs),
+                                              ),
+                                              content: Text(
+                                                'Pero todavía puedes compartir tu codigo con tus amigos para recibir beneficios',
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        tamanoContenidoDialogs),
+                                              ),
+                                            );
+                                          });
+                                    } else {
+                                      print('el codigo esta vigentee');
+                                      if (hayBidon) {
+                                        //SI HAY BIDONES NUEVOS EN LA LISTA DE PRODUCTOS
+                                        print('hay bidones nuevos');
+                                        setState(() {
+                                          buscandoCodigo = false;
+                                          colorCupon = const Color.fromRGBO(
+                                              255, 0, 93, 1.000);
+                                          ahorro = 12.0 * cantidadBidones;
+                                          totalVenta =
+                                              envio + totalProvider - ahorro;
+                                        });
+                                      } else {
+                                        print('no hay bidones');
+                                        setState(() {
+                                          buscandoCodigo = false;
+                                          colorCupon = Colors.white;
+                                        });
+                                        // ignore: use_build_context_synchronously
+                                        showDialog(
+                                            // ignore: use_build_context_synchronously
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                backgroundColor: Colors.white,
+                                                surfaceTintColor: Colors.white,
+                                                title: Text(
+                                                  'Este codigo solo es valido para compras de Bidones Nuevos',
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          tamanoTitulosDialogs),
+                                                ),
+                                                content: Text(
+                                                  'Agrega un bidón nuevo a tu carrito para acceder a tu descuento ;)',
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          tamanoContenidoDialogs),
+                                                ),
+                                              );
+                                            });
+                                        //PONER SEÑAL DE QUE EL CODIGO SOLO EL VALIDO
+                                        //DESUCENTO EN BIDONES NUEVOS
+                                      }
+                                    }
+                                  } else {
+                                    //PONER UNA SEÑAL DE
+                                    //QUE EL CODIGO NO EXISTE
+                                    print("no existe el codigo");
+                                    setState(() {
+                                      buscandoCodigo = false;
+                                      colorCupon = Colors.white;
+                                    });
+                                    // ignore: use_build_context_synchronously
+                                    showDialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            surfaceTintColor: Colors.white,
+                                            title: Text(
+                                              'El codigo que ingresaste no existe :(',
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      tamanoTitulosDialogs),
+                                            ),
+                                            content: Text(
+                                              'Pruba ',
+                                              style: TextStyle(
+                                                  fontSize:
+                                                      tamanoContenidoDialogs),
+                                            ),
+                                          );
+                                        });
+                                  }
                                 }
                               },
                               style: ButtonStyle(
@@ -783,7 +830,7 @@ class _PedidoState extends State<Pedido> {
                       //TIPO DE ENVIO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
+                            bottom: largoActual * 0.008,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Tipo de envio",
@@ -930,10 +977,10 @@ class _PedidoState extends State<Pedido> {
                       //DIRECCION DE ENVIO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
+                            bottom: largoActual * 0.008,
                             left: anchoActual * 0.055),
                         child: Text(
-                          "A esta dirección enviaremos el pedido",
+                          "Direccion de envio",
                           style: TextStyle(
                               color: colorTitulos,
                               fontWeight: FontWeight.w600,
@@ -989,60 +1036,10 @@ class _PedidoState extends State<Pedido> {
                                   ),
                                 ],
                               ))),
-                      //NOTAS PARA EL REPARTIDOR
-                      Container(
-                        margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
-                            left: anchoActual * 0.055),
-                        child: Text(
-                          "Notas para el repartidor",
-                          style: TextStyle(
-                              color: colorTitulos,
-                              fontWeight: FontWeight.w600,
-                              fontSize: tamanoTitulos),
-                        ),
-                      ),
-                      Card(
-                        surfaceTintColor: Colors.white,
-                        color: Colors.white,
-                        elevation: 8,
-                        margin: EdgeInsets.only(
-                            left: anchoActual * 0.028,
-                            right: anchoActual * 0.028,
-                            bottom: anchoActual * 0.013),
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              left: anchoActual * 0.055,
-                              right: anchoActual * 0.055,
-                              bottom: largoActual * 0.0068),
-                          child: TextFormField(
-                            controller: notas,
-                            cursorColor:
-                                const Color.fromRGBO(0, 106, 252, 1.000),
-                            enableInteractiveSelection: false,
-                            style: TextStyle(
-                                fontSize: largoActual * 0.018,
-                                color: colorContenido),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText:
-                                  'Ej. Casa con porton azúl, tocar tercer piso',
-                              hintStyle: TextStyle(
-                                  color:
-                                      const Color.fromARGB(255, 195, 195, 195),
-                                  fontSize: largoActual * 0.018,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            /*validator: (value) {
-
-                          },*/
-                          ),
-                        ),
-                      ),
                       //RESUMEN
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.013,
+                            bottom: largoActual * 0.008,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Resumen de Pedido",
@@ -1117,7 +1114,7 @@ class _PedidoState extends State<Pedido> {
                                       'Ahorro',
                                       style: TextStyle(
                                           fontSize: largoActual * (13 / 736),
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w600,
                                           color: const Color.fromRGBO(
                                               234, 51, 98, 1.000)),
                                     ),
@@ -1125,7 +1122,7 @@ class _PedidoState extends State<Pedido> {
                                       'S/.$ahorro',
                                       style: TextStyle(
                                           fontSize: largoActual * (13 / 736),
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.w600,
                                           color: const Color.fromRGBO(
                                               234, 51, 98, 1.000)),
                                     )
@@ -1134,6 +1131,57 @@ class _PedidoState extends State<Pedido> {
                               ],
                             )),
                       ),
+                      //NOTAS PARA EL REPARTIDOR
+                      Container(
+                        margin: EdgeInsets.only(
+                            bottom: largoActual * 0.008,
+                            left: anchoActual * 0.055),
+                        child: Text(
+                          "Notas para el repartidor",
+                          style: TextStyle(
+                              color: colorTitulos,
+                              fontWeight: FontWeight.w600,
+                              fontSize: tamanoTitulos),
+                        ),
+                      ),
+                      Card(
+                        surfaceTintColor: Colors.white,
+                        color: Colors.white,
+                        elevation: 8,
+                        margin: EdgeInsets.only(
+                            left: anchoActual * 0.028,
+                            right: anchoActual * 0.028,
+                            bottom: anchoActual * 0.013),
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              left: anchoActual * 0.055,
+                              right: anchoActual * 0.055,
+                              bottom: largoActual * 0.0068),
+                          child: TextFormField(
+                            controller: notas,
+                            cursorColor:
+                                const Color.fromRGBO(0, 106, 252, 1.000),
+                            enableInteractiveSelection: false,
+                            style: TextStyle(
+                                fontSize: largoActual * 0.018,
+                                color: colorContenido),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText:
+                                  'Ej. Casa con porton azúl, tocar tercer piso',
+                              hintStyle: TextStyle(
+                                  color:
+                                      const Color.fromARGB(255, 195, 195, 195),
+                                  fontSize: largoActual * 0.018,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            /*validator: (value) {
+
+                          },*/
+                          ),
+                        ),
+                      ),
+
                       SizedBox(
                         height: largoActual * (95 / 630),
                       ),

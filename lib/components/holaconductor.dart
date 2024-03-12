@@ -282,9 +282,7 @@ class _HolaConductorState extends State<HolaConductor> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const ActualizadoStock()
-                                      //const Promos()
-                                      ),
+                                          const ActualizadoStock()),
                                 );
                                 //QUE LO LLEVE A LA VISTA DE FORMULARIO DE LLENADO DE STOCK
                               },
