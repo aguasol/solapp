@@ -180,13 +180,18 @@ class _PromosState extends State<Promos> {
 
     for (var i = 0; i < productosProvider.length; i++) {
       for (var j = 0; j < productosContabilizados.length; j++) {
-        if (productosProvider[i].id == productosContabilizados[j].id &&
-            productosProvider[i].promoID ==
-                productosContabilizados[j].promoID) {
-          setState(() {
-            productosContabilizados[j].cantidadActual +=
-                productosProvider[i].cantidadActual;
-          });
+        if (productosProvider[i].id == productosContabilizados[j].id) {
+          if (productosProvider[i].promoID ==
+              productosContabilizados[j].promoID) {
+            setState(() {
+              productosContabilizados[j].cantidadActual +=
+                  productosProvider[i].cantidadActual;
+            });
+          } else {
+            //si tienen el mismo id, pero no tienen la misma promo
+          }
+        } else {
+          //si no tiene el mismo iD hmmmm
         }
       }
     }
