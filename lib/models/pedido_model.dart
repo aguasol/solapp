@@ -12,12 +12,4 @@ class PedidoModel {
     required this.cantidadProd,
     required this.total,
   });
-
-  /*factory PedidoModel() {
-    return PedidoModel(
-      seleccionados:[],
-      seleccionadosPromo: [],
-      total:0.0,
-    );
-  }*/
 }

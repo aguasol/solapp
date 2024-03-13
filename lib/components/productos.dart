@@ -1,5 +1,4 @@
 import 'package:appsol_final/components/pedido.dart';
-import 'package:appsol_final/components/navegador.dart';
 import 'package:appsol_final/models/promocion_model.dart';
 import 'package:appsol_final/models/producto_model.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
@@ -22,11 +21,11 @@ class _ProductosState extends State<Productos> {
   late PedidoModel pedidoMio;
   String apiUrl = dotenv.env['API_URL'] ?? '';
   List<Producto> listProducto = [];
-  int cantidadP = 0;
   bool almenosUno = false;
   List<Producto> productosContabilizados = [];
   List<Producto> productosProvider = [];
   List<Promo> promosProvider = [];
+  List<Producto> productosContabilizadosDePromo = [];
   double totalProvider = 0.0;
   int cantCarrito = 0;
   Color colorCantidadCarrito = Colors.black;
@@ -56,13 +55,13 @@ class _ProductosState extends State<Productos> {
           );
         }).toList();
 
-        if(mounted){
+        if (mounted) {
           setState(() {
-          listProducto = tempProducto;
-          //conductores = tempConductor;
-        });
+            tempProducto.removeWhere((element) => (element.id == 6));
+            listProducto = tempProducto;
+            //conductores = tempConductor;
+          });
         }
-        
       }
     } catch (e) {
       print('Error en la solicitud: $e');
@@ -70,19 +69,53 @@ class _ProductosState extends State<Productos> {
     }
   }
 
+  void obtenerProductos() async {
+    print("-------------------------");
+    print("obtiene PRODUCTOS");
+
+    for (var i = 0; i < productosProvider.length; i++) {
+      for (var j = 0; j < productosContabilizados.length; j++) {
+        if (productosProvider[i].id == productosContabilizados[j].id &&
+            productosProvider[i].promoID ==
+                productosContabilizados[j].promoID) {
+          setState(() {
+            productosContabilizados[j].cantidadActual +=
+                productosProvider[i].cantidadActual;
+          });
+        }
+      }
+    }
+
+    setState(() {
+      productosContabilizadosDePromo = productosContabilizados
+          .where((prod) => prod.promoID != null)
+          .toList();
+      cantCarrito = promosProvider.length +
+          productosContabilizados.length -
+          productosContabilizadosDePromo.length;
+    });
+  }
+
   // FUNCIONES DE SUMATORIA
   void incrementar(int index) {
     setState(() {
       almenosUno = true;
       listProducto[index].cantidad++;
+      productosContabilizados =
+          listProducto.where((producto) => producto.cantidad > 0).toList();
     });
   }
 
   void disminuir(int index) {
     setState(() {
-      if (listProducto[index].cantidad > 0) {
+      productosContabilizados = [];
+    });
+    if (listProducto[index].cantidad > 0) {
+      setState(() {
         listProducto[index].cantidad--;
-      }
+      });
+    }
+    setState(() {
       // Verificar si hay al menos un producto seleccionado después de la disminución
       productosContabilizados =
           listProducto.where((producto) => producto.cantidad > 0).toList();
@@ -229,7 +262,7 @@ class _ProductosState extends State<Productos> {
 
                     //CONTAINER DE LISTBUILDER
                     SizedBox(
-                      height: largoActual * 0.57,
+                      height: largoActual * 0.58,
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: listProducto.length,
@@ -259,7 +292,7 @@ class _ProductosState extends State<Productos> {
                                   ),
                                   Container(
                                     width: anchoActual * 0.55,
-                                    height: largoActual * 0.138,
+                                    height: largoActual * 0.148,
                                     //color: Colors.grey,
                                     margin: EdgeInsets.only(
                                         top: largoActual * 0.013,
@@ -283,7 +316,7 @@ class _ProductosState extends State<Productos> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              "S/.${producto.precio} ",
+                                              "S/.${producto.precio}0 ",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: largoActual * 0.022,
@@ -292,6 +325,7 @@ class _ProductosState extends State<Productos> {
                                             ),
                                             Text(
                                               producto.descripcion,
+                                              textAlign: TextAlign.left,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w300,
                                                   fontSize: largoActual * 0.018,
@@ -308,7 +342,6 @@ class _ProductosState extends State<Productos> {
                                             IconButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  // cantidadP = producto.cantidad++;
                                                   disminuir(index);
                                                   print(
                                                       "disminuir ${producto.cantidad}");
@@ -334,7 +367,6 @@ class _ProductosState extends State<Productos> {
                                             IconButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  // cantidadP = producto.cantidad++;
                                                   incrementar(index);
                                                   print(
                                                       "incrementar ${producto.cantidad}");
@@ -412,34 +444,18 @@ class _ProductosState extends State<Productos> {
                               child: ElevatedButton(
                                   onPressed: almenosUno
                                       ? () {
-                                          setState(() {
-                                            productosContabilizados
-                                                .addAll(productosProvider);
-                                          });
+                                          obtenerProductos();
                                           print("Agregar al carrito");
                                           pedidoMio = PedidoModel(
                                               seleccionados:
                                                   productosContabilizados,
                                               seleccionadosPromo:
                                                   promosProvider,
-                                              cantidadProd:
-                                                  productosContabilizados
-                                                      .length,
+                                              cantidadProd: cantCarrito,
                                               total: totalProvider + total);
                                           Provider.of<PedidoProvider>(context,
                                                   listen: false)
                                               .updatePedido(pedidoMio);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const BarraNavegacion(
-                                                      indice: 0,
-                                                      subIndice: 1,
-                                                    )
-                                                //const Promos()
-                                                ),
-                                          );
                                         }
                                       : null,
                                   style: ButtonStyle(

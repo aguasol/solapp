@@ -704,6 +704,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                           onPressed: () async {
                                                             setState(() {
                                                               _isloading = true;
+                                                              print(_isloading);
                                                             });
                                                             await currentLocation();
 
@@ -731,42 +732,48 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                     .all(Colors
                                                                         .white),
                                                           ),
-                                                          child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children:
-                                                                  _isloading
-                                                                      ? [
-                                                                          const CircularProgressIndicator(
-                                                                            color: Color.fromRGBO(
-                                                                                0,
-                                                                                106,
-                                                                                252,
-                                                                                1.000),
-                                                                            strokeWidth:
-                                                                                3,
-                                                                          ),
-                                                                        ]
-                                                                      : [
-                                                                          Icon(
-                                                                            Icons.add_location_alt_rounded,
+                                                          child: _isloading
+                                                              ? const CircularProgressIndicator(
+                                                                  color: Color
+                                                                      .fromRGBO(
+                                                                          0,
+                                                                          106,
+                                                                          252,
+                                                                          1.000),
+                                                                  strokeWidth:
+                                                                      3,
+                                                                )
+                                                              : Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .add_location_alt_rounded,
+                                                                        color: const Color
+                                                                            .fromRGBO(
+                                                                            0,
+                                                                            106,
+                                                                            252,
+                                                                            1.000),
+                                                                        size: largoActual *
+                                                                            0.034,
+                                                                      ),
+                                                                      Text(
+                                                                        ' Agregar ubicación actual',
+                                                                        style: TextStyle(
+                                                                            fontSize: largoActual *
+                                                                                0.021,
+                                                                            fontWeight: FontWeight
+                                                                                .w500,
                                                                             color: const Color.fromRGBO(
                                                                                 0,
                                                                                 106,
                                                                                 252,
-                                                                                1.000),
-                                                                            size:
-                                                                                largoActual * 0.034,
-                                                                          ),
-                                                                          Text(
-                                                                            ' Agregar ubicación actual',
-                                                                            style: TextStyle(
-                                                                                fontSize: largoActual * 0.021,
-                                                                                fontWeight: FontWeight.w500,
-                                                                                color: const Color.fromRGBO(0, 106, 252, 1.000)),
-                                                                          ),
-                                                                        ]),
+                                                                                1.000)),
+                                                                      ),
+                                                                    ]),
                                                         ),
                                                       ],
                                                     ),

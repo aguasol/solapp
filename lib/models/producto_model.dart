@@ -6,7 +6,7 @@ class Producto {
   final double precio;
   final String descripcion;
   final String foto;
-  final int? promoID;
+  int? promoID;
   int cantidad;
   int cantidadActual;
   int cantidadRequeridaParaRuta;
@@ -22,7 +22,7 @@ class Producto {
     required this.precio,
     required this.descripcion,
     required this.foto,
-    required this.promoID,
+    this.promoID,
     this.cantidad = 0,
     this.cantidadActual = 0,
     this.cantidadFaltante = 0,
