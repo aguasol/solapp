@@ -22,9 +22,7 @@ class _PromosState extends State<Promos> {
   String apiUrl = dotenv.env['API_URL'] ?? '';
   String apiProdProm = '/api/prod_prom';
   DateTime fechaLim = DateTime.now();
-  List<Producto> productosContabilizados = [];
   List<Producto> productosProvider = [];
-  List<Promo> promocionesContabilizadas = [];
   List<Promo> promosProvider = [];
   List<Promo> listPromociones = [];
   List<Producto> listProducto = [];
@@ -32,15 +30,12 @@ class _PromosState extends State<Promos> {
   List<ProductoPromocion> listProdProm = [];
   bool almenosUno = false;
   int cantCarrito = 0;
-  List<Producto> productosContabilizadosDePromo = [];
   Color colorCantidadCarrito = Colors.black;
 
   @override
   void initState() {
     super.initState();
-    getPromociones();
-    getTodosProductoPromocion();
-    getProducts();
+    _initialize();
   }
 
   DateTime mesyAnio(String fecha) {
@@ -48,39 +43,15 @@ class _PromosState extends State<Promos> {
     return fechaLim;
   }
 
-  Future<dynamic> getPromociones() async {
-    var res = await http.get(
-      Uri.parse('$apiUrl/api/promocion'),
-      headers: {"Content-type": "application/json"},
-    );
-    try {
-      if (res.statusCode == 200) {
-        var data = json.decode(res.body);
-        List<Promo> tempPromocion = data.map<Promo>((mapa) {
-          return Promo(
-              id: mapa['id'],
-              nombre: mapa['nombre'],
-              precio: mapa['precio'].toDouble(),
-              descripcion: mapa['descripcion'],
-              fechaLimite: mapa['fecha_limite'],
-              foto: '$apiUrl/images/${mapa['foto'].replaceAll(r'\\', '/')}');
-        }).toList();
-
-        if (mounted) {
-          setState(() {
-            listPromociones = tempPromocion;
-          });
-        }
-      }
-    } catch (e) {
-      print('Error en la solicitud: $e');
-      throw Exception('Error en la solicitud: $e');
-    }
+  Future<void> _initialize() async {
+    print('1) INITIALIZE-------------');
+    await getTodosProductoPromocion();
+    await getProducts();
+    await getPromociones();
   }
 
-//MOVER A LA OTRA VISTA
   Future<dynamic> getTodosProductoPromocion() async {
-    print("cantidad promo----");
+    print("--------------get productos promos----");
     var res = await http.get(
       Uri.parse(apiUrl + apiProdProm),
       headers: {"Content-type": "application/json"},
@@ -109,6 +80,7 @@ class _PromosState extends State<Promos> {
   }
 
   Future<dynamic> getProducts() async {
+    print("---------------get productos-----------------------");
     var res = await http.get(
       Uri.parse("$apiUrl/api/products"),
       headers: {"Content-type": "application/json"},
@@ -141,68 +113,89 @@ class _PromosState extends State<Promos> {
     }
   }
 
-  void obtenerProductos() async {
-    print("-------------------------");
-    print("obtiene PRODUCTOS");
-    for (var i = 0; i < promocionesContabilizadas.length; i++) {
-      print(
-          "la promocion [i] ${promocionesContabilizadas[i].nombre} esta contabilizada");
-      for (var j = 0; j < listProdProm.length; j++) {
-        if (promocionesContabilizadas[i].id == listProdProm[j].promocionId) {
-          for (var t = 0; t < listProducto.length; t++) {
-            if (listProdProm[j].productoId == listProducto[t].id) {
-              print("------------------");
-              print(
-                  "el producto [i] ${listProducto[i].nombre} esta dentro de la prom");
-              setState(() {
-                listProducto[t].cantidadActual =
-                    promocionesContabilizadas[i].cantidad *
-                        listProdProm[j].cantidadProd;
-                listProducto[t].promoID = listProdProm[j].promocionId;
-                productosContabilizados.add(listProducto[t]);
-              });
+  Future<dynamic> getPromociones() async {
+    print("---------------get promos ----------------");
+    var res = await http.get(
+      Uri.parse('$apiUrl/api/promocion'),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Promo> tempPromocion = data.map<Promo>((mapa) {
+          return Promo(
+              id: mapa['id'],
+              nombre: mapa['nombre'],
+              precio: mapa['precio'].toDouble(),
+              descripcion: mapa['descripcion'],
+              fechaLimite: mapa['fecha_limite'],
+              foto: '$apiUrl/images/${mapa['foto'].replaceAll(r'\\', '/')}');
+        }).toList();
 
-              print("LISTA DE PRODS CONTABILIZADOS ${productosContabilizados}");
+        if (mounted) {
+          setState(() {
+            listPromociones = tempPromocion;
+          });
+          for (var i = 0; i < listPromociones.length; i++) {
+            print(
+                "--------------------------------------------------------------");
+            print(
+                "la promocion ID[${listPromociones[i].id}] ${listPromociones[i].nombre}");
+            print(
+                "longitud de la lista producto promocion: ${listProdProm.length}");
+            for (var j = 0; j < listProdProm.length; j++) {
+              if (listPromociones[i].id == listProdProm[j].promocionId) {
+                for (var t = 0; t < listProducto.length; t++) {
+                  if (listProdProm[j].productoId == listProducto[t].id) {
+                    print(
+                        "* el producto ID[${listProducto[t].id}] ${listProducto[t].nombre} esta dentro de la prom");
+                    setState(() {
+                      listProducto[t].promoID = listProdProm[j].promocionId;
+                      listProducto[t].cantidad = listProdProm[j].cantidadProd;
+                      listPromociones[i].listaProductos.add(listProducto[t]);
+                    });
+                    print(
+                        "* lista de productos de la prom: ${listPromociones[i].listaProductos}");
+                  }
+                }
+              }
             }
           }
         }
       }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
     }
-    for (var i = 0; i < promosProvider.length; i++) {
-      for (var j = 0; j < promocionesContabilizadas.length; j++) {
-        if (promosProvider[i].id == promocionesContabilizadas[j].id) {
-          setState(() {
-            promocionesContabilizadas[j].cantidad += promosProvider[i].cantidad;
-          });
-        }
-      }
-    }
+  }
 
-    for (var i = 0; i < productosProvider.length; i++) {
-      for (var j = 0; j < productosContabilizados.length; j++) {
-        if (productosProvider[i].id == productosContabilizados[j].id) {
-          if (productosProvider[i].promoID ==
-              productosContabilizados[j].promoID) {
-            setState(() {
-              productosContabilizados[j].cantidadActual +=
-                  productosProvider[i].cantidadActual;
-            });
-          } else {
-            //si tienen el mismo id, pero no tienen la misma promo
-          }
-        } else {
-          //si no tiene el mismo iD hmmmm
-        }
-      }
-    }
+//este nel PASTEL
+  void obtenerPromos() {
+    print("-------------------------");
+    print("obtiene PRODUCTOS");
+
+    List<Promo> listTemp = promosProvider +
+        listPromociones.where((promocion) => promocion.cantidad > 0).toList();
+
+    var seen = <String>{};
+    List<Promo> uniquelist =
+        listTemp.where((promo) => seen.add(promo.nombre)).toList();
 
     setState(() {
-      productosContabilizadosDePromo = productosContabilizados
-          .where((prod) => prod.promoID != null)
-          .toList();
-      cantCarrito = promocionesContabilizadas.length +
-          productosContabilizados.length -
-          productosContabilizadosDePromo.length;
+      promosProvider = uniquelist;
+    });
+
+    //SE CALCULA EL PRECIO TOTAL DE PRODUCTOS YPROMOSSS
+    double totalproductos = 0;
+    double totalpromos = 0;
+    for (var productos in productosProvider) {
+      totalproductos += productos.cantidad * productos.precio;
+    }
+    for (var promo in promosProvider) {
+      totalpromos += promo.cantidad * promo.precio;
+    }
+    setState(() {
+      totalProvider = totalproductos + totalpromos;
     });
   }
 
@@ -211,57 +204,45 @@ class _PromosState extends State<Promos> {
     setState(() {
       almenosUno = true;
       listPromociones[index].cantidad++;
-      promocionesContabilizadas =
-          listPromociones.where((promocion) => promocion.cantidad > 0).toList();
     });
     print("esta es la listA PROMOCIONES");
     print(listPromociones[index].cantidad);
     print("esta es la PROMOCIONES CONTABILIZADAS");
-    print(promocionesContabilizadas);
   }
 
   void disminuir(int index) {
-    setState(() {
-      promocionesContabilizadas = [];
-    });
     if (listPromociones[index].cantidad > 0) {
       setState(() {
         listPromociones[index].cantidad--;
       });
     }
-    setState(() {
-      promocionesContabilizadas =
-          listPromociones.where((promocion) => promocion.cantidad > 0).toList();
-      print("${promocionesContabilizadas.isEmpty} <--isEmpty?");
-      almenosUno = promocionesContabilizadas.isNotEmpty;
-    });
-
-    print("PContabilizados: ${promocionesContabilizadas}");
-    print("esta es la listA PROMOCIONES");
+    almenosUno =
+        listPromociones.where((promo) => promo.cantidad > 0).isNotEmpty;
     print(listPromociones[index].cantidad);
-    print("esta es la PROMOCIONES CONTABILIZADAS");
-    print(promocionesContabilizadas);
   }
 
   double obtenerTotal() {
     double stotal = 0;
-    promocionesContabilizadas =
+
+    List promocionesContabilizadas =
         listPromociones.where((promo) => promo.cantidad > 0).toList();
     for (var promo in promocionesContabilizadas) {
       stotal += promo.cantidad * promo.precio;
     }
+
     return stotal;
   }
 
   void esVacio(PedidoModel? pedido) {
     if (pedido is PedidoModel) {
       print('ES PEDIDOOO');
-      cantCarrito = pedido.cantidadProd;
       productosProvider = pedido.seleccionados;
+      //COMO HACER AHHHHH
       promosProvider = pedido.seleccionadosPromo;
       totalProvider = pedido.total;
+      cantCarrito = productosProvider.length + promosProvider.length;
 
-      if (pedido.cantidadProd > 0) {
+      if (cantCarrito > 0) {
         setState(() {
           colorCantidadCarrito = const Color.fromRGBO(255, 0, 93, 1.000);
         });
@@ -413,7 +394,7 @@ class _PromosState extends State<Promos> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                            promocion.nombre,
+                                            "Promocion ${promocion.nombre}",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: largoActual * 0.02,
@@ -568,27 +549,17 @@ class _PromosState extends State<Promos> {
                                 child: ElevatedButton(
                                     onPressed: almenosUno
                                         ? () async {
-                                            obtenerProductos();
-                                            print(
-                                                "++++++++++++++++++++++++++++++++");
-                                            print(
-                                                "esta es la longitud de los productos contabilizados: ${productosContabilizados.length}");
-                                            for (int b = 0;
-                                                b <
-                                                    productosContabilizados
-                                                        .length;
-                                                b++) {
-                                              print(productosContabilizados[b]
-                                                  .cantidadActual);
-                                            }
+                                            obtenerPromos();
 
                                             pedidoMio = PedidoModel(
                                                 seleccionados:
-                                                    productosContabilizados,
+                                                    productosProvider,
                                                 seleccionadosPromo:
-                                                    promocionesContabilizadas,
-                                                cantidadProd: cantCarrito,
-                                                total: totalProvider + total);
+                                                    promosProvider,
+                                                cantidadProd:
+                                                    productosProvider.length +
+                                                        promosProvider.length,
+                                                total: totalProvider);
                                             Provider.of<PedidoProvider>(context,
                                                     listen: false)
                                                 .updatePedido(pedidoMio);

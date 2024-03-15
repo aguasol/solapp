@@ -5,6 +5,8 @@ import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
 import 'package:appsol_final/provider/ubicacion_provider.dart';
 import 'package:appsol_final/components/fin.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -33,7 +35,6 @@ class _PedidoState extends State<Pedido> {
   double envio = 0.0;
   //EL AHORRO ES IGUAL A 4 SOLES POR CADA BIDON NUEVO
   double ahorro = 0.0;
-  double totalVenta = 0.0;
   double totalProvider = 0.0;
   double tamanoTitulos = 0.0;
   double tamanoTitulosDialogs = 0.0;
@@ -72,6 +73,7 @@ class _PedidoState extends State<Pedido> {
   String? fechaLimiteString = '';
   DateTime fechaLimite = DateTime.now();
   DateTime fechaLimiteCliente = DateTime.now();
+  double totalVenta = 0.0;
 
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
@@ -126,7 +128,7 @@ class _PedidoState extends State<Pedido> {
   }
 
   Future<void> crearPedidoyDetallePedido(clienteID, tipo, subtotal, monto,
-      descuento, seleccionados, notas, codigo, cantidadBidon) async {
+      descuento, notas, codigo, cantidadBidon) async {
     DateTime tiempoGMTPeru = tiempoActual.subtract(const Duration(hours: 0));
     showDialog(
         context: context,
@@ -152,14 +154,25 @@ class _PedidoState extends State<Pedido> {
         ubicacionSelectID);
     print(tiempoGMTPeru.toString());
     print(tiempoActual.timeZoneName);
+    print("-----------------------------------");
     print("creando detalles de pedidos----------");
-    for (var i = 0; i < seleccionados.length; i++) {
-      print("longitud de seleccinados--------${seleccionados.length}");
-      print(i);
-      print("est es la promocion ID---------");
-      print(seleccionados[i].promoID);
-      await detallePedido(clienteID, seleccionados[i].id,
-          seleccionados[i].cantidad, seleccionados[i].promoID);
+    print("-----------------------------------");
+    print("longitud de seleccinados--------${seleccionadosTodos.length}");
+    for (var i = 0; i < seleccionadosTodos.length; i++) {
+      if (seleccionadosTodos[i] is Promo) {
+        for (Producto producto in seleccionadosTodos[i].listaProductos) {
+          await detallePedido(
+              clienteID,
+              producto.id,
+              (seleccionadosTodos[i].cantidad * producto.cantidad),
+              producto.promoID);
+        }
+        //es producto
+      } else {
+        //es producto
+        await detallePedido(clienteID, seleccionadosTodos[i].id,
+            seleccionadosTodos[i].cantidad, seleccionadosTodos[i].promoID);
+      }
     }
   }
 
@@ -168,29 +181,27 @@ class _PedidoState extends State<Pedido> {
       print('ES PEDIDOOO');
       setState(() {
         totalProvider = pedido.total;
-        print(totalProvider);
-        totalVenta = totalProvider + envio - ahorro;
-        cantCarrito = pedido.cantidadProd;
         seleccionadosProvider = pedido.seleccionados;
         selecciondosPromosProvider = pedido.seleccionadosPromo;
+        cantCarrito =
+            seleccionadosProvider.length + selecciondosPromosProvider.length;
+
+        //se consulta si hay bidones en el pedido
         for (var i = 0; i < seleccionadosProvider.length; i++) {
-          if (seleccionadosProvider[i].promoID == null) {
-            seleccionadosTodos.add(seleccionadosProvider[i]);
-          }
-        }
-        for (var i = 0; i < seleccionadosTodos.length; i++) {
           //si hay un bidon nuevo en los productos de la lista, solo productos
           //no promociones
-          if (seleccionadosTodos[i].id == 2) {
+          if (seleccionadosProvider[i].id == 2) {
             setState(() {
               hayBidon = true;
-              cantidadBidones = seleccionadosTodos[i].cantidad;
+              cantidadBidones = seleccionadosProvider[i].cantidad;
             });
           }
         }
-        for (var i = 0; i < selecciondosPromosProvider.length; i++) {
-          seleccionadosTodos.add(selecciondosPromosProvider[i]);
-        }
+
+        setState(() {
+          seleccionadosTodos.addAll(seleccionadosProvider);
+          seleccionadosTodos.addAll(selecciondosPromosProvider);
+        });
         if (pedido.cantidadProd > 0) {
           setState(() {
             colorCantidadCarrito = const Color.fromRGBO(255, 0, 93, 1.000);
@@ -274,12 +285,48 @@ class _PedidoState extends State<Pedido> {
     });
   }
 
+  //FUNCIONES DE SUMATORIA
+  void incrementar(int index) {
+    setState(() {
+      //almenosUno = true;
+      seleccionadosTodos[index].cantidad++;
+    });
+    setState(() {
+      totalProvider = 0;
+    });
+    totalProvider = 0;
+    for (var elemento in seleccionadosTodos) {
+      setState(() {
+        totalProvider += elemento.cantidad * elemento.precio;
+      });
+    }
+
+    print("esta es la listA PROMOCIONES");
+    print(seleccionadosTodos[index].cantidad);
+    print("esta es la PROMOCIONES CONTABILIZADAS");
+  }
+
+  void disminuir(int index) {
+    if (seleccionadosTodos[index].cantidad > 0) {
+      setState(() {
+        seleccionadosTodos[index].cantidad--;
+        totalProvider = 0;
+        for (var elemento in seleccionadosTodos) {
+          totalProvider += elemento.cantidad * elemento.precio;
+        }
+      });
+    }
+    //almenosUno =
+    //  listPromociones.where((promo) => promo.cantidad > 0).isNotEmpty;
+    print(seleccionadosTodos[index].cantidad);
+  }
+
   void descuentoPrimeraCompra(bool? esnuevo) {
     if (esnuevo == true && hayBidon) {
       setState(() {
         dctoPrimeraCompra = 10;
         ahorro = dctoPrimeraCompra * cantidadBidones;
-        totalVenta = totalProvider - ahorro;
+        totalProvider = totalProvider - ahorro;
       });
     } else {
       setState(() {
@@ -301,6 +348,7 @@ class _PedidoState extends State<Pedido> {
     tamanoTitulos = largoActual * 0.02;
     tamanoTitulosDialogs = largoActual * 0.021;
     tamanoContenidoDialogs = largoActual * 0.018;
+    totalVenta = totalProvider - ahorro + envio;
     setState(() {
       seleccionadosTodos = [];
     });
@@ -339,7 +387,7 @@ class _PedidoState extends State<Pedido> {
                                 fontSize: largoActual * (17 / 736)),
                           ),
                           Text(
-                            'S/.$totalVenta',
+                            'S/.${totalProvider - ahorro + envio}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -359,9 +407,8 @@ class _PedidoState extends State<Pedido> {
                                         userProvider.user?.id,
                                         tipoPedido,
                                         totalProvider,
-                                        totalVenta,
+                                        (totalProvider - ahorro + envio),
                                         ahorro,
-                                        seleccionadosProvider,
                                         notas.text,
                                         _cupon.text,
                                         cantidadBidones);
@@ -414,6 +461,18 @@ class _PedidoState extends State<Pedido> {
           surfaceTintColor: Colors.white,
           backgroundColor: Colors.white,
           toolbarHeight: largoActual * 0.08,
+          leading: BackButton(
+            onPressed: () {
+              pedidoMio = PedidoModel(
+                  seleccionados: seleccionadosProvider,
+                  seleccionadosPromo: selecciondosPromosProvider,
+                  cantidadProd: cantCarrito,
+                  total: totalProvider);
+              Provider.of<PedidoProvider>(context, listen: false)
+                  .updatePedido(pedidoMio);
+              Navigator.of(context).pop();
+            },
+          ),
           actions: [
             Container(
               margin: EdgeInsets.only(
@@ -459,7 +518,7 @@ class _PedidoState extends State<Pedido> {
                       //TU PEDIDO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Tu pedido",
@@ -480,119 +539,243 @@ class _PedidoState extends State<Pedido> {
                               bottom: largoActual * 0.013,
                               left: anchoActual * 0.028,
                               right: anchoActual * 0.028),
-                          child: ListView.builder(
-                              itemCount: seleccionadosTodos.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  alignment: Alignment.center,
-                                  margin: EdgeInsets.only(
-                                      bottom: largoActual * 0.0068,
-                                      left: anchoActual * 0.028,
-                                      right: anchoActual * 0.028),
-                                  decoration: const BoxDecoration(
-                                      border: Border(
-                                    bottom: BorderSide(
-                                        style: BorderStyle.solid,
-                                        color: Colors.black26),
-                                  )),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: anchoActual * 0.028),
-                                            height: largoActual * 0.064,
-                                            width: anchoActual * 0.13,
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(0),
-                                                image: DecorationImage(
-                                                  image: NetworkImage(
-                                                      seleccionadosTodos[index]
-                                                          .foto),
-                                                  //fit: BoxFit.cover,
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            width: anchoActual * 0.028,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                seleccionadosTodos[index]
-                                                    .nombre
-                                                    .toString()
-                                                    .capitalize(),
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        largoActual * 0.019,
-                                                    color: colorContenido),
-                                              ),
-                                              SizedBox(
-                                                width: anchoActual * 0.45,
-                                                child: Text(
-                                                  seleccionadosTodos[index]
-                                                      .descripcion
-                                                      .toString()
-                                                      .capitalize(),
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          largoActual * 0.015,
-                                                      color: colorContenido),
+                          child: Container(
+                            margin: EdgeInsets.all(anchoActual * 0.01),
+                            child: ListView.builder(
+                                itemCount: seleccionadosTodos.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    width: anchoActual,
+                                    margin: EdgeInsets.only(
+                                        top: largoActual * 0.005,
+                                        left: anchoActual * 0.013,
+                                        right: anchoActual * 0.013),
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                      bottom: BorderSide(
+                                          style: BorderStyle.solid,
+                                          color: Colors.black26),
+                                    )),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  bottom: largoActual * 0.01),
+                                              height: largoActual * 0.055,
+                                              width: anchoActual * 0.13,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(0),
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(
+                                                        seleccionadosTodos[
+                                                                index]
+                                                            .foto),
+                                                    //fit: BoxFit.cover,
+                                                  )),
+                                            ),
+                                            SizedBox(
+                                              width: anchoActual * 0.001,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                    children:
+                                                        (seleccionadosTodos[
+                                                                    index]
+                                                                is Producto)
+                                                            ? [
+                                                                Text(
+                                                                    seleccionadosTodos[
+                                                                            index]
+                                                                        .nombre
+                                                                        .toString()
+                                                                        .capitalize(),
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        color:
+                                                                            colorContenido,
+                                                                        fontWeight:
+                                                                            FontWeight.w800)),
+                                                                Text(
+                                                                    "    S/. ${seleccionadosTodos[index].precio}",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        color:
+                                                                            colorContenido,
+                                                                        fontWeight:
+                                                                            FontWeight.w400)),
+                                                              ]
+                                                            : [
+                                                                Text(
+                                                                    "Prom. ${seleccionadosTodos[index].nombre}",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        color:
+                                                                            colorContenido,
+                                                                        fontWeight:
+                                                                            FontWeight.w800)),
+                                                                Text(
+                                                                    "    S/. ${seleccionadosTodos[index].precio}",
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        color:
+                                                                            colorContenido,
+                                                                        fontWeight:
+                                                                            FontWeight.w400)),
+                                                              ]),
+
+                                                //ESPACIOOO
+
+                                                SizedBox(
+                                                  width: anchoActual * 0.35,
+                                                  child: Text(
+                                                    seleccionadosTodos[index]
+                                                        .descripcion
+                                                        .toString()
+                                                        .capitalize(),
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            largoActual * 0.014,
+                                                        color: colorContenido),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: anchoActual * 0.09,
+                                              color: Colors.lightGreenAccent,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    disminuir(index);
+                                                  });
+                                                },
+                                                iconSize: largoActual * 0.028,
+                                                icon: const Icon(
+                                                  Icons.remove_circle,
+                                                  color: Color.fromRGBO(
+                                                      0, 170, 219, 1.000),
                                                 ),
                                               ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                            right: anchoActual * 0.028),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            SizedBox(
-                                              height: largoActual * 0.0054,
                                             ),
                                             Text(
-                                              "S/. ${seleccionadosTodos[index].precio}",
+                                              "${seleccionadosTodos[index].cantidad}",
                                               style: TextStyle(
-                                                  fontSize: largoActual * 0.018,
-                                                  color: colorContenido),
+                                                  color: const Color.fromARGB(
+                                                      255, 4, 62, 107),
+                                                  fontSize: largoActual * 0.025,
+                                                  fontWeight: FontWeight.w500),
                                             ),
-                                            Text(
-                                              "Cant. ${seleccionadosTodos[index].cantidad}",
-                                              style: TextStyle(
-                                                  fontSize: largoActual * 0.018,
-                                                  color: colorContenido),
+                                            Container(
+                                              width: anchoActual * 0.09,
+                                              color: Colors.lightGreenAccent,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    incrementar(index);
+                                                    print(
+                                                        "incrementar ${seleccionadosTodos[index].cantidad}");
+                                                  });
+                                                },
+                                                iconSize: largoActual * 0.028,
+                                                icon: const Icon(
+                                                  Icons.add_circle,
+                                                  color: Color.fromRGBO(
+                                                      0, 170, 219, 1.000),
+                                                ),
+                                              ),
                                             ),
-                                            SizedBox(
-                                              height: largoActual * 0.0081,
+                                            //BOTON DE ELIMINAR EL PRODUCTO
+                                            Container(
+                                              width: anchoActual * 0.07,
+                                              color: Colors.redAccent,
+                                              alignment: Alignment.center,
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    print("eliminandinnnnn");
+                                                    print(index);
+                                                    var variableEliminar =
+                                                        seleccionadosTodos[
+                                                            index];
+                                                    seleccionadosTodos.remove(
+                                                        seleccionadosTodos[
+                                                            index]);
+                                                    seleccionadosProvider
+                                                        .removeWhere(
+                                                            (element) =>
+                                                                element
+                                                                    .nombre ==
+                                                                variableEliminar
+                                                                    .nombre);
+                                                    selecciondosPromosProvider
+                                                        .removeWhere(
+                                                            (element) =>
+                                                                element
+                                                                    .nombre ==
+                                                                variableEliminar
+                                                                    .nombre);
+                                                  });
+                                                  setState(() {
+                                                    totalProvider = 0;
+                                                  });
+                                                  for (var elemento
+                                                      in seleccionadosTodos) {
+                                                    setState(() {
+                                                      totalProvider +=
+                                                          elemento.cantidad *
+                                                              elemento.precio;
+                                                    });
+                                                  }
+
+                                                  print(seleccionadosTodos);
+                                                },
+                                                iconSize: largoActual * 0.027,
+                                                icon: const Icon(
+                                                  Icons.delete_rounded,
+                                                  color: Color.fromRGBO(
+                                                      82, 82, 83, 1),
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              }),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          ),
                         ),
                       ),
                       //CUPONES
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Cupones",
@@ -732,8 +915,6 @@ class _PedidoState extends State<Pedido> {
                                           colorCupon = const Color.fromRGBO(
                                               255, 0, 93, 1.000);
                                           ahorro = 12.0 * cantidadBidones;
-                                          totalVenta =
-                                              envio + totalProvider - ahorro;
                                         });
                                       } else {
                                         print('no hay bidones');
@@ -830,7 +1011,7 @@ class _PedidoState extends State<Pedido> {
                       //TIPO DE ENVIO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Tipo de envio",
@@ -934,11 +1115,6 @@ class _PedidoState extends State<Pedido> {
                                     });
                                   }
                                 }
-
-                                setState(() {
-                                  totalVenta = totalProvider + envio - ahorro;
-                                  print(totalVenta);
-                                });
                               },
                             ),
                             Container(
@@ -977,7 +1153,7 @@ class _PedidoState extends State<Pedido> {
                       //DIRECCION DE ENVIO
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Direccion de envio",
@@ -1039,7 +1215,7 @@ class _PedidoState extends State<Pedido> {
                       //RESUMEN
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Resumen de Pedido",
@@ -1134,7 +1310,7 @@ class _PedidoState extends State<Pedido> {
                       //NOTAS PARA EL REPARTIDOR
                       Container(
                         margin: EdgeInsets.only(
-                            bottom: largoActual * 0.008,
+                            bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
                           "Notas para el repartidor",

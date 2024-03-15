@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:appsol_final/components/login.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';

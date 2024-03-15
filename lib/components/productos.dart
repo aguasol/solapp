@@ -20,12 +20,11 @@ class Productos extends StatefulWidget {
 class _ProductosState extends State<Productos> {
   late PedidoModel pedidoMio;
   String apiUrl = dotenv.env['API_URL'] ?? '';
+  String apiProductos = "/api/products";
   List<Producto> listProducto = [];
   bool almenosUno = false;
-  List<Producto> productosContabilizados = [];
   List<Producto> productosProvider = [];
   List<Promo> promosProvider = [];
-  List<Producto> productosContabilizadosDePromo = [];
   double totalProvider = 0.0;
   int cantCarrito = 0;
   Color colorCantidadCarrito = Colors.black;
@@ -38,7 +37,7 @@ class _ProductosState extends State<Productos> {
 
   Future<dynamic> getProducts() async {
     var res = await http.get(
-      Uri.parse("$apiUrl/api/products"),
+      Uri.parse(apiUrl + apiProductos),
       headers: {"Content-type": "application/json"},
     );
     try {
@@ -72,27 +71,27 @@ class _ProductosState extends State<Productos> {
   void obtenerProductos() async {
     print("-------------------------");
     print("obtiene PRODUCTOS");
-
-    for (var i = 0; i < productosProvider.length; i++) {
-      for (var j = 0; j < productosContabilizados.length; j++) {
-        if (productosProvider[i].id == productosContabilizados[j].id &&
-            productosProvider[i].promoID ==
-                productosContabilizados[j].promoID) {
-          setState(() {
-            productosContabilizados[j].cantidadActual +=
-                productosProvider[i].cantidadActual;
-          });
-        }
-      }
-    }
+    List<Producto> listTemp = productosProvider +
+        listProducto.where((product) => product.cantidad > 0).toList();
+    var seen = <String>{};
+    List<Producto> uniquelist =
+        listTemp.where((product) => seen.add(product.nombre)).toList();
 
     setState(() {
-      productosContabilizadosDePromo = productosContabilizados
-          .where((prod) => prod.promoID != null)
-          .toList();
-      cantCarrito = promosProvider.length +
-          productosContabilizados.length -
-          productosContabilizadosDePromo.length;
+      productosProvider = uniquelist;
+    });
+
+    //SE CALCULA EL TOTAL DE PRODUCTOS YPROMOSSSS
+    double totalpromos = 0;
+    double totalproductos = 0;
+    for (var promos in promosProvider) {
+      totalpromos += promos.cantidad * promos.precio;
+    }
+    for (var product in productosProvider) {
+      totalproductos += product.cantidad * product.precio;
+    }
+    setState(() {
+      totalProvider = totalpromos + totalproductos;
     });
   }
 
@@ -101,42 +100,28 @@ class _ProductosState extends State<Productos> {
     setState(() {
       almenosUno = true;
       listProducto[index].cantidad++;
-      productosContabilizados =
-          listProducto.where((producto) => producto.cantidad > 0).toList();
     });
   }
 
   void disminuir(int index) {
-    setState(() {
-      productosContabilizados = [];
-    });
     if (listProducto[index].cantidad > 0) {
       setState(() {
         listProducto[index].cantidad--;
       });
     }
-    setState(() {
-      // Verificar si hay al menos un producto seleccionado después de la disminución
-      productosContabilizados =
-          listProducto.where((producto) => producto.cantidad > 0).toList();
-      print("${productosContabilizados.isEmpty} <--isEmpty?");
-      almenosUno = productosContabilizados.isNotEmpty;
-
-      print("PContabilizados: ${productosContabilizados}");
-    });
+    almenosUno =
+        listProducto.where((producto) => producto.cantidad > 0).isNotEmpty;
   }
 
   double obtenerTotal() {
     double stotal = 0;
-    productosContabilizados =
+
+    List productosContabilizados =
         listProducto.where((producto) => producto.cantidad > 0).toList();
 
     for (var producto in productosContabilizados) {
-      print("Cantidad: ${producto.cantidad}, Precio: ${producto.precio}");
       stotal += producto.cantidad * producto.precio;
     }
-
-    print("Total: $stotal");
 
     return stotal;
   }
@@ -144,11 +129,10 @@ class _ProductosState extends State<Productos> {
   void esVacio(PedidoModel? pedido) {
     if (pedido is PedidoModel) {
       print('ES PEDIDOOO');
-      cantCarrito = pedido.cantidadProd;
       productosProvider = pedido.seleccionados;
       promosProvider = pedido.seleccionadosPromo;
-      totalProvider = pedido.total;
-      if (pedido.cantidadProd > 0) {
+      cantCarrito = productosProvider.length + promosProvider.length;
+      if (cantCarrito > 0) {
         setState(() {
           colorCantidadCarrito = const Color.fromRGBO(255, 0, 93, 1.000);
         });
@@ -447,12 +431,13 @@ class _ProductosState extends State<Productos> {
                                           obtenerProductos();
                                           print("Agregar al carrito");
                                           pedidoMio = PedidoModel(
-                                              seleccionados:
-                                                  productosContabilizados,
+                                              seleccionados: productosProvider,
                                               seleccionadosPromo:
                                                   promosProvider,
-                                              cantidadProd: cantCarrito,
-                                              total: totalProvider + total);
+                                              cantidadProd:
+                                                  productosProvider.length +
+                                                      promosProvider.length,
+                                              total: totalProvider);
                                           Provider.of<PedidoProvider>(context,
                                                   listen: false)
                                               .updatePedido(pedidoMio);
