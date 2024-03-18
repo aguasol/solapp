@@ -607,6 +607,10 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                           producto.cantidad +
                                               producto.cantidadActual,
                                           producto.id);
+                                      SharedPreferences actualizadoStock =
+                                          await SharedPreferences.getInstance();
+                                      actualizadoStock.setBool(
+                                          "actualizado", true);
                                     }
                                   }
                                   Navigator.push(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:appsol_final/provider/user_provider.dart';
 import 'package:open_file/open_file.dart';
@@ -290,8 +291,17 @@ class _PdfState extends State<Pdf> {
                     ElevatedButton(
                       onPressed: () async {
                         final pdfFile = await _createPDF('Sample Text');
-
                         openFile(pdfFile);
+                        SharedPreferences actualizadoStock =
+                            await SharedPreferences.getInstance();
+                        actualizadoStock.setBool("actualizado", false);
+                        SharedPreferences rutaFinalizada =
+                            await SharedPreferences.getInstance();
+                        rutaFinalizada.setBool("finalizado", true);
+                        SharedPreferences fechaFinalizado =
+                            await SharedPreferences.getInstance();
+                        fechaFinalizado.setString(
+                            "fecha", DateTime.now().toString());
                       },
                       style: ButtonStyle(
                         backgroundColor:

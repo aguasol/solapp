@@ -5,8 +5,6 @@ import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
 import 'package:appsol_final/provider/ubicacion_provider.dart';
 import 'package:appsol_final/components/fin.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -73,7 +71,7 @@ class _PedidoState extends State<Pedido> {
   String? fechaLimiteString = '';
   DateTime fechaLimite = DateTime.now();
   DateTime fechaLimiteCliente = DateTime.now();
-  double totalVenta = 0.0;
+  bool almenosuno = false;
 
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
@@ -180,12 +178,16 @@ class _PedidoState extends State<Pedido> {
     if (pedido is PedidoModel) {
       print('ES PEDIDOOO');
       setState(() {
-        totalProvider = pedido.total;
+        totalProvider = pedido.totalProds;
         seleccionadosProvider = pedido.seleccionados;
         selecciondosPromosProvider = pedido.seleccionadosPromo;
+        envio = pedido.envio;
         cantCarrito =
             seleccionadosProvider.length + selecciondosPromosProvider.length;
-
+        if (seleccionadosProvider.isNotEmpty ||
+            selecciondosPromosProvider.isNotEmpty) {
+          almenosuno = true;
+        }
         //se consulta si hay bidones en el pedido
         for (var i = 0; i < seleccionadosProvider.length; i++) {
           //si hay un bidon nuevo en los productos de la lista, solo productos
@@ -202,6 +204,7 @@ class _PedidoState extends State<Pedido> {
           seleccionadosTodos.addAll(seleccionadosProvider);
           seleccionadosTodos.addAll(selecciondosPromosProvider);
         });
+
         if (pedido.cantidadProd > 0) {
           setState(() {
             colorCantidadCarrito = const Color.fromRGBO(255, 0, 93, 1.000);
@@ -214,6 +217,7 @@ class _PedidoState extends State<Pedido> {
       });
     } else {
       print('no es pedido');
+      almenosuno = false;
       limpiarVariables();
     }
   }
@@ -281,7 +285,10 @@ class _PedidoState extends State<Pedido> {
       cantCarrito = 0;
       hayBidon = false;
       cantidadBidones = 0;
+      almenosuno = false;
       colorCantidadCarrito = Colors.grey;
+      ahorro = 0;
+      envio = 0;
     });
   }
 
@@ -290,16 +297,11 @@ class _PedidoState extends State<Pedido> {
     setState(() {
       //almenosUno = true;
       seleccionadosTodos[index].cantidad++;
+      obtenerTotal();
+
+      actualizarProviderPedido();
+      print("nUEVO TOTAL PROVIDER ${totalProvider}0");
     });
-    setState(() {
-      totalProvider = 0;
-    });
-    totalProvider = 0;
-    for (var elemento in seleccionadosTodos) {
-      setState(() {
-        totalProvider += elemento.cantidad * elemento.precio;
-      });
-    }
 
     print("esta es la listA PROMOCIONES");
     print(seleccionadosTodos[index].cantidad);
@@ -307,13 +309,13 @@ class _PedidoState extends State<Pedido> {
   }
 
   void disminuir(int index) {
-    if (seleccionadosTodos[index].cantidad > 0) {
+    if (seleccionadosTodos[index].cantidad > 1) {
       setState(() {
         seleccionadosTodos[index].cantidad--;
-        totalProvider = 0;
-        for (var elemento in seleccionadosTodos) {
-          totalProvider += elemento.cantidad * elemento.precio;
-        }
+        obtenerTotal();
+
+        actualizarProviderPedido();
+        print("nUEVO TOTAL PROVIDER ${totalProvider}0");
       });
     }
     //almenosUno =
@@ -326,12 +328,29 @@ class _PedidoState extends State<Pedido> {
       setState(() {
         dctoPrimeraCompra = 10;
         ahorro = dctoPrimeraCompra * cantidadBidones;
-        totalProvider = totalProvider - ahorro;
       });
-    } else {
+    }
+  }
+
+  void actualizarProviderPedido() {
+    pedidoMio = PedidoModel(
+      seleccionados: seleccionadosProvider,
+      seleccionadosPromo: selecciondosPromosProvider,
+      cantidadProd: cantCarrito,
+      totalProds: totalProvider,
+      envio: envio,
+    );
+
+    Provider.of<PedidoProvider>(context, listen: false).updatePedido(pedidoMio);
+  }
+
+  void obtenerTotal() {
+    setState(() {
+      totalProvider = 0;
+    });
+    for (var objeto in seleccionadosTodos) {
       setState(() {
-        dctoPrimeraCompra = 0;
-        ahorro = 0;
+        totalProvider += objeto.cantidad * objeto.precio;
       });
     }
   }
@@ -348,7 +367,7 @@ class _PedidoState extends State<Pedido> {
     tamanoTitulos = largoActual * 0.02;
     tamanoTitulosDialogs = largoActual * 0.021;
     tamanoContenidoDialogs = largoActual * 0.018;
-    totalVenta = totalProvider - ahorro + envio;
+    obtenerTotal();
     setState(() {
       seleccionadosTodos = [];
     });
@@ -356,7 +375,7 @@ class _PedidoState extends State<Pedido> {
     descuentoPrimeraCompra(userProvider.user?.esNuevo);
     print("SELECCIONADOS TODOS");
     print(seleccionadosTodos);
-    if (totalProvider != 0) {
+    if (almenosuno) {
       return Scaffold(
         backgroundColor: Colors.white,
         bottomSheet: BottomSheet(
@@ -387,7 +406,7 @@ class _PedidoState extends State<Pedido> {
                                 fontSize: largoActual * (17 / 736)),
                           ),
                           Text(
-                            'S/.${totalProvider - ahorro + envio}',
+                            'S/.${totalProvider - ahorro + envio}0',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
@@ -413,16 +432,7 @@ class _PedidoState extends State<Pedido> {
                                         _cupon.text,
                                         cantidadBidones);
                                     limpiarVariables();
-                                    pedidoMio = PedidoModel(
-                                        seleccionados: seleccionadosProvider,
-                                        seleccionadosPromo:
-                                            selecciondosPromosProvider,
-                                        cantidadProd: cantCarrito,
-                                        total: totalProvider);
-                                    // ignore: use_build_context_synchronously
-                                    Provider.of<PedidoProvider>(context,
-                                            listen: false)
-                                        .updatePedido(pedidoMio);
+                                    actualizarProviderPedido();
                                     // ignore: use_build_context_synchronously
                                     Navigator.push(
                                       context,
@@ -463,13 +473,7 @@ class _PedidoState extends State<Pedido> {
           toolbarHeight: largoActual * 0.08,
           leading: BackButton(
             onPressed: () {
-              pedidoMio = PedidoModel(
-                  seleccionados: seleccionadosProvider,
-                  seleccionadosPromo: selecciondosPromosProvider,
-                  cantidadProd: cantCarrito,
-                  total: totalProvider);
-              Provider.of<PedidoProvider>(context, listen: false)
-                  .updatePedido(pedidoMio);
+              actualizarProviderPedido();
               Navigator.of(context).pop();
             },
           ),
@@ -490,13 +494,7 @@ class _PedidoState extends State<Pedido> {
                 child: IconButton(
                   onPressed: () {
                     limpiarVariables();
-                    pedidoMio = PedidoModel(
-                        seleccionados: seleccionadosProvider,
-                        seleccionadosPromo: selecciondosPromosProvider,
-                        cantidadProd: cantCarrito,
-                        total: totalProvider);
-                    Provider.of<PedidoProvider>(context, listen: false)
-                        .updatePedido(pedidoMio);
+                    actualizarProviderPedido();
                   },
                   icon: const Icon(Icons.delete_rounded),
                   color: const Color.fromRGBO(0, 106, 252, 1.000),
@@ -666,9 +664,8 @@ class _PedidoState extends State<Pedido> {
                                         ),
                                         Row(
                                           children: [
-                                            Container(
+                                            SizedBox(
                                               width: anchoActual * 0.09,
-                                              color: Colors.lightGreenAccent,
                                               child: IconButton(
                                                 onPressed: () {
                                                   setState(() {
@@ -691,13 +688,13 @@ class _PedidoState extends State<Pedido> {
                                                   fontSize: largoActual * 0.025,
                                                   fontWeight: FontWeight.w500),
                                             ),
-                                            Container(
+                                            SizedBox(
                                               width: anchoActual * 0.09,
-                                              color: Colors.lightGreenAccent,
                                               child: IconButton(
                                                 onPressed: () {
                                                   setState(() {
                                                     incrementar(index);
+
                                                     print(
                                                         "incrementar ${seleccionadosTodos[index].cantidad}");
                                                   });
@@ -713,7 +710,6 @@ class _PedidoState extends State<Pedido> {
                                             //BOTON DE ELIMINAR EL PRODUCTO
                                             Container(
                                               width: anchoActual * 0.07,
-                                              color: Colors.redAccent,
                                               alignment: Alignment.center,
                                               child: IconButton(
                                                 onPressed: () {
@@ -742,14 +738,15 @@ class _PedidoState extends State<Pedido> {
                                                                     .nombre);
                                                   });
                                                   setState(() {
-                                                    totalProvider = 0;
+                                                    obtenerTotal();
+                                                    actualizarProviderPedido();
                                                   });
-                                                  for (var elemento
-                                                      in seleccionadosTodos) {
+
+                                                  if (selecciondosPromosProvider
+                                                      .isEmpty) {
                                                     setState(() {
-                                                      totalProvider +=
-                                                          elemento.cantidad *
-                                                              elemento.precio;
+                                                      limpiarVariables();
+                                                      actualizarProviderPedido();
                                                     });
                                                   }
 
@@ -845,6 +842,12 @@ class _PedidoState extends State<Pedido> {
                                 });
                                 if (_cupon.text ==
                                     userProvider.user?.codigocliente) {
+                                  setState(() {
+                                    _cupon.clear();
+                                    buscandoCodigo = false;
+                                    colorCupon = Colors.white;
+                                  });
+
                                   //si es mi codigo
                                   showDialog(
                                       // ignore: use_build_context_synchronously
@@ -869,19 +872,24 @@ class _PedidoState extends State<Pedido> {
                                 } else {
                                   //si no es mi codigfo
                                   await cuponExist(_cupon.text);
-                                  setState(() {
-                                    fechaLimite = mesyAnio(fechaLimiteString)
-                                        .add(const Duration(days: (30 * 3)));
-                                  });
+
                                   print(fechaLimite);
                                   if (existe) {
                                     //EXISTE EL CODIGO
+
                                     print("codigo válido");
+                                    setState(() {
+                                      fechaLimite = mesyAnio(fechaLimiteString)
+                                          .add(const Duration(days: (30 * 3)));
+                                    });
                                     if (fechaLimite.day <= DateTime.now().day &&
                                         fechaLimite.month <=
                                             DateTime.now().month &&
                                         fechaLimite.year <=
                                             DateTime.now().year) {
+                                      setState(() {
+                                        _cupon.clear();
+                                      });
                                       print("el codigo ya expiro");
                                       // ignore: use_build_context_synchronously
                                       showDialog(
@@ -915,10 +923,13 @@ class _PedidoState extends State<Pedido> {
                                           colorCupon = const Color.fromRGBO(
                                               255, 0, 93, 1.000);
                                           ahorro = 12.0 * cantidadBidones;
+                                          print("ESTE ES EL AHORRO: $ahorro");
+                                          actualizarProviderPedido();
                                         });
                                       } else {
                                         print('no hay bidones');
                                         setState(() {
+                                          _cupon.clear();
                                           buscandoCodigo = false;
                                           colorCupon = Colors.white;
                                         });
@@ -953,6 +964,7 @@ class _PedidoState extends State<Pedido> {
                                     //QUE EL CODIGO NO EXISTE
                                     print("no existe el codigo");
                                     setState(() {
+                                      _cupon.clear();
                                       buscandoCodigo = false;
                                       colorCupon = Colors.white;
                                     });
@@ -971,7 +983,7 @@ class _PedidoState extends State<Pedido> {
                                                       tamanoTitulosDialogs),
                                             ),
                                             content: Text(
-                                              'Pruba ',
+                                              'Revisa el código e intentalo de nuevo',
                                               style: TextStyle(
                                                   fontSize:
                                                       tamanoContenidoDialogs),
@@ -1092,6 +1104,7 @@ class _PedidoState extends State<Pedido> {
                                     envio = 0;
                                     print(tipoPedido);
                                     print(envio);
+                                    actualizarProviderPedido();
                                   });
                                 } else {
                                   //ES EXPRESS
@@ -1104,6 +1117,7 @@ class _PedidoState extends State<Pedido> {
                                       envio = 4;
                                       print(tipoPedido);
                                       print(envio);
+                                      actualizarProviderPedido();
                                     });
                                   } else {
                                     print('son mas de las 16');

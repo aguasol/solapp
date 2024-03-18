@@ -1,4 +1,6 @@
 import 'package:appsol_final/components/actualizado_stock.dart';
+import 'package:appsol_final/components/holaconductor2.dart';
+import 'package:appsol_final/components/pdf.dart';
 import 'package:appsol_final/models/ruta_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,6 +50,10 @@ class _HolaConductorState extends State<HolaConductor> {
   int rutaID = 0;
   int? rutaIDpref = 0;
   int? conductorIDpref = 0;
+  DateTime fechaFinalizadoPref = DateTime.now();
+  bool yaSeActualizoStockPref = false;
+  bool rutaTerminadaPref = false;
+  String comenzarOaqui = '¡ Comenzar !';
   int cantidad = 0;
   List<int> idpedidos = [];
   DateTime fechaHoy = DateTime.now();
@@ -56,11 +62,23 @@ class _HolaConductorState extends State<HolaConductor> {
 
   //CREAR UN FUNCION QUE LLAME EL ENDPOINT EN EL QUE SE VERIFICA QUE EL CONDUCTOR
   //TIENE UNA RUTA ASIGNADA PARA ESE DÍA
+  DateTime mesyAnio(String? fecha) {
+    if (fecha is String) {
+      DateTime fechaDateTime = DateTime.parse(fecha);
+      return fechaDateTime;
+    } else {
+      return DateTime.now();
+    }
+  }
 
   _cargarPreferencias() async {
     print('3) CARGAR PREFERENCIAS-------');
     SharedPreferences rutaPreference = await SharedPreferences.getInstance();
     SharedPreferences userPreference = await SharedPreferences.getInstance();
+    SharedPreferences actualizadoStock = await SharedPreferences.getInstance();
+    SharedPreferences rutaFinalizada = await SharedPreferences.getInstance();
+    SharedPreferences fechaFinalizado = await SharedPreferences.getInstance();
+
     if (rutaPreference.getInt("Ruta") != null) {
       print('3.a)  EMTRO A los IFS------- ');
       setState(() {
@@ -80,7 +98,48 @@ class _HolaConductorState extends State<HolaConductor> {
         conductorIDpref = 3;
       });
     }
-
+    if (actualizadoStock.getBool("actualizado") != null) {
+      if (actualizadoStock.getBool("actualizado") is bool &&
+          actualizadoStock.getBool("actualizado") == true) {
+        setState(() {
+          yaSeActualizoStockPref = true;
+        });
+      } else {
+        setState(() {
+          yaSeActualizoStockPref = false;
+        });
+      }
+    } else {
+      setState(() {
+        yaSeActualizoStockPref = false;
+      });
+    }
+    if (rutaFinalizada.getBool("finalizado") != null) {
+      if (rutaFinalizada.getBool("finalizado") is bool &&
+          rutaFinalizada.getBool("finalizado") == true) {
+        setState(() {
+          rutaTerminadaPref = true;
+        });
+      } else {
+        setState(() {
+          rutaTerminadaPref = false;
+        });
+      }
+    } else {
+      setState(() {
+        yaSeActualizoStockPref = false;
+      });
+    }
+    if (fechaFinalizado.getString("fecha") != null) {
+      setState(() {
+        fechaFinalizadoPref = mesyAnio(fechaFinalizado.getString("fecha"));
+      });
+    } else {
+      setState(() {
+        fechaFinalizadoPref = DateTime.now();
+      });
+    }
+    fechaFinalizado.setString("fecha", DateTime.now().toString());
     print('4) esta es mi ruta Preferencia ------- $rutaIDpref');
     print('4) esta es mi COND Preferencia ------- $conductorIDpref');
   }
@@ -119,6 +178,8 @@ class _HolaConductorState extends State<HolaConductor> {
               await SharedPreferences.getInstance();
           SharedPreferences vehiculoPreference =
               await SharedPreferences.getInstance();
+          SharedPreferences rutaFinalizada =
+              await SharedPreferences.getInstance();
           setState(() {
             rutaID = tempRutaModel.id;
             nombreCamion = tempRutaModel.nombreVehiculo;
@@ -126,9 +187,26 @@ class _HolaConductorState extends State<HolaConductor> {
           });
           rutaPreference.setInt("Ruta", rutaID);
           vehiculoPreference.setInt("carID", tempRutaModel.vehiculoID);
-          mensaje =
-              'Tu ruta hoy es la Nº $rutaID, en el vehículo $nombreCamion con placa $placa\n ¡EXITOS!';
-          tengoruta = true;
+          if (fechaCreacion.day == fechaFinalizadoPref.day &&
+              fechaCreacion.month == fechaFinalizadoPref.month &&
+              fechaCreacion.year == fechaFinalizadoPref.year) {
+            //SIGNIFICA QUE LA RUTA YA SE TERMINO HOY
+            setState(() {
+              mensaje =
+                  'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
+              comenzarOaqui = '¡ Aqui !';
+              tengoruta = true;
+            });
+          } else {
+            //la ruta no se ha terminado hoyyyy
+            setState(() {
+              rutaTerminadaPref = false;
+              rutaFinalizada.setBool("finalizado", rutaTerminadaPref);
+              mensaje =
+                  'Tu ruta hoy es la Nº $rutaID, en el vehículo $nombreCamion con placa $placa\n ¡EXITOS!';
+              tengoruta = true;
+            });
+          }
         }
       }
     } catch (e) {
@@ -163,6 +241,8 @@ class _HolaConductorState extends State<HolaConductor> {
       print("Error de socket, $error");
     });
     SharedPreferences rutaPreference = await SharedPreferences.getInstance();
+    SharedPreferences rutaFinalizada = await SharedPreferences.getInstance();
+
     socket.on(
       'creadoRuta',
       (data) {
@@ -176,6 +256,8 @@ class _HolaConductorState extends State<HolaConductor> {
           rutaPreference.setInt("Ruta", data['vehiculo_id']);
           mensaje = 'Tu ruta hoy es la ruta Nº $rutaID :D';
           tengoruta = true;
+          rutaTerminadaPref = false;
+          rutaFinalizada.setBool("finalizado", rutaTerminadaPref);
         });
       },
     );
@@ -278,12 +360,32 @@ class _HolaConductorState extends State<HolaConductor> {
                       child: tengoruta
                           ? ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ActualizadoStock()),
-                                );
+                                if (rutaTerminadaPref) {
+                                  //SI YA TERMINO LA RUTAAAA
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Pdf()),
+                                  );
+                                } else {
+                                  //SI NO TERMINO LA RUTAAAAAA
+                                  if (yaSeActualizoStockPref) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HolaConductor2()),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ActualizadoStock()),
+                                    );
+                                  }
+                                }
+
                                 //QUE LO LLEVE A LA VISTA DE FORMULARIO DE LLENADO DE STOCK
                               },
                               style: ButtonStyle(
@@ -296,7 +398,7 @@ class _HolaConductorState extends State<HolaConductor> {
                                     Color.fromRGBO(83, 176, 68, 1.000)),
                               ),
                               child: Text(
-                                '¡Comenzar!',
+                                comenzarOaqui,
                                 style: TextStyle(
                                     fontSize: largoActual * 0.021,
                                     fontWeight: FontWeight.w800,

@@ -28,6 +28,8 @@ class _ProductosState extends State<Productos> {
   double totalProvider = 0.0;
   int cantCarrito = 0;
   Color colorCantidadCarrito = Colors.black;
+  double envio = 0.0;
+  //EL AHORRO ES IGUAL A 4 SOLES POR CADA BIDON NUEVO
 
   @override
   void initState() {
@@ -132,6 +134,7 @@ class _ProductosState extends State<Productos> {
       productosProvider = pedido.seleccionados;
       promosProvider = pedido.seleccionadosPromo;
       cantCarrito = productosProvider.length + promosProvider.length;
+      envio = pedido.envio;
       if (cantCarrito > 0) {
         setState(() {
           colorCantidadCarrito = const Color.fromRGBO(255, 0, 93, 1.000);
@@ -431,13 +434,14 @@ class _ProductosState extends State<Productos> {
                                           obtenerProductos();
                                           print("Agregar al carrito");
                                           pedidoMio = PedidoModel(
-                                              seleccionados: productosProvider,
-                                              seleccionadosPromo:
-                                                  promosProvider,
-                                              cantidadProd:
-                                                  productosProvider.length +
-                                                      promosProvider.length,
-                                              total: totalProvider);
+                                            seleccionados: productosProvider,
+                                            seleccionadosPromo: promosProvider,
+                                            cantidadProd:
+                                                productosProvider.length +
+                                                    promosProvider.length,
+                                            totalProds: totalProvider,
+                                            envio: envio,
+                                          );
                                           Provider.of<PedidoProvider>(context,
                                                   listen: false)
                                               .updatePedido(pedidoMio);

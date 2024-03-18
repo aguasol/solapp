@@ -31,6 +31,7 @@ class _PromosState extends State<Promos> {
   bool almenosUno = false;
   int cantCarrito = 0;
   Color colorCantidadCarrito = Colors.black;
+  double envio = 0.0;
 
   @override
   void initState() {
@@ -239,7 +240,8 @@ class _PromosState extends State<Promos> {
       productosProvider = pedido.seleccionados;
       //COMO HACER AHHHHH
       promosProvider = pedido.seleccionadosPromo;
-      totalProvider = pedido.total;
+      totalProvider = pedido.totalProds;
+      envio = pedido.envio;
       cantCarrito = productosProvider.length + promosProvider.length;
 
       if (cantCarrito > 0) {
@@ -430,7 +432,7 @@ class _PromosState extends State<Promos> {
                                                     255, 4, 62, 107)),
                                           ),
                                           Text(
-                                            "S/.${promocion.precio} ",
+                                            "S/.${promocion.precio}0",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: largoActual * 0.022,
@@ -518,7 +520,7 @@ class _PromosState extends State<Promos> {
                                 margin:
                                     EdgeInsets.only(left: anchoActual * 0.055),
                                 child: Text(
-                                  "S/.$total",
+                                  "S/.${total}0",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: largoActual * 0.027,
@@ -552,14 +554,15 @@ class _PromosState extends State<Promos> {
                                             obtenerPromos();
 
                                             pedidoMio = PedidoModel(
-                                                seleccionados:
-                                                    productosProvider,
-                                                seleccionadosPromo:
-                                                    promosProvider,
-                                                cantidadProd:
-                                                    productosProvider.length +
-                                                        promosProvider.length,
-                                                total: totalProvider);
+                                              seleccionados: productosProvider,
+                                              seleccionadosPromo:
+                                                  promosProvider,
+                                              cantidadProd:
+                                                  productosProvider.length +
+                                                      promosProvider.length,
+                                              totalProds: totalProvider,
+                                              envio: envio,
+                                            );
                                             Provider.of<PedidoProvider>(context,
                                                     listen: false)
                                                 .updatePedido(pedidoMio);

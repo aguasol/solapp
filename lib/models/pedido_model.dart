@@ -5,11 +5,13 @@ class PedidoModel {
   final List<Producto> seleccionados;
   final List<Promo> seleccionadosPromo;
   final int cantidadProd;
-  final double total;
+  final double totalProds;
+  final double envio;
   PedidoModel({
     required this.seleccionados,
     required this.seleccionadosPromo,
     required this.cantidadProd,
-    required this.total,
+    required this.totalProds,
+    required this.envio,
   });
 }
