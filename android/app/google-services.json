@@ -1,0 +1,54 @@
+{
+    "project_info": {
+      "project_number": "945258803127",
+      "project_id": "oceanaguasol",
+      "storage_bucket": "oceanaguasol.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:945258803127:android:0b60f9127d1fdb1b8a4232",
+          "android_client_info": {
+            "package_name": "com.example.appsol_final"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "945258803127-qcgfa4dlm5o79ltrgo6tvt9bgmqu1ddl.apps.googleusercontent.com",
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.example.appsol_final",
+              "certificate_hash": "219a4d9a626e75800b179e28739d1bacc485c558"
+            }
+        },
+        {
+          "client_id": "945258803127-svqqps4hlj9653bu22tlq9u0in4of45m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgOXwViwm63GHkP-FIrK8xoH7GPKP_XGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945258803127-svqqps4hlj9653bu22tlq9u0in4of45m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "945258803127-djrimptvmr3krc7kh3p4dv57piu119uf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.appsolFinal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

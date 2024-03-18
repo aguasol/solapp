@@ -14,6 +14,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:intl/intl.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -36,6 +40,105 @@ class _LoginState extends State<Login> {
   late UserModel userData;
   bool yaTieneUbicaciones = false;
   bool noTienePedidosEsNuevo = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final FirebaseAuth __auth = FirebaseAuth.instance;
+  String apiCreateUser = '/api/user_cliente';
+  String rolIdKey = "rol_id";
+  String nicknameKey = "nickname";
+  String contrasenaKey = "contrasena";
+  String emailKey = "email";
+  String nombreKey = "nombre";
+  String apellidosKey = "apellidos";
+  String telefonoKey = "telefono";
+  String rucKey = "ruc";
+  String dniKey = "dni";
+  String fechaNacimientoKey = "fecha_nacimiento";
+  String fechaCreacionCuentaKey = "fecha_creacion_cuenta";
+  String sexoKey = "sexo";
+
+  Future<User?> _signInWithFacebook() async {
+    try {
+      // Iniciar sesión con Facebook
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+
+      // Obtener el token de acceso de Facebook
+      final AccessToken accessToken = loginResult.accessToken!;
+
+      // Crear una credencial de autenticación de Facebook
+      final OAuthCredential credential =
+          FacebookAuthProvider.credential(accessToken.token);
+
+      // Iniciar sesión con Firebase
+      final UserCredential userCredential =
+          await __auth.signInWithCredential(credential);
+
+      // Obtener el usuario actual
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // El usuario ha iniciado sesión correctamente
+        print('Usuario autenticado: ${user.displayName}');
+        return user;
+      } else {
+        print('Error al iniciar sesión con Facebook');
+      }
+    } catch (e) {
+      print('Error al iniciar sesión con Facebook: $e');
+    }
+  }
+
+  Future<User?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+        final UserCredential authResult =
+            await _auth.signInWithCredential(credential);
+        final User? user = authResult.user;
+        return user;
+      }
+    } catch (error) {
+      print(error);
+      return null;
+    }
+  }
+
+  Future<dynamic> registrar(
+      String? nombre,
+      String? fecha,
+      fechaAct,
+      String? nickname,
+      String? contrasena,
+      String? email,
+      String? telefono) async {
+    try {
+      await http.post(Uri.parse(apiUrl + apiCreateUser),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({
+            "rol_id": 4,
+            "nickname": nickname,
+            "contrasena": contrasena,
+            "email": email,
+            "nombre": nombre,
+            "apellidos": '',
+            "telefono": telefono ?? '',
+            "ruc": '',
+            "dni": '',
+            "fecha_nacimiento": fecha,
+            "fecha_creacion_cuenta": fechaAct,
+            "sexo": ''
+          }));
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
 
   @override
   void initState() {
@@ -499,13 +602,31 @@ class _LoginState extends State<Login> {
                     children: [
                       InkWell(
                         onTap: () async {
-                          // Resto de tu código...
-                          /*  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Hola(
-                                            url: user.photoURL,
-                                            LoggedInWith: LoggedInWith)));*/
+                          final User? user = await _signInWithGoogle();
+                          if (user != null) {
+                            await loginsol(user.displayName, user.displayName);
+                            while (status != 200) {
+                              await registrar(
+                                  user.displayName,
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.now()),
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.now()),
+                                  user.displayName,
+                                  user.displayName,
+                                  user.email,
+                                  user.phoneNumber);
+                              await loginsol(
+                                  user.displayName, user.displayName);
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Prueba()),
+                            );
+                          } else {
+                            print('Error al iniciar sesión con Google');
+                          }
                         },
                         child: Image.asset(
                           'lib/imagenes/google.png',
@@ -518,15 +639,31 @@ class _LoginState extends State<Login> {
                       ),
                       InkWell(
                         onTap: () async {
-                          print("google");
-                          /*  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Hola(
-                                            url: user.photoURL,
-                                            LoggedInWith: LoggedInWith)));*/
-
-                          print("ooog");
+                          final User? user = await _signInWithFacebook();
+                          if (user != null) {
+                            await loginsol(user.displayName, user.displayName);
+                            while (status != 200) {
+                              await registrar(
+                                  user.displayName,
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.now()),
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.now()),
+                                  user.displayName,
+                                  user.displayName,
+                                  user.email,
+                                  user.phoneNumber);
+                              await loginsol(
+                                  user.displayName, user.displayName);
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Prueba()),
+                            );
+                          } else {
+                            print('Error al iniciar sesión con facebook');
+                          }
                         },
                         child: Image.asset(
                           'lib/imagenes/facebook.png',
