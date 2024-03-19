@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:appsol_final/components/navegador.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class Fin extends StatefulWidget {
   const Fin({super.key});
@@ -32,6 +33,7 @@ class _FinState extends State<Fin> {
               Color.fromRGBO(0, 106, 252, 1.000),
               Color.fromRGBO(0, 106, 252, 1.000),
               Colors.white,
+              Colors.white,
             ], begin: Alignment.topLeft, end: Alignment.bottomCenter)),
             child: SafeArea(
                 child: Padding(
@@ -42,35 +44,57 @@ class _FinState extends State<Fin> {
                         children: [
                           Container(
                             height: largoActual * 0.7,
+                            width: anchoActual,
                             decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(0),
                             ),
                             child:
                                 Stack(alignment: Alignment.center, children: [
-                              Lottie.asset(
-                                'lib/imagenes/check10.json',
-                                height: anchoActual * 1,
-                              ),
+                              Lottie.asset('lib/imagenes/check6.json',
+                                  height: anchoActual * 1,
+                                  width: anchoActual * 1),
                               Positioned(
-                                right: largoActual * 0.07,
+                                right: largoActual * 0.03,
                                 bottom: largoActual * 0.18,
-                                child: Lottie.asset(
-                                  'lib/imagenes/check3.json',
-                                  height: anchoActual * 0.35,
+                                child: Container(
+                                  height: largoActual * 0.17,
+                                  width: anchoActual * 0.5,
+                                  margin: const EdgeInsets.only(top: 10),
+                                  decoration: const BoxDecoration(
+                                      color: Colors.transparent,
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              'lib/imagenes/BIDON20.png'),
+                                          fit: BoxFit.scaleDown)),
                                 ),
-                              ),
+                              )
+                                  .animate()
+                                  .shake(duration: const Duration(seconds: 1)),
                               Positioned(
                                 top: 0.02,
                                 child: SizedBox(
-                                  width: anchoActual * 0.8,
-                                  child: Text(
-                                    "Gracias por confiar en Agua Sol para llevar VIDA A TU HOGAR",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w300,
-                                        fontSize: tamanoTexto),
+                                  width: anchoActual * 0.75,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "¡Gracias por confiar en Agua Sol!",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                            fontSize: largoActual * 0.038),
+                                      ),
+                                      Text(
+                                        "Llevando vida a tu hogar.",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.white,
+                                            fontSize: largoActual * 0.03),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

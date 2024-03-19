@@ -130,6 +130,7 @@ class _PedidoState extends State<Pedido> {
     DateTime tiempoGMTPeru = tiempoActual.subtract(const Duration(hours: 0));
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) {
           return const Center(
             child: CircularProgressIndicator(

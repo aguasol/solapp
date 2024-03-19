@@ -35,6 +35,7 @@ class _BarraNavegacion extends State<BarraNavegacion> {
     final screensHola = [
       Hola2(
         clienteId: userProvider.user?.id,
+        esNuevo: userProvider.user?.esNuevo,
       ),
       const Promos(),
       const Productos(),

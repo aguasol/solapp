@@ -20,6 +20,7 @@ import 'package:appsol_final/models/pedido_model.dart';
 import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:lottie/lottie.dart';
 import 'package:appsol_final/models/zona_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Producto {
   final String nombre;
@@ -39,6 +40,7 @@ class Hola2 extends StatefulWidget {
   final String? url;
   final String? loggedInWith;
   final int? clienteId;
+  final bool? esNuevo;
   //final double? latitud;
   // final double? longitud;
 
@@ -46,6 +48,7 @@ class Hola2 extends StatefulWidget {
     this.url,
     this.loggedInWith,
     this.clienteId,
+    this.esNuevo,
     // this.latitud, // Nuevo campo
     // this.longitud, // Nuevo campo
     Key? key,
@@ -62,8 +65,8 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   double? latitudUser = 0.0;
   double? longitudUser = 0.0;
   int? zonaIDUbicacion = 0;
-  bool _isloading = false;
   int? clienteID = 0;
+  bool? yaSeMostro = false;
   List<UbicacionModel> listUbicacionesObjetos = [];
   List<String> ubicacionesString = [];
   String? _ubicacionSelected;
@@ -74,8 +77,9 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   Color colorCantidadCarrito = Colors.black;
   Color colorLetra = const Color.fromARGB(255, 1, 42, 76);
   Color colorTextos = const Color.fromARGB(255, 1, 42, 76);
-  late String direccion;
+  late String direccionNueva;
   late UbicacionModel miUbicacion;
+  late UbicacionModel miUbicacionNueva;
   List<Zona> listZonas = [];
   List<String> tempString = [];
   Map<int, dynamic> mapaLineasZonas = {};
@@ -85,8 +89,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   String urlPreview = 'https://youtu.be/bNKXxwOQYB8?si=d_Un1vXsQiPzMt3s';
   String tituloUbicacion = 'Gracias por compartir tu ubicación!';
   String contenidoUbicacion = '¡Disfruta de Agua Sol!';
-  String mensajeCodigoParaAmigos =
-      'Hola!,\nUsa mi código en la *app de 💧 Agua Sol 💧* para comprar un *BIDON DE AGUA NUEVO DE 20L a solo S/.10.00* usando mi código, además puedes _*GANAR S/. 4.00 💸*_ por cada persona que compre con tu código de referencia. \n✅ USA MI CODIGO DE REFERENCIA: \n⏬ Descarga la APP AQUÍ: ';
 
   //bool _disposed = false;
   //bool _autoScrollInProgress = false;
@@ -109,12 +111,67 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     ordenarFuncionesInit();
+
+    if (widget.esNuevo != null &&
+        widget.esNuevo == true &&
+        yaSeMostro == false) {
+      muestraDialogoPubli(context);
+    } else {
+      print("+++++++++++++++++++++++++++++++++++++++++");
+      print(widget.esNuevo);
+    }
+  }
+
+  Future<void> muestraDialogoPubli(BuildContext context) async {
+    SharedPreferences yasemostroPubli = await SharedPreferences.getInstance();
+    yasemostroPubli.setBool("ya", true);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Dialog(
+              child: Container(
+                height: 500,
+                width: 500,
+                decoration: BoxDecoration(
+                    border: Border.all(width: 4, color: Colors.white),
+                    color: const Color.fromARGB(255, 130, 219, 133),
+                    borderRadius: BorderRadius.circular(10),
+                    image: const DecorationImage(
+                      image: AssetImage('lib/imagenes/bodegon.png'),
+                      fit: BoxFit.cover,
+                    )),
+              ),
+            );
+          });
+    });
+  }
+
+  _cargarPreferencias() async {
+    print('3) CARGAR PREFERENCIAS-------');
+    SharedPreferences yasemostroPubli = await SharedPreferences.getInstance();
+    if (yasemostroPubli.getBool("ya") != null) {
+      print('3.a)  EMTRO A los IFS------- ');
+      setState(() {
+        yaSeMostro = yasemostroPubli.getBool("ya");
+      });
+    } else {
+      setState(() {
+        yaSeMostro = false;
+      });
+    }
   }
 
   Future<void> ordenarFuncionesInit() async {
+    await _cargarPreferencias();
     await getUbicaciones(widget.clienteId);
     await getProducts();
     await getZonas();
+  }
+
+  Future<void> nuevaUbicacion() async {
+    await creadoUbicacion(widget.clienteId, distrito);
+    await getUbicaciones(widget.clienteId);
   }
 
   Future<dynamic> getZonas() async {
@@ -246,6 +303,10 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   }
 
   Future<dynamic> getUbicaciones(clienteID) async {
+    setState(() {
+      listUbicacionesObjetos = [];
+      ubicacionesString = [];
+    });
     print("1) get ubicaciones---------");
     print("$apiUrl/api/ubicacion/$clienteID");
     var res = await http.get(
@@ -291,7 +352,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         body: jsonEncode({
           "latitud": latitudUser,
           "longitud": longitudUser,
-          "direccion": direccion,
+          "direccion": direccionNueva,
           "cliente_id": clienteId,
           "cliente_nr_id": null,
           "distrito": distrito,
@@ -306,14 +367,14 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       if (placemark.isNotEmpty) {
         Placemark lugar = placemark.first;
         setState(() {
-          direccion =
+          direccionNueva =
               "${lugar.locality}, ${lugar.subAdministrativeArea}, ${lugar.street}";
           setState(() {
             distrito = lugar.locality;
           });
         });
       } else {
-        direccion = "Default";
+        direccionNueva = "Default";
       }
       print("x-----y");
       print("${x},${y}");
@@ -338,9 +399,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Cierra el AlertDialog
-                  setState(() {
-                    _isloading = false;
-                  });
                 },
                 child: const Text(
                   'OK',
@@ -356,9 +414,23 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       setState(() {
         latitudUser = x;
         longitudUser = y;
-        _isloading = false;
         print('esta es la zonaID $zonaIDUbicacion');
-        creadoUbicacion(widget.clienteId, distrito);
+        int suma = 0;
+        for (UbicacionModel ubi in listUbicacionesObjetos) {
+          if (ubi.direccion != direccionNueva) {
+            //son diferentesssss
+            suma += 0;
+          } else {
+            //son iguales
+            suma += 1;
+          }
+        }
+        if (suma == 0) {
+          //no es igual a ninguna direccion existente
+          nuevaUbicacion();
+        } else {
+          //es igual a una direccion, por lo tanto no se agrega nada
+        }
       });
     }
   }
@@ -369,11 +441,16 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
     location_package.PermissionStatus permissionGranted;
     location_package.LocationData locationData;
 
-    setState(() {
-      _isloading = true;
-      print("_isloadin = $_isloading");
-    });
-
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
+        });
     // Verificar si el servicio de ubicación está habilitado
     var serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
@@ -381,9 +458,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         // Mostrar mensaje al usuario indicando que el servicio de ubicación es necesario
-        setState(() {
-          _isloading = true;
-        });
         return;
       }
     }
@@ -588,10 +662,14 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
+
+    final userProvider = context.watch<UserProvider>();
+    String mensajeCodigoParaAmigos =
+        'Hola!,\nUsa mi código en la *app de 💧 Agua Sol 💧* para comprar un *BIDON DE AGUA NUEVO DE 20L a solo S/.10.00* usando mi código, además puedes _*GANAR S/. 4.00 💸*_ por cada persona que compre con tu código de referencia. \n✅ USA MI CODIGO DE REFERENCIA: ${userProvider.user?.codigocliente}\n⏬ Descarga la APP AQUÍ: ';
     final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final pedidoProvider = context.watch<PedidoProvider>();
-    final userProvider = context.watch<UserProvider>();
+
     fechaLimite = mesyAnio(userProvider.user?.fechaCreacionCuenta)
         .add(const Duration(days: (30 * 3)));
     direccionesVacias();
@@ -702,12 +780,12 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                     0.013),
                                                         ElevatedButton(
                                                           onPressed: () async {
-                                                            setState(() {
-                                                              _isloading = true;
-                                                              print(_isloading);
-                                                            });
                                                             await currentLocation();
 
+                                                            // ignore: use_build_context_synchronously
+                                                            Navigator.pop(
+                                                                // ignore: use_build_context_synchronously
+                                                                context);
                                                             // ignore: use_build_context_synchronously
                                                             Navigator.pop(
                                                                 // ignore: use_build_context_synchronously
@@ -732,48 +810,41 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                     .all(Colors
                                                                         .white),
                                                           ),
-                                                          child: _isloading
-                                                              ? const CircularProgressIndicator(
-                                                                  color: Color
+                                                          child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .add_location_alt_rounded,
+                                                                  color: const Color
                                                                       .fromRGBO(
+                                                                      0,
+                                                                      106,
+                                                                      252,
+                                                                      1.000),
+                                                                  size:
+                                                                      largoActual *
+                                                                          0.034,
+                                                                ),
+                                                                Text(
+                                                                  ' Agregar ubicación actual',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          largoActual *
+                                                                              0.021,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color: const Color
+                                                                          .fromRGBO(
                                                                           0,
                                                                           106,
                                                                           252,
-                                                                          1.000),
-                                                                  strokeWidth:
-                                                                      3,
-                                                                )
-                                                              : Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                      Icon(
-                                                                        Icons
-                                                                            .add_location_alt_rounded,
-                                                                        color: const Color
-                                                                            .fromRGBO(
-                                                                            0,
-                                                                            106,
-                                                                            252,
-                                                                            1.000),
-                                                                        size: largoActual *
-                                                                            0.034,
-                                                                      ),
-                                                                      Text(
-                                                                        ' Agregar ubicación actual',
-                                                                        style: TextStyle(
-                                                                            fontSize: largoActual *
-                                                                                0.021,
-                                                                            fontWeight: FontWeight
-                                                                                .w500,
-                                                                            color: const Color.fromRGBO(
-                                                                                0,
-                                                                                106,
-                                                                                252,
-                                                                                1.000)),
-                                                                      ),
-                                                                    ]),
+                                                                          1.000)),
+                                                                ),
+                                                              ]),
                                                         ),
                                                       ],
                                                     ),
@@ -1216,7 +1287,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                         SizedBox(
                                                             height:
                                                                 largoActual *
-                                                                    0.06),
+                                                                    0.04),
                                                         //TEXTO EXPLICATIVO
                                                         RichText(
                                                             text: TextSpan(
@@ -1267,13 +1338,39 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                               .w800)),
                                                               const TextSpan(
                                                                   text:
-                                                                      'tus contactos con tu código.'),
+                                                                      'tus contactos con tu código: '),
+                                                              TextSpan(
+                                                                  text:
+                                                                      '${userProvider.user?.codigocliente}.',
+                                                                  style: const TextStyle(
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w800)),
+                                                              const TextSpan(
+                                                                  text:
+                                                                      ' Recuerda que tu código tiene una válidez de '),
+                                                              const TextSpan(
+                                                                  text:
+                                                                      '3 meses ',
+                                                                  style: TextStyle(
+                                                                      fontStyle:
+                                                                          FontStyle
+                                                                              .italic,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w800)),
+                                                              const TextSpan(
+                                                                  text:
+                                                                      'desde que creaste tu cuenta.'),
                                                             ])),
 //ESPACIOOO
                                                         SizedBox(
                                                             height:
                                                                 largoActual *
-                                                                    0.07),
+                                                                    0.04),
 //BOTON COMPARTE
                                                         SizedBox(
                                                           height: largoActual *
@@ -1309,7 +1406,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                             0.015,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w400),
+                                                                            .w500),
                                                               )),
                                                         ),
 
@@ -1378,7 +1475,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                             0.015,
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w400),
+                                                                            .w500),
                                                               )),
                                                         ),
                                                       ],
