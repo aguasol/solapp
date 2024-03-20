@@ -619,11 +619,35 @@ class _LoginState extends State<Login> {
                               await loginsol(
                                   user.displayName, user.displayName);
                             }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Prueba()),
-                            );
+                            await tieneUbicaciones(userData.id);
+                            await tienePedidos(userData.id);
+                            if (noTienePedidosEsNuevo) {
+                              setState(() {
+                                userData.esNuevo = true;
+                              });
+                            } else {
+                              setState(() {
+                                userData.esNuevo = false;
+                              });
+                            }
+                            //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
+                            if (yaTieneUbicaciones == true) {
+                              print("YA tiene unibicaciones");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const BarraNavegacion(
+                                        indice: 0, subIndice: 0)),
+                              );
+                              //SI NO TIENE UBICACIONES INGRESA A UBICACION
+                            } else {
+                              print("NO tiene unibicaciones");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Ubicacion()),
+                              );
+                            }
                           } else {
                             print('Error al iniciar sesión con Google');
                           }
@@ -656,11 +680,35 @@ class _LoginState extends State<Login> {
                               await loginsol(
                                   user.displayName, user.displayName);
                             }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Prueba()),
-                            );
+                            await tieneUbicaciones(userData.id);
+                            await tienePedidos(userData.id);
+                            if (noTienePedidosEsNuevo) {
+                              setState(() {
+                                userData.esNuevo = true;
+                              });
+                            } else {
+                              setState(() {
+                                userData.esNuevo = false;
+                              });
+                            }
+                            //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
+                            if (yaTieneUbicaciones == true) {
+                              print("YA tiene unibicaciones");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const BarraNavegacion(
+                                        indice: 0, subIndice: 0)),
+                              );
+                              //SI NO TIENE UBICACIONES INGRESA A UBICACION
+                            } else {
+                              print("NO tiene unibicaciones");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Ubicacion()),
+                              );
+                            }
                           } else {
                             print('Error al iniciar sesión con facebook');
                           }

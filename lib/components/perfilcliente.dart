@@ -17,7 +17,6 @@ class _PerfilCliente extends State<PerfilCliente> {
   Color colorLetra = const Color.fromARGB(255, 1, 42, 76);
   String apiUrl = dotenv.env['API_URL'] ?? '';
   DateTime fechaLimite = DateTime.now();
-
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
       print('es string');
@@ -53,7 +52,7 @@ class _PerfilCliente extends State<PerfilCliente> {
                   decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 218, 218, 218),
                       borderRadius: BorderRadius.circular(40)),
-                  height: 70,
+                  height: 60,
                   width: 70,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(40),
@@ -61,7 +60,7 @@ class _PerfilCliente extends State<PerfilCliente> {
                     child: Icon(
                       Icons.man_2_rounded,
                       color: colorTitulos,
-                      size: 50,
+                      size: 40,
                     ),
                   ),
                 ),
@@ -207,7 +206,7 @@ class _PerfilCliente extends State<PerfilCliente> {
               style: TextStyle(
                   color: colorTitulos,
                   fontWeight: FontWeight.w600,
-                  fontSize: 17),
+                  fontSize: largoActual * (16 / 760)),
             ),
           ),
           Container(
@@ -250,8 +249,8 @@ class _PerfilCliente extends State<PerfilCliente> {
                             ],
                           ),
                           Container(
-                            height: 80,
-                            width: 80,
+                            height: largoActual * (80 / 760),
+                            width: anchoActual * (61 / 360),
                             decoration: BoxDecoration(
                               color: Colors.transparent,
                               //color: Colors.amberAccent,
@@ -265,15 +264,74 @@ class _PerfilCliente extends State<PerfilCliente> {
                         height: largoActual * 0.02,
                       ),
                       SizedBox(
-                        width: anchoActual * 0.4,
+                        width: anchoActual * (168 / 360),
                         height: largoActual * 0.04,
                         child: ElevatedButton(
                           onPressed: () {
-                            /* Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Asistencia()),
-                            );*/
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                String _selectedItem = 'yape o plin';
+                                String _secondSelectedItem = 'yape o plin';
+                                return AlertDialog(
+                                  title: Text('Selecciona un metodo de retiro'),
+                                  content: Column(
+                                    children: [
+                                      DropdownButtonFormField<String>(
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _selectedItem = newValue!;
+                                          });
+                                        },
+                                        onSaved: (value) {
+                                          setState(() {
+                                            _selectedItem = value!;
+                                          });
+                                        },
+                                        value: _selectedItem,
+                                        items: <String>[
+                                          'transferencia',
+                                          'yape o plin'
+                                        ].map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                      ),
+                                      SizedBox(height: 20),
+                                      if (_selectedItem == 'yape o plin')
+                                        DropdownButtonFormField<String>(
+                                          value: _secondSelectedItem,
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              _secondSelectedItem = newValue!;
+                                            });
+                                          },
+                                          onSaved: (value) {
+                                            setState(() {
+                                              _secondSelectedItem = value!;
+                                            });
+                                          },
+                                          items: <String>[
+                                            'yape o plin',
+                                            'Opción B',
+                                            'Opción C',
+                                            'Opción D'
+                                          ].map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
                           },
                           style: ButtonStyle(
                             elevation: MaterialStateProperty.all(1),
@@ -296,7 +354,7 @@ class _PerfilCliente extends State<PerfilCliente> {
                                   width: anchoActual *
                                       0.020), // Ajusta el espacio entre el icono y el texto según tus preferencias
                               Text(
-                                "Ayuda",
+                                "Retirar dinero",
                                 style: TextStyle(
                                     fontSize: largoActual * 0.021,
                                     fontWeight: FontWeight.w400,
@@ -318,7 +376,7 @@ class _PerfilCliente extends State<PerfilCliente> {
               style: TextStyle(
                   color: colorTitulos,
                   fontWeight: FontWeight.w600,
-                  fontSize: 17),
+                  fontSize: largoActual * (16 / 760)),
             ),
           ),
           Container(
