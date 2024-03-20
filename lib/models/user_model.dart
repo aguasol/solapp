@@ -2,6 +2,7 @@ class UserModel {
   final int id;
   final String nombre;
   final String apellidos;
+  String? sexo;
   double? saldoBeneficio;
   String? codigocliente;
   String? fechaCreacionCuenta;
@@ -14,6 +15,7 @@ class UserModel {
     required this.id,
     required this.nombre,
     required this.apellidos,
+    this.sexo,
     this.saldoBeneficio,
     this.codigocliente,
     this.fechaCreacionCuenta,
