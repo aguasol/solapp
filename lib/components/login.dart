@@ -315,415 +315,429 @@ class _LoginState extends State<Login> {
     final largoActual = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Colors.white,
-          Color.fromRGBO(0, 106, 252, 1.000),
-          Color.fromRGBO(0, 106, 252, 1.000),
-        ], begin: Alignment.topLeft, end: Alignment.bottomCenter)),
-        child: SafeArea(
-          top: false,
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // LOGO SOL
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 30, left: 20),
-                    height: MediaQuery.of(context).size.height / 8,
-                    width: MediaQuery.of(context).size.width / 2.25,
-                    child: Opacity(
-                        opacity: 1,
-                        child: Image.asset(
-                            'lib/imagenes/logo_aguasol_blanco.png')),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                // FORMULARIO
-                Center(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 20, right: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: TextFormField(
-                              controller: _usuario,
-                              decoration: const InputDecoration(
-                                hintText: 'Usuario',
-                                border: InputBorder.none,
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor, ingrese su usuario';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(left: 20, right: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.0),
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: TextFormField(
-                              controller: _contrasena,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                hintText: 'Contraseña',
-                                border: InputBorder.none,
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor, ingrese su contraseña';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (didPop) {
+            return;
+          }
+        },
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [
+            Colors.white,
+            Color.fromRGBO(0, 106, 252, 1.000),
+            Color.fromRGBO(0, 106, 252, 1.000),
+          ], begin: Alignment.topLeft, end: Alignment.bottomCenter)),
+          child: SafeArea(
+            top: false,
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // LOGO SOL
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 30, left: 20),
+                      height: MediaQuery.of(context).size.height / 8,
+                      width: MediaQuery.of(context).size.width / 2.25,
+                      child: Opacity(
+                          opacity: 1,
+                          child: Image.asset(
+                              'lib/imagenes/logo_aguasol_blanco.png')),
                     ),
                   ),
-                ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // FORMULARIO
+                  Center(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 20, right: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 0.5,
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: TextFormField(
+                                controller: _usuario,
+                                decoration: const InputDecoration(
+                                  hintText: 'Usuario',
+                                  border: InputBorder.none,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor, ingrese su usuario';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 20, right: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 0.5,
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: TextFormField(
+                                controller: _contrasena,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  hintText: 'Contraseña',
+                                  border: InputBorder.none,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Por favor, ingrese su contraseña';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
-                Center(
-                  child: Container(
-                    width: 500,
-                    margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        print(largoActual);
-                        print(anchoActual);
-                        if (_formKey.currentState!.validate()) {
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                  ),
+                  Center(
+                    child: Container(
+                      width: 500,
+                      margin:
+                          const EdgeInsets.only(top: 10, left: 20, right: 20),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          print(largoActual);
+                          print(anchoActual);
+                          if (_formKey.currentState!.validate()) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                });
+                            try {
+                              await loginsol(_usuario.text, _contrasena.text);
+
+                              if (status == 200) {
+                                Navigator.of(context)
+                                    .pop(); // Cerrar el primer AlertDialog
+
+                                //SI ES CLIENTE
+                                if (rol == 4) {
+                                  await tieneUbicaciones(userData.id);
+                                  await tienePedidos(userData.id);
+                                  if (noTienePedidosEsNuevo) {
+                                    setState(() {
+                                      userData.esNuevo = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      userData.esNuevo = false;
+                                    });
+                                  }
+                                  //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
+                                  if (yaTieneUbicaciones == true) {
+                                    print("YA tiene unibicaciones");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const BarraNavegacion(
+                                                  indice: 0, subIndice: 0)),
+                                    );
+                                    //SI NO TIENE UBICACIONES INGRESA A UBICACION
+                                  } else {
+                                    print("NO tiene unibicaciones");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Ubicacion()),
+                                    );
+                                  }
+
+                                  //SI ES CONDUCTOR
+                                } else if (rol == 5) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HolaConductor()),
+                                  );
+
+                                  //SI ES GERENTE
+                                } else if (rol == 3) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Prueba()),
+                                  );
+                                }
+                                //SI NO ESTA REGISTRADO
+                              } else if (status == 401) {
+                                Navigator.of(context)
+                                    .pop(); // Cerrar el primer AlertDialog
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          SizedBox(width: 20),
+                                          Text("Credenciales inválidas"),
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 );
-                              });
-                          try {
-                            await loginsol(_usuario.text, _contrasena.text);
+                              } else if (status == 404) {
+                                Navigator.of(context).pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          SizedBox(width: 20),
+                                          Text("Usuario no existente"),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            } catch (e) {
+                              print(
+                                  "Excepción durante el inicio de sesión: $e");
+                            }
+                          }
+                        },
+                        style: ButtonStyle(
+                          elevation: MaterialStateProperty.all(8),
+                          surfaceTintColor:
+                              MaterialStateProperty.all(Colors.white),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                        ),
+                        child: const Text(
+                          "Ingresa",
+                          style: TextStyle(
+                            color: Color.fromRGBO(0, 106, 252, 1.000),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
-                            if (status == 200) {
-                              Navigator.of(context)
-                                  .pop(); // Cerrar el primer AlertDialog
+                  Center(
+                    child: Container(
+                      width: 800,
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          print(largoActual);
+                          print(anchoActual);
 
-                              //SI ES CLIENTE
-                              if (rol == 4) {
-                                await tieneUbicaciones(userData.id);
-                                await tienePedidos(userData.id);
-                                if (noTienePedidosEsNuevo) {
-                                  setState(() {
-                                    userData.esNuevo = true;
-                                  });
-                                } else {
-                                  setState(() {
-                                    userData.esNuevo = false;
-                                  });
-                                }
-                                //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
-                                if (yaTieneUbicaciones == true) {
-                                  print("YA tiene unibicaciones");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const BarraNavegacion(
-                                                indice: 0, subIndice: 0)),
-                                  );
-                                  //SI NO TIENE UBICACIONES INGRESA A UBICACION
-                                } else {
-                                  print("NO tiene unibicaciones");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const Ubicacion()),
-                                  );
-                                }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Formu()),
+                          );
+                        },
+                        style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(8),
+                            backgroundColor: MaterialStateProperty.all(
+                                Color.fromRGBO(0, 106, 252, 1.000))),
+                        child: const Text(
+                          "Regístrate",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    ),
+                  ),
 
-                                //SI ES CONDUCTOR
-                              } else if (rol == 5) {
+                  Center(
+                    child: const Center(
+                        child: Text(
+                      "o continua con:",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    )),
+                  ),
+
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final User? user = await _signInWithGoogle();
+                            if (user != null) {
+                              await loginsol(
+                                  user.displayName, user.displayName);
+                              while (status != 200) {
+                                await registrar(
+                                    user.displayName,
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(DateTime.now()),
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(DateTime.now()),
+                                    user.displayName,
+                                    user.displayName,
+                                    user.email,
+                                    user.phoneNumber);
+                                await loginsol(
+                                    user.displayName, user.displayName);
+                              }
+                              await tieneUbicaciones(userData.id);
+                              await tienePedidos(userData.id);
+                              if (noTienePedidosEsNuevo) {
+                                setState(() {
+                                  userData.esNuevo = true;
+                                });
+                              } else {
+                                setState(() {
+                                  userData.esNuevo = false;
+                                });
+                              }
+                              //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
+                              if (yaTieneUbicaciones == true) {
+                                print("YA tiene unibicaciones");
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const HolaConductor()),
+                                          const BarraNavegacion(
+                                              indice: 0, subIndice: 0)),
                                 );
-
-                                //SI ES GERENTE
-                              } else if (rol == 3) {
+                                //SI NO TIENE UBICACIONES INGRESA A UBICACION
+                              } else {
+                                print("NO tiene unibicaciones");
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const Prueba()),
+                                      builder: (context) => const Ubicacion()),
                                 );
                               }
-                              //SI NO ESTA REGISTRADO
-                            } else if (status == 401) {
-                              Navigator.of(context)
-                                  .pop(); // Cerrar el primer AlertDialog
-
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const AlertDialog(
-                                    content: Row(
-                                      children: [
-                                        SizedBox(width: 20),
-                                        Text("Credenciales inválidas"),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
-                            } else if (status == 404) {
-                              Navigator.of(context).pop();
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const AlertDialog(
-                                    content: Row(
-                                      children: [
-                                        SizedBox(width: 20),
-                                        Text("Usuario no existente"),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              );
+                            } else {
+                              print('Error al iniciar sesión con Google');
                             }
-                          } catch (e) {
-                            print("Excepción durante el inicio de sesión: $e");
-                          }
-                        }
-                      },
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(8),
-                        surfaceTintColor:
-                            MaterialStateProperty.all(Colors.white),
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                      ),
-                      child: const Text(
-                        "Ingresa",
-                        style: TextStyle(
-                          color: Color.fromRGBO(0, 106, 252, 1.000),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
+                          },
+                          child: Image.asset(
+                            'lib/imagenes/google.png',
+                            width: 30,
+                            height: 30,
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                Center(
-                  child: Container(
-                    width: 800,
-                    margin: const EdgeInsets.only(left: 20, right: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        print(largoActual);
-                        print(anchoActual);
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Formu()),
-                        );
-                      },
-                      style: ButtonStyle(
-                          elevation: MaterialStateProperty.all(8),
-                          backgroundColor: MaterialStateProperty.all(
-                              Color.fromRGBO(0, 106, 252, 1.000))),
-                      child: const Text(
-                        "Regístrate",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ),
-                  ),
-                ),
-
-                Center(
-                  child: const Center(
-                      child: Text(
-                    "o continua con:",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  )),
-                ),
-
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          final User? user = await _signInWithGoogle();
-                          if (user != null) {
-                            await loginsol(user.displayName, user.displayName);
-                            while (status != 200) {
-                              await registrar(
-                                  user.displayName,
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(DateTime.now()),
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(DateTime.now()),
-                                  user.displayName,
-                                  user.displayName,
-                                  user.email,
-                                  user.phoneNumber);
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            final User? user = await _signInWithFacebook();
+                            if (user != null) {
                               await loginsol(
                                   user.displayName, user.displayName);
-                            }
-                            await tieneUbicaciones(userData.id);
-                            await tienePedidos(userData.id);
-                            if (noTienePedidosEsNuevo) {
-                              setState(() {
-                                userData.esNuevo = true;
-                              });
+                              while (status != 200) {
+                                await registrar(
+                                    user.displayName,
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(DateTime.now()),
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(DateTime.now()),
+                                    user.displayName,
+                                    user.displayName,
+                                    user.email,
+                                    user.phoneNumber);
+                                await loginsol(
+                                    user.displayName, user.displayName);
+                              }
+                              await tieneUbicaciones(userData.id);
+                              await tienePedidos(userData.id);
+                              if (noTienePedidosEsNuevo) {
+                                setState(() {
+                                  userData.esNuevo = true;
+                                });
+                              } else {
+                                setState(() {
+                                  userData.esNuevo = false;
+                                });
+                              }
+                              //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
+                              if (yaTieneUbicaciones == true) {
+                                print("YA tiene unibicaciones");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const BarraNavegacion(
+                                              indice: 0, subIndice: 0)),
+                                );
+                                //SI NO TIENE UBICACIONES INGRESA A UBICACION
+                              } else {
+                                print("NO tiene unibicaciones");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Ubicacion()),
+                                );
+                              }
                             } else {
-                              setState(() {
-                                userData.esNuevo = false;
-                              });
+                              print('Error al iniciar sesión con facebook');
                             }
-                            //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
-                            if (yaTieneUbicaciones == true) {
-                              print("YA tiene unibicaciones");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const BarraNavegacion(
-                                        indice: 0, subIndice: 0)),
-                              );
-                              //SI NO TIENE UBICACIONES INGRESA A UBICACION
-                            } else {
-                              print("NO tiene unibicaciones");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Ubicacion()),
-                              );
-                            }
-                          } else {
-                            print('Error al iniciar sesión con Google');
-                          }
-                        },
-                        child: Image.asset(
-                          'lib/imagenes/google.png',
-                          width: 30,
-                          height: 30,
+                          },
+                          child: Image.asset(
+                            'lib/imagenes/facebook.png',
+                            width: 30,
+                            height: 30,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          final User? user = await _signInWithFacebook();
-                          if (user != null) {
-                            await loginsol(user.displayName, user.displayName);
-                            while (status != 200) {
-                              await registrar(
-                                  user.displayName,
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(DateTime.now()),
-                                  DateFormat('yyyy-MM-dd')
-                                      .format(DateTime.now()),
-                                  user.displayName,
-                                  user.displayName,
-                                  user.email,
-                                  user.phoneNumber);
-                              await loginsol(
-                                  user.displayName, user.displayName);
-                            }
-                            await tieneUbicaciones(userData.id);
-                            await tienePedidos(userData.id);
-                            if (noTienePedidosEsNuevo) {
-                              setState(() {
-                                userData.esNuevo = true;
-                              });
-                            } else {
-                              setState(() {
-                                userData.esNuevo = false;
-                              });
-                            }
-                            //SI YA TIENE UBICACIONES INGRESA DIRECTAMENTE A LA BARRA DE AVEGACION
-                            if (yaTieneUbicaciones == true) {
-                              print("YA tiene unibicaciones");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const BarraNavegacion(
-                                        indice: 0, subIndice: 0)),
-                              );
-                              //SI NO TIENE UBICACIONES INGRESA A UBICACION
-                            } else {
-                              print("NO tiene unibicaciones");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Ubicacion()),
-                              );
-                            }
-                          } else {
-                            print('Error al iniciar sesión con facebook');
-                          }
-                        },
-                        child: Image.asset(
-                          'lib/imagenes/facebook.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
