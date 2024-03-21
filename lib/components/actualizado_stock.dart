@@ -67,6 +67,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
   }
 //ghgererge
 //tyhtyhty
+//rtgty
   Future<dynamic> getProductosVehiculo() async {
     print('----------------------------------');
     print('4) Dentro de detalle de Vehiculo');
