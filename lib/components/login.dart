@@ -178,6 +178,8 @@ class _LoginState extends State<Login> {
               codigocliente: data['usuario']['codigo'] ?? 'Sin código',
               fechaCreacionCuenta: data['usuario']['fecha_creacion_cuenta'],
               sexo: data['usuario']['sexo'],
+              frecuencia: data['usuario']['frecuencia'],
+              quiereRetirar: data['usuario']['frecuencia'],
               suscripcion: data['usuario']['suscripcion'] ?? 'Sin suscripción');
           setState(() {
             status = 200;

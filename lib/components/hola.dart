@@ -548,14 +548,17 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
             setState(() {
               zonaIDUbicacion = null;
             });
+            
           } else {
             setState(() {
               print('- Es una cantidad IMPAR, ESTA DENTRO');
               zonaIDUbicacion = zonaID;
+              print(zonaIDUbicacion);
             });
             //es impar ESTA AFUERA
+            break;
           }
-          print('');
+          
         } else {
           print('No tiene intersecciones');
           setState(() {

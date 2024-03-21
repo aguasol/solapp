@@ -401,14 +401,17 @@ class _UbicacionState extends State<Ubicacion> {
             setState(() {
               zonaIDUbicacion = null;
             });
+            
           } else {
             setState(() {
               print('- Es una cantidad IMPAR, ESTA DENTRO');
               zonaIDUbicacion = zonaID;
+              print(zonaIDUbicacion);
             });
             //es impar ESTA AFUERA
+            break;
           }
-          print('');
+          
         } else {
           print('No tiene intersecciones');
           setState(() {

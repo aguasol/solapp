@@ -7,7 +7,10 @@ class UserModel {
   String? codigocliente;
   String? fechaCreacionCuenta;
   String? suscripcion;
+  String? frecuencia;
+  bool? quiereRetirar;
   bool esNuevo;
+
 
   // Agrega más atributos según sea necesario
 
@@ -20,6 +23,10 @@ class UserModel {
     this.codigocliente,
     this.fechaCreacionCuenta,
     this.suscripcion,
+    this.frecuencia,
+    this.quiereRetirar,
+
+
     this.esNuevo = false,
     // Agrega más parámetros según sea necesario
   });

@@ -1,4 +1,6 @@
 import 'package:appsol_final/components/login.dart';
+import 'package:appsol_final/models/user_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:appsol_final/provider/user_provider.dart';
 import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PerfilCliente extends StatefulWidget {
   const PerfilCliente({Key? key}) : super(key: key);
@@ -14,6 +18,7 @@ class PerfilCliente extends StatefulWidget {
 }
 
 class _PerfilCliente extends State<PerfilCliente> {
+  late UserModel clienteUpdate;
   Color colorTitulos = const Color.fromARGB(255, 3, 34, 60);
   Color colorLetra = const Color.fromARGB(255, 1, 42, 76);
   Color colorInhabilitado = const Color.fromARGB(255, 130, 130, 130);
@@ -27,6 +32,7 @@ class _PerfilCliente extends State<PerfilCliente> {
   String telefono_ = '';
   String cuenta_ = '';
   String apiUrl = dotenv.env['API_URL'] ?? '';
+   String apiCliente = '/api/cliente/';
   DateTime fechaLimite = DateTime.now();
   TextEditingController numeroDeCuenta = TextEditingController();
   DateTime mesyAnio(String? fecha) {
@@ -37,6 +43,32 @@ class _PerfilCliente extends State<PerfilCliente> {
       print('no es string');
       return DateTime.now();
     }
+  }
+
+    Future<dynamic> updateCliente(saldoBeneficios, suscripcion, frecuencia,quiereretirar,clienteID,medioretiro,bancoretiro,numerocuenta) async {
+    await http.put(
+          Uri.parse(
+              apiUrl + apiCliente + clienteID.toString()),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({"saldo_beneficios": saldoBeneficios, "suscripcion": suscripcion,"frecuencia": frecuencia,"quiereretirar": quiereretirar, "medio_retiro": medioretiro,"banco_retiro": bancoretiro,"numero_cuenta": numerocuenta}));
+    print("RUTA ACTUALIZADA A ");
+  }
+
+  void actualizarProviderCliente(clienteid, name, lastname, saldo, codigo, fechaCreacion,sexo,frecuencia,suscrip,medioretiro,bancoretiro,numerocuenta) async{
+    clienteUpdate = UserModel(
+      id: clienteid,
+      nombre: name,
+      apellidos: lastname,
+      saldoBeneficio: saldo,
+      codigocliente: codigo,
+      fechaCreacionCuenta: fechaCreacion,
+      sexo: sexo,
+      frecuencia: frecuencia,
+      quiereRetirar: true,
+      suscripcion: suscrip,
+    );
+    Provider.of<UserProvider>(context, listen: false).updateUser(clienteUpdate);
+    await updateCliente(saldo, suscrip, frecuencia, true, clienteid,medioretiro,bancoretiro,numerocuenta);
   }
 
   @override
@@ -51,9 +83,10 @@ class _PerfilCliente extends State<PerfilCliente> {
       body: SafeArea(
           child: Padding(
         padding: EdgeInsets.all(anchoActual * 0.04),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           SizedBox(
-            height: largoActual * 0.037,
+            height: largoActual * 0.033,
           ),
           Row(
             children: [
@@ -68,7 +101,7 @@ class _PerfilCliente extends State<PerfilCliente> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   //poner un if por aqui por si es hombre o mujer
-                  child: userProvider.user?.sexo == 'femenino'
+                  child: userProvider.user?.sexo == 'Femenino'
                       ? Icon(
                           Icons.face_3_rounded,
                           color: colorTitulos,
@@ -85,41 +118,43 @@ class _PerfilCliente extends State<PerfilCliente> {
                 width: anchoActual * 0.05,
               ),
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //Nombre
-                  Text(
-                    '${userProvider.user?.nombre} ${userProvider.user?.apellidos}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: largoActual * 0.025,
-                        color: colorTitulos),
-                  ),
-                  //Correo
-                  Text(
-                    'Codigo: ${userProvider.user?.codigocliente}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: largoActual * 0.018,
-                        color: colorTitulos),
-                  ),
-                  //Numero
-                  Text(
-                    '${userProvider.user?.suscripcion}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: largoActual * 0.018,
-                        color: colorTitulos),
-                  ),
-                ],
+              SizedBox(
+                width: anchoActual*0.65,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Nombre
+                    Text(
+                      '${userProvider.user?.nombre} ${userProvider.user?.apellidos}',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: largoActual * 0.023,
+                          color: colorTitulos),
+                    ),
+                    //Correo
+                    Text(
+                      'Codigo: ${userProvider.user?.codigocliente}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: largoActual * 0.018,
+                          color: colorTitulos),
+                    ),
+                    //Numero
+                    Text(
+                      '${userProvider.user?.suscripcion}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: largoActual * 0.018,
+                          color: colorTitulos),
+                    ),
+                  ],
+                ),
               )
             ],
           ),
-          SizedBox(
-            height: largoActual * 0.02,
-          ),
+          
           //CARDS DE INFOPERSONAL MEMBRE SOL CUPONES
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,11 +250,13 @@ class _PerfilCliente extends State<PerfilCliente> {
                   )),
             ],
           ),
-          SizedBox(
-            height: largoActual * 0.01,
-          ),
+          
           //BILLETERA SOL
-          Container(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
             margin: EdgeInsets.only(left: anchoActual * 0.045),
             child: Text(
               "Billetera Sol",
@@ -230,7 +267,7 @@ class _PerfilCliente extends State<PerfilCliente> {
             ),
           ),
           SizedBox(
-            height: largoActual * 0.21,
+            height: largoActual * 0.19,
             child: Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
@@ -278,184 +315,231 @@ class _PerfilCliente extends State<PerfilCliente> {
                                     String _selectedItem =
                                         'Seleccione su metodo';
                                     String _otroItem = 'Ingrese su banco';
-                                    return AlertDialog(
-                                      title: Text(
-                                          'Selecciona un metodo de retiro'),
-                                      content: StatefulBuilder(
+                                    return Dialog(                                     
+                                      child: StatefulBuilder(
                                         builder: (BuildContext context,
                                             StateSetter setState) {
-                                          return Column(
-                                            children: [
-                                              DropdownButtonFormField<String>(
-                                                onChanged: (String? newValue) {
-                                                  setState(() {
-                                                    _selectedItem = newValue!;
-                                                    print(
-                                                        'valor: $_selectedItem');
-                                                  });
-                                                },
-                                                value: _selectedItem,
-                                                items: <String>[
-                                                  'Seleccione su metodo',
-                                                  'transferencia',
-                                                  'yape o plin'
-                                                ].map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                                  return DropdownMenuItem<
-                                                      String>(
-                                                    value: value,
-                                                    child: Text(value),
-                                                  );
-                                                }).toList(),
+                                          return Container(
+                                            height: largoActual*0.4,
+                                            decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                      gradient:
+                                                          const LinearGradient(
+                                                              colors: [
+                                                            Color.fromRGBO(
+                                                                0,
+                                                                106,
+                                                                252,
+                                                                1.000),
+                                                            Color.fromRGBO(
+                                                                0,
+                                                                106,
+                                                                252,
+                                                                1.000),
+                                                            Color.fromRGBO(
+                                                                0,
+                                                                106,
+                                                                252,
+                                                                1.000),
+                                                            Color.fromRGBO(150,
+                                                                198, 230, 1),
+                                                            Colors.white,
+                                                            Colors.white,
+                                                          ],
+                                                              begin: Alignment
+                                                                  .topCenter,
+                                                              end: Alignment
+                                                                  .bottomCenter)),
+                                                  
+                                            child: Container(
+                                              
+                                              margin: EdgeInsets.all(anchoActual*0.04
                                               ),
-                                              const SizedBox(height: 20),
-                                              Visibility(
-                                                visible: _selectedItem ==
-                                                    'transferencia',
-                                                child: Column(
-                                                  children: [
-                                                    DropdownButtonFormField<
-                                                        String>(
-                                                      onChanged:
-                                                          (String? newValue) {
-                                                        setState(() {
-                                                          _otroItem = newValue!;
-                                                        });
-                                                      },
-                                                      value: _otroItem,
-                                                      items: <String>[
-                                                        'Ingrese su banco',
-                                                        'BBVA',
-                                                        'BCP',
-                                                        'Caja Arequipa',
-                                                        'Otros'
-                                                      ].map<
-                                                              DropdownMenuItem<
-                                                                  String>>(
-                                                          (String value) {
-                                                        return DropdownMenuItem<
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text('Selecciona el metodo que prefieras', style: TextStyle(color: Colors.white,fontSize: largoActual*0.028, fontWeight: FontWeight.w700),),
+                                                  Column(
+                                                    children: [
+                                                      DropdownButtonFormField<String>(
+                                                    onChanged: (String? newValue) {
+                                                      setState(() {
+                                                        _selectedItem = newValue!;
+                                                        print(
+                                                            'valor: $_selectedItem');
+                                                      });
+                                                    },
+                                                    value: _selectedItem,
+                                                    items: <String>[
+                                                      'Seleccione su metodo',
+                                                      'Transferencia',
+                                                      'Yape o plin'
+                                                    ].map<DropdownMenuItem<String>>(
+                                                        (String value) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: value,
+                                                        child: Text(value),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                  
+                                                  Visibility(
+                                                    visible: _selectedItem ==
+                                                        'Transferencia',
+                                                    child: Column(
+                                                      children: [
+                                                        DropdownButtonFormField<
                                                             String>(
-                                                          value: value,
-                                                          child: Text(value),
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                    TextFormField(
-                                                      controller: _cuenta,
-                                                      decoration:
-                                                          const InputDecoration(
-                                                        hintText:
-                                                            'ingrese su numero de cuenta',
-                                                        border:
-                                                            InputBorder.none,
-                                                      ),
-                                                      validator: (value) {
-                                                        if (value == null ||
-                                                            value.isEmpty) {
-                                                          return 'Por favor, ingrese su numero de cuenta';
-                                                        }
-                                                        return null;
-                                                      },
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        cuenta_ = _cuenta.text;
-                                                        _cuenta.text = '';
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      style: ButtonStyle(
-                                                        elevation:
-                                                            MaterialStateProperty
-                                                                .all(8),
-                                                        surfaceTintColor:
-                                                            MaterialStateProperty
-                                                                .all(Colors
-                                                                    .white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all(Colors
-                                                                    .white),
-                                                      ),
-                                                      child: const Text(
-                                                        "Aceptar",
-                                                        style: TextStyle(
-                                                          color: Color.fromRGBO(
-                                                              0,
-                                                              106,
-                                                              252,
-                                                              1.000),
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.w400,
+                                                          onChanged:
+                                                              (String? newValue) {
+                                                            setState(() {
+                                                              _otroItem = newValue!;
+                                                            });
+                                                          },
+                                                          value: _otroItem,
+                                                          items: <String>[
+                                                            'Ingrese su banco',
+                                                            'BBVA',
+                                                            'BCP',
+                                                            'Caja Arequipa',
+                                                            'Otros'
+                                                          ].map<
+                                                                  DropdownMenuItem<
+                                                                      String>>(
+                                                              (String value) {
+                                                            return DropdownMenuItem<
+                                                                String>(
+                                                              value: value,
+                                                              child: Text(value),
+                                                            );
+                                                          }).toList(),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Visibility(
-                                                visible: _selectedItem ==
-                                                    'yape o plin',
-                                                child: Column(
-                                                  children: [
-                                                    TextFormField(
-                                                      controller: _telefono,
-                                                      decoration:
-                                                          const InputDecoration(
-                                                        hintText:
-                                                            'ingrese su numero de telefono',
-                                                        border:
-                                                            InputBorder.none,
-                                                      ),
-                                                      validator: (value) {
-                                                        if (value == null ||
-                                                            value.isEmpty) {
-                                                          return 'Por favor, ingrese su numero';
-                                                        }
-                                                        return null;
-                                                      },
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        print(_telefono.text);
-                                                        telefono_ =
-                                                            _telefono.text;
-                                                        _telefono.text = '';
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      style: ButtonStyle(
-                                                        elevation:
-                                                            MaterialStateProperty
-                                                                .all(8),
-                                                        surfaceTintColor:
-                                                            MaterialStateProperty
-                                                                .all(Colors
-                                                                    .white),
-                                                        backgroundColor:
-                                                            MaterialStateProperty
-                                                                .all(Colors
-                                                                    .white),
-                                                      ),
-                                                      child: const Text(
-                                                        "Aceptar",
-                                                        style: TextStyle(
-                                                          color: Color.fromRGBO(
-                                                              0,
-                                                              106,
-                                                              252,
-                                                              1.000),
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.w400,
+                                                        TextFormField(
+                                                          controller: _cuenta,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            hintText:
+                                                                'Ingrese su numero de cuenta',
+                                                            border:
+                                                                InputBorder.none,
+                                                          ),
+                                                          validator: (value) {
+                                                            if (value == null ||
+                                                                value.isEmpty) {
+                                                              return 'Por favor, ingrese su numero de cuenta';
+                                                            }
+                                                            return null;
+                                                          },
                                                         ),
-                                                      ),
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            actualizarProviderCliente(userProvider.user?.id, userProvider.user?.nombre, userProvider.user?.apellidos, userProvider.user?.saldoBeneficio , userProvider.user?.codigocliente, userProvider.user?.fechaCreacionCuenta, userProvider.user?.sexo, userProvider.user?.frecuencia, userProvider.user?.suscripcion,_selectedItem,_otroItem,_cuenta.text);
+                                                            cuenta_ = _cuenta.text;
+                                                            _cuenta.text = '';
+                                                            Navigator.of(context)
+                                                                .pop();
+                                                          },
+                                                          style: ButtonStyle(
+                                                            elevation:
+                                                                MaterialStateProperty
+                                                                    .all(8),
+                                                            surfaceTintColor:
+                                                                MaterialStateProperty
+                                                                    .all(Colors
+                                                                        .white),
+                                                            backgroundColor:
+                                                                MaterialStateProperty
+                                                                    .all(Colors
+                                                                        .white),
+                                                          ),
+                                                          child: const Text(
+                                                            "Aceptar",
+                                                            style: TextStyle(
+                                                              color: Color.fromRGBO(
+                                                                  0,
+                                                                  106,
+                                                                  252,
+                                                                  1.000),
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight.w400,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                  Visibility(
+                                                    visible: _selectedItem ==
+                                                        'Yape o plin',
+                                                    child: Column(
+                                                      children: [
+                                                        TextFormField(
+                                                          controller: _telefono,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            hintText:
+                                                                'Ingrese su numero de telefono',
+                                                            border:
+                                                                InputBorder.none,
+                                                          ),
+                                                          validator: (value) {
+                                                            if (value == null ||
+                                                                value.isEmpty) {
+                                                              return 'Por favor, ingrese su numero';
+                                                            }
+                                                            return null;
+                                                          },
+                                                        ),
+                                                        ElevatedButton(
+                                                          onPressed: () async {
+                                                            print(_telefono.text);
+                                                            telefono_ =
+                                                                _telefono.text;
+                                                            _telefono.text = '';
+                                                            Navigator.of(context)
+                                                                .pop();
+                                                          },
+                                                          style: ButtonStyle(
+                                                            elevation:
+                                                                MaterialStateProperty
+                                                                    .all(8),
+                                                            surfaceTintColor:
+                                                                MaterialStateProperty
+                                                                    .all(Colors
+                                                                        .white),
+                                                            backgroundColor:
+                                                                MaterialStateProperty
+                                                                    .all(Colors
+                                                                        .white),
+                                                          ),
+                                                          child: const Text(
+                                                            "Aceptar",
+                                                            style: TextStyle(
+                                                              color: Color.fromRGBO(
+                                                                  0,
+                                                                  106,
+                                                                  252,
+                                                                  1.000),
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight.w400,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  
+                                                    ],
+                                                  ),
+                                                  
+                                                ],
                                               ),
-                                            ],
+                                            ),
                                           );
                                         },
                                       ),
@@ -473,16 +557,7 @@ class _PerfilCliente extends State<PerfilCliente> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    Icons
-                                        .monetization_on_rounded, // Reemplaza con el icono que desees
-                                    size: largoActual * 0.02,
-                                    color: Colors.white,
-                                  ),
-
-                                  SizedBox(
-                                      width: anchoActual *
-                                          0.020), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                                  // Ajusta el espacio entre el icono y el texto según tus preferencias
                                   Text(
                                     "Retirar dinero",
                                     style: TextStyle(
@@ -509,11 +584,15 @@ class _PerfilCliente extends State<PerfilCliente> {
                   ),
                 )),
           ),
-          //CONFIGURACION
-          SizedBox(
-            height: largoActual * 0.01,
+          
+            ],
           ),
-          Container(
+          //CONFIGURACION
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+Container(
             margin: EdgeInsets.only(left: anchoActual * 0.045),
             child: Text(
               "Configuración",
@@ -568,7 +647,6 @@ class _PerfilCliente extends State<PerfilCliente> {
               ],
             ),
           ),
-
           ElevatedButton(
             onPressed: estaHabilitado
                 ? () {
@@ -705,6 +783,10 @@ class _PerfilCliente extends State<PerfilCliente> {
               ],
             ),
           ),
+       
+            ],
+          ),
+          
         ]),
       )),
     );
