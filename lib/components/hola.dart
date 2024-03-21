@@ -87,6 +87,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   String direccionImagenParaEstados = 'lib/imagenes/promocion.jpg';
   //ACA SE DEBE ACTUALIZAR EL LINK PARA DESCARGAR LA APPPPPP
   String urlPreview = 'https://youtu.be/bNKXxwOQYB8?si=d_Un1vXsQiPzMt3s';
+  String urlExplicacion = 'https://youtu.be/bNKXxwOQYB8?si=d_Un1vXsQiPzMt3s';
   String tituloUbicacion = 'Gracias por compartir tu ubicación!';
   String contenidoUbicacion = '¡Disfruta de Agua Sol!';
 
@@ -111,15 +112,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     ordenarFuncionesInit();
-
-    if (widget.esNuevo != null &&
-        widget.esNuevo == true &&
-        yaSeMostro == false) {
-      muestraDialogoPubli(context);
-    } else {
-      print("+++++++++++++++++++++++++++++++++++++++++");
-      print(widget.esNuevo);
-    }
   }
 
   Future<void> muestraDialogoPubli(BuildContext context) async {
@@ -167,6 +159,14 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
     await getUbicaciones(widget.clienteId);
     await getProducts();
     await getZonas();
+    if (widget.esNuevo != null &&
+        widget.esNuevo == true &&
+        yaSeMostro == false) {
+      await muestraDialogoPubli(context);
+    } else {
+      print("+++++++++++++++++++++++++++++++++++++++++");
+      print(widget.esNuevo);
+    }
   }
 
   Future<void> nuevaUbicacion() async {
@@ -668,7 +668,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
 
     final userProvider = context.watch<UserProvider>();
     String mensajeCodigoParaAmigos =
-        'Hola!,\nUsa mi código en la *app de 💧 Agua Sol 💧* para comprar un *BIDON DE AGUA NUEVO DE 20L a solo S/.10.00* usando mi código, además puedes _*GANAR S/. 4.00 💸*_ por cada persona que compre con tu código de referencia. \n✅ USA MI CODIGO DE REFERENCIA: ${userProvider.user?.codigocliente}\n⏬ Descarga la APP AQUÍ: ';
+        'Hola!,\nTe presento la *app 💧 Sol Market 💧* usa mi codigo para tu primera compra de un *BIDÓN DE AGUA DE 20L (bidon + agua)* y te lo podrás llevar *a solo S/.23.00 ~(Precio regular: S/.35.00)~*.\n¡Solo usando mi código!.\nAdemás puedes referir a tus contactos con tu codigo y _*beneficiarte con S/. 3.00 💸*_ por las compras que realicen. \n✅ USA MI CODIGO DE REFERENCIA: ${userProvider.user?.codigocliente}\n❓ Más detalles AQUÍ: $urlExplicacion \n⏬ Descarga la APP AQUÍ: $urlPreview';
     final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final pedidoProvider = context.watch<PedidoProvider>();
@@ -1352,10 +1352,33 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w800)),
-                                                              const TextSpan(
+                                                              
+                                                            ])),
+                                                            SizedBox(
+                                                              height: largoActual*0.007,
+                                                            ),
+                                                        RichText(
+                                                            text: TextSpan(
+                                                                style: TextStyle(
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .normal,
+                                                                    color:
+                                                                        colorLetra,
+                                                                    fontSize:
+                                                                        largoActual *
+                                                                            0.017,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400),
+                                                                children:const  [
+                                                              
+                                                              
+                                                             
+                                                               TextSpan(
                                                                   text:
-                                                                      ' Recuerda que tu código tiene una válidez de '),
-                                                              const TextSpan(
+                                                                      'Recuerda que tu código tiene una válidez de ',),
+                                                              TextSpan(
                                                                   text:
                                                                       '3 meses ',
                                                                   style: TextStyle(
@@ -1365,22 +1388,29 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w800)),
-                                                              const TextSpan(
+                                                              TextSpan(
                                                                   text:
                                                                       'desde que creaste tu cuenta.'),
                                                             ])),
-//ESPACIOOO
+                                                        
+//ESPACIOOO   
                                                         SizedBox(
                                                             height:
                                                                 largoActual *
                                                                     0.04),
-//BOTON COMPARTE
-                                                        SizedBox(
+                                                        Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+
+                                                                      children: [
+                                                                        SizedBox(
                                                           height: largoActual *
-                                                              (17 / 760),
-                                                          child: OutlinedButton(
+                                                              (17 / 740),
+                                                          child: ElevatedButton(
                                                               style:
                                                                   const ButtonStyle(
+                                                                    elevation: MaterialStatePropertyAll(10),
+                                                                    surfaceTintColor: MaterialStatePropertyAll(Colors.white),
+                                                                    backgroundColor: MaterialStatePropertyAll(Colors.white),
                                                                       shape:
                                                                           MaterialStatePropertyAll(
                                                                         RoundedRectangleBorder(
@@ -1396,30 +1426,43 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                     mensajeCodigoParaAmigos +
                                                                         urlPreview);
                                                               },
-                                                              child: Text(
-                                                                'COMPARTE TU CÓDIGO',
-                                                                style: TextStyle(
-                                                                    fontStyle:
-                                                                        FontStyle
-                                                                            .normal,
-                                                                    color:
-                                                                        colorTextos,
-                                                                    fontSize:
-                                                                        largoActual *
-                                                                            0.015,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Icon(Icons.share, size: largoActual*0.02,color: colorTextos),
+                                                                  SizedBox(width: anchoActual*0.02),
+                                                                  Text(
+                                                                    'COMPARTE TU CÓDIGO',
+                                                                    style: TextStyle(
+                                                                        fontStyle:
+                                                                            FontStyle
+                                                                                .normal,
+                                                                        color:
+                                                                            colorTextos,
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w500),
+                                                                  ),
+                                                                ],
                                                               )),
                                                         ),
-
+SizedBox(
+                                                            height:
+                                                                largoActual *
+                                                                    0.01),
                                                         //BOTON PARA PUBLICARLO EN TU ESTADO
                                                         SizedBox(
                                                           height: largoActual *
                                                               (17 / 760),
-                                                          child: OutlinedButton(
+                                                          child: ElevatedButton(
                                                               style:
                                                                   const ButtonStyle(
+                                                                    elevation: MaterialStatePropertyAll(10),
+                                                                    surfaceTintColor: MaterialStatePropertyAll(Colors.white),
+                                                                    backgroundColor: MaterialStatePropertyAll(Colors.white),
                                                                       shape:
                                                                           MaterialStatePropertyAll(
                                                                         RoundedRectangleBorder(
@@ -1465,23 +1508,35 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                       'mi codigo',
                                                                 );
                                                               },
-                                                              child: Text(
-                                                                'PUBLÍCALO EN TU ESTADO',
-                                                                style: TextStyle(
-                                                                    fontStyle:
-                                                                        FontStyle
-                                                                            .normal,
-                                                                    color:
-                                                                        colorTextos,
-                                                                    fontSize:
-                                                                        largoActual *
-                                                                            0.015,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
-                                                              )),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  Icon(Icons.share, size: largoActual*0.02,color: colorTextos,),
+                                                                  SizedBox(width: anchoActual*0.02,),
+                                                                  Text(
+                                                                    'PUBLÍCALO EN TU ESTADO',
+                                                                    style: TextStyle(
+                                                                        fontStyle:
+                                                                            FontStyle
+                                                                                .normal,
+                                                                        color:
+                                                                            colorTextos,
+                                                                        fontSize:
+                                                                            largoActual *
+                                                                                0.015,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .w500),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              ),
                                                         ),
-                                                      ],
+                                                     
+                                                                      ],
+                                                                    ),
+//BOTON COMPARTE
+                                                         ],
                                                     ),
                                                   ),
                                                 ),

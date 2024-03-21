@@ -136,7 +136,7 @@ class _HolaConductorState extends State<HolaConductor> {
       });
     } else {
       setState(() {
-        fechaFinalizadoPref = DateTime.now();
+        fechaFinalizadoPref = DateTime.now().subtract(const Duration(hours: 24));;
       });
     }
     fechaFinalizado.setString("fecha", DateTime.now().toString());
@@ -189,18 +189,35 @@ class _HolaConductorState extends State<HolaConductor> {
           vehiculoPreference.setInt("carID", tempRutaModel.vehiculoID);
           if (fechaCreacion.day == fechaFinalizadoPref.day &&
               fechaCreacion.month == fechaFinalizadoPref.month &&
-              fechaCreacion.year == fechaFinalizadoPref.year) {
-            //SIGNIFICA QUE LA RUTA YA SE TERMINO HOY
-            setState(() {
+              fechaCreacion.year == fechaFinalizadoPref.year 
+              ) {
+                if(
+              fechaCreacion.hour == fechaFinalizadoPref.hour){
+                if(fechaCreacion.minute<fechaFinalizadoPref.minute){
+setState(() {
               mensaje =
                   'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
               comenzarOaqui = '¡ Aqui !';
               tengoruta = true;
             });
+                }
+              }else if(fechaCreacion.hour < fechaFinalizadoPref.hour){
+setState(() {
+              mensaje =
+                  'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
+              comenzarOaqui = '¡ Aqui !';
+              tengoruta = true;
+            });
+              }
+            //SIGNIFICA QUE LA RUTA YA SE TERMINO HOY
+            
           } else {
             //la ruta no se ha terminado hoyyyy
             setState(() {
+              print('esta es la FEHCA DE CREACION DE LA RUTA $fechaCreacion');
+              print('esta es la FEHCA DE FIN DE LA RUTA $fechaFinalizadoPref');
               rutaTerminadaPref = false;
+              rutaFinalizada.setBool("finalizado", false);
               rutaFinalizada.setBool("finalizado", rutaTerminadaPref);
               mensaje =
                   'Tu ruta hoy es la Nº $rutaID, en el vehículo $nombreCamion con placa $placa\n ¡EXITOS!';

@@ -62,6 +62,7 @@ class _PedidoState extends State<Pedido> {
   String codigoverify = '/api/code_cliente';
   String apiPedido = '/api/pedido';
   String apiDetallePedido = '/api/detallepedido';
+  int? beneficiadoID;
   bool existe = false;
   bool buscandoCodigo = false;
   bool hayBidon = false;
@@ -325,7 +326,11 @@ class _PedidoState extends State<Pedido> {
   }
 
   void descuentoPrimeraCompra(bool? esnuevo) {
-    if (esnuevo == true && hayBidon) {
+    if (existe && hayBidon) {
+      setState(() {
+        ahorro = 12.0 * cantidadBidones;
+      });
+    }else if(esnuevo == true && hayBidon){
       setState(() {
         dctoPrimeraCompra = 10;
         ahorro = dctoPrimeraCompra * cantidadBidones;
@@ -743,7 +748,7 @@ class _PedidoState extends State<Pedido> {
                                                     actualizarProviderPedido();
                                                   });
 
-                                                  if (selecciondosPromosProvider
+                                                  if (seleccionadosTodos
                                                       .isEmpty) {
                                                     setState(() {
                                                       limpiarVariables();
@@ -776,7 +781,7 @@ class _PedidoState extends State<Pedido> {
                             bottom: largoActual * 0.002,
                             left: anchoActual * 0.055),
                         child: Text(
-                          "Cupones",
+                          "Código de referencia",
                           style: TextStyle(
                               color: colorTitulos,
                               fontWeight: FontWeight.w600,
@@ -821,7 +826,7 @@ class _PedidoState extends State<Pedido> {
                                     color: colorContenido),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: 'Ingresar cupón',
+                                  hintText: 'Ingresar el código',
                                   hintStyle: TextStyle(
                                       color: const Color.fromARGB(
                                           255, 195, 195, 195),
@@ -924,6 +929,7 @@ class _PedidoState extends State<Pedido> {
                                           colorCupon = const Color.fromRGBO(
                                               255, 0, 93, 1.000);
                                           ahorro = 12.0 * cantidadBidones;
+                                          
                                           print("ESTE ES EL AHORRO: $ahorro");
                                           actualizarProviderPedido();
                                         });

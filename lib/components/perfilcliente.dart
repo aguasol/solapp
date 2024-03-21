@@ -138,8 +138,8 @@ class _PerfilCliente extends State<PerfilCliente> {
                     Text(
                       'Codigo: ${userProvider.user?.codigocliente}',
                       style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: largoActual * 0.018,
+                          fontWeight: FontWeight.w500,
+                          fontSize: largoActual * 0.02,
                           color: colorTitulos),
                     ),
                     //Numero
