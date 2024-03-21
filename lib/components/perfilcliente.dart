@@ -78,6 +78,7 @@ class _PerfilCliente extends State<PerfilCliente> {
     final userProvider = context.watch<UserProvider>();
     fechaLimite = mesyAnio(userProvider.user?.fechaCreacionCuenta)
         .add(const Duration(days: (30 * 3)));
+        //TYJYUJY
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
