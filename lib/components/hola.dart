@@ -1374,7 +1374,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
 //BOTON COMPARTE
                                                         SizedBox(
                                                           height: largoActual *
-                                                              0.04,
+                                                              (17 / 760),
                                                           child: OutlinedButton(
                                                               style:
                                                                   const ButtonStyle(
@@ -1413,7 +1413,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                         //BOTON PARA PUBLICARLO EN TU ESTADO
                                                         SizedBox(
                                                           height: largoActual *
-                                                              0.04,
+                                                              (17 / 760),
                                                           child: OutlinedButton(
                                                               style:
                                                                   const ButtonStyle(
@@ -1453,7 +1453,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                             .lengthInBytes,
                                                                       ),
                                                                       mimeType:
-                                                                          'image/jpg',
+                                                                          'jpg',
                                                                       name:
                                                                           'usaMiCodigo',
                                                                     )
