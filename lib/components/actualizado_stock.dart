@@ -65,7 +65,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
       throw Exception('$e');
     }
   }
-//ghg
+//ghgererge
   Future<dynamic> getProductosVehiculo() async {
     print('----------------------------------');
     print('4) Dentro de detalle de Vehiculo');
