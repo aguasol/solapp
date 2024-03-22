@@ -23,6 +23,7 @@ import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:lottie/lottie.dart';
 import 'package:appsol_final/models/zona_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:appsol_final/models/promocion_model.dart';
 
 class Producto {
   final String nombre;
@@ -92,6 +93,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   String urlExplicacion = 'https://youtu.be/bNKXxwOQYB8?si=d_Un1vXsQiPzMt3s';
   String tituloUbicacion = 'Gracias por compartir tu ubicación!';
   String contenidoUbicacion = '¡Disfruta de Agua Sol!';
+  List<String> listPromociones = [];
 
   //bool _disposed = false;
   //bool _autoScrollInProgress = false;
@@ -108,6 +110,13 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       print('no es string');
       return DateTime.now();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController1.dispose();
+    scrollController2.dispose();
   }
 
   @override
@@ -132,7 +141,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                     color: const Color.fromARGB(255, 130, 219, 133),
                     borderRadius: BorderRadius.circular(10),
                     image: const DecorationImage(
-                      image: AssetImage('lib/imagenes/bodegon.png'),
+                      image: AssetImage('lib/imagenes/bodegoncito.png'),
                       fit: BoxFit.cover,
                     )),
               ),
@@ -161,6 +170,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
     await getUbicaciones(widget.clienteId);
     await getProducts();
     await getZonas();
+    await getPromociones();
     if (widget.esNuevo != null &&
         widget.esNuevo == true &&
         yaSeMostro == false) {
@@ -345,6 +355,31 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
               listaUbisString: ubicacionesString);
           Provider.of<UbicacionListProvider>(context, listen: false)
               .updateUbicacionList(listUbis);
+        }
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
+
+  Future<dynamic> getPromociones() async {
+    print("---------------get promos ----------------");
+    var res = await http.get(
+      Uri.parse('$apiUrl/api/promocion'),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<String> tempPromocion = data.map<String>((mapa) {
+          return '$apiUrl/images/${mapa['foto'].replaceAll(r'\\', '/')}';
+        }).toList();
+
+        if (mounted) {
+          setState(() {
+            listPromociones = tempPromocion;
+          });
         }
       }
     } catch (e) {
@@ -1083,8 +1118,9 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                               ListView.builder(
                                   controller: scrollController1,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: 5,
+                                  itemCount: listPromociones.length,
                                   itemBuilder: (context, index) {
+                                    String promo = listPromociones[index];
                                     return GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -1094,9 +1130,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                   const BarraNavegacion(
                                                     indice: 0,
                                                     subIndice: 1,
-                                                  )
-                                              //const Promos()
-                                              ),
+                                                  )),
                                         );
                                       },
                                       child: Container(
@@ -1109,10 +1143,9 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                 255, 130, 219, 133),
                                             borderRadius:
                                                 BorderRadius.circular(20),
-                                            image: const DecorationImage(
-                                              image: AssetImage(
-                                                  'lib/imagenes/bodegon.png'),
-                                              fit: BoxFit.cover,
+                                            image: DecorationImage(
+                                              image: NetworkImage(promo),
+                                              fit: BoxFit.fitHeight,
                                             )),
                                       ),
                                     );
