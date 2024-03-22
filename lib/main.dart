@@ -1,6 +1,7 @@
 import 'package:appsol_final/components/login.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
 import 'package:appsol_final/provider/ubicacion_provider.dart';
+import 'package:appsol_final/provider/ubicaciones_list_provider.dart';
 import 'package:appsol_final/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,6 +39,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => UbicacionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UbicacionListProvider(),
         ),
       ],
       child: MaterialApp(

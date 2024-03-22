@@ -2,9 +2,11 @@ import 'package:appsol_final/models/pedido_model.dart';
 import 'package:appsol_final/models/promocion_model.dart';
 import 'package:appsol_final/models/producto_model.dart';
 import 'package:appsol_final/models/ubicacion_model.dart';
+import 'package:appsol_final/models/ubicaciones_lista_model.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
 import 'package:appsol_final/provider/ubicacion_provider.dart';
 import 'package:appsol_final/components/fin.dart';
+import 'package:appsol_final/provider/ubicaciones_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -66,6 +68,7 @@ class _PedidoState extends State<Pedido> {
   bool existe = false;
   bool buscandoCodigo = false;
   bool hayBidon = false;
+  bool hayUbicacion = false;
   bool esPrimeraCompra = false;
   double dctoPrimeraCompra = 0.2;
   int cantidadBidones = 0;
@@ -73,6 +76,12 @@ class _PedidoState extends State<Pedido> {
   DateTime fechaLimite = DateTime.now();
   DateTime fechaLimiteCliente = DateTime.now();
   bool almenosuno = false;
+  String? _ubicacionSelected;
+  List<String> ubicacionesString = [];
+  List<UbicacionModel> listUbicacionesObjetos = [];
+  String tituloUbicacion = 'Gracias por compartir tu ubicación!';
+  String contenidoUbicacion = '¡Disfruta de Agua Sol!';
+  late UbicacionModel miUbicacion;
 
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
@@ -224,20 +233,26 @@ class _PedidoState extends State<Pedido> {
     }
   }
 
-  void esUbicacion(UbicacionModel? ubicacion) {
+  void esUbicacion(
+      UbicacionModel? ubicacion, UbicacionListaModel? ubicacionList) {
     if (ubicacion is UbicacionModel) {
       print('ES UBIIIII');
       setState(() {
+        hayUbicacion = true;
+        miUbicacion = ubicacion;
         ubicacionSelectID = ubicacion.id;
         direccion = ubicacion.direccion;
         colorDireccion = const Color.fromARGB(255, 1, 75, 135);
       });
     } else {
-      print('no es ubi');
-      setState(() {
-        ubicacionSelectID = 0;
-        direccion = "Seleccione una dirección, por favor";
-      });
+      if (ubicacionList is UbicacionListaModel) {
+        print('no es ubi');
+        setState(() {
+          direccion = "Seleccione una dirección, por favor";
+          ubicacionesString = ubicacionList.listaUbisString;
+          listUbicacionesObjetos = ubicacionList.listaUbisObjeto;
+        });
+      }
     }
   }
 
@@ -330,7 +345,7 @@ class _PedidoState extends State<Pedido> {
       setState(() {
         ahorro = 12.0 * cantidadBidones;
       });
-    }else if(esnuevo == true && hayBidon){
+    } else if (esnuevo == true && hayBidon) {
       setState(() {
         dctoPrimeraCompra = 10;
         ahorro = dctoPrimeraCompra * cantidadBidones;
@@ -361,6 +376,26 @@ class _PedidoState extends State<Pedido> {
     }
   }
 
+  UbicacionModel direccionSeleccionada(String direccion) {
+    UbicacionModel ubicacionObjeto = UbicacionModel(
+        id: 0,
+        latitud: 0,
+        longitud: 0,
+        direccion: 'direccion',
+        clienteID: 0,
+        clienteNrID: 0,
+        distrito: 'distrito',
+        zonaID: 0);
+    for (var i = 0; i < listUbicacionesObjetos.length; i++) {
+      if (listUbicacionesObjetos[i].direccion == direccion) {
+        setState(() {
+          ubicacionObjeto = listUbicacionesObjetos[i];
+        });
+      }
+    }
+    return ubicacionObjeto;
+  }
+
   @override
   Widget build(BuildContext context) {
     final anchoActual = MediaQuery.of(context).size.width;
@@ -368,8 +403,9 @@ class _PedidoState extends State<Pedido> {
     final pedidoProvider = context.watch<PedidoProvider>();
     final userProvider = context.watch<UserProvider>();
     final ubicacionProvider = context.watch<UbicacionProvider>();
+    final ubicacionListaProvider = context.watch<UbicacionListProvider>();
     fechaLimiteCliente = mesyAnio(userProvider.user?.fechaCreacionCuenta);
-    esUbicacion(ubicacionProvider.ubicacion);
+    esUbicacion(ubicacionProvider.ubicacion, ubicacionListaProvider.ubicacion);
     tamanoTitulos = largoActual * 0.02;
     tamanoTitulosDialogs = largoActual * 0.021;
     tamanoContenidoDialogs = largoActual * 0.018;
@@ -474,13 +510,15 @@ class _PedidoState extends State<Pedido> {
               );
             }),
         appBar: AppBar(
-          surfaceTintColor: Colors.white,
-          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
           toolbarHeight: largoActual * 0.08,
           leading: BackButton(
             onPressed: () {
               actualizarProviderPedido();
               Navigator.of(context).pop();
+              Provider.of<UbicacionProvider>(context, listen: false)
+                  .updateUbicacion(miUbicacion);
             },
           ),
           actions: [
@@ -514,16 +552,17 @@ class _PedidoState extends State<Pedido> {
         ),
         body: SafeArea(
             child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: EdgeInsets.only(
+                    left: anchoActual * 0.02,
+                    right: anchoActual * 0.02,
+                    bottom: anchoActual * 0.03),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //TU PEDIDO
                       Container(
-                        margin: EdgeInsets.only(
-                            bottom: largoActual * 0.002,
-                            left: anchoActual * 0.055),
+                        margin: EdgeInsets.only(left: anchoActual * 0.055),
                         child: Text(
                           "Tu pedido",
                           style: TextStyle(
@@ -929,7 +968,7 @@ class _PedidoState extends State<Pedido> {
                                           colorCupon = const Color.fromRGBO(
                                               255, 0, 93, 1.000);
                                           ahorro = 12.0 * cantidadBidones;
-                                          
+
                                           print("ESTE ES EL AHORRO: $ahorro");
                                           actualizarProviderPedido();
                                         });
@@ -1063,21 +1102,21 @@ class _PedidoState extends State<Pedido> {
                                   Text(
                                     'Normal',
                                     style: TextStyle(
-                                        fontSize: largoActual * 0.019,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: largoActual * 0.017,
+                                        fontWeight: FontWeight.w600,
                                         color: colorContenido),
                                   ),
                                   Text(
                                     'GRATIS',
                                     style: TextStyle(
-                                        fontSize: largoActual * 0.013,
+                                        fontSize: largoActual * 0.0125,
                                         color: colorContenido),
                                   ),
                                   Text(
                                     "Si lo pides después de la 1:00 P.M se agenda para mañana.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: largoActual * 0.013,
+                                        fontSize: largoActual * 0.0125,
                                         color: colorContenido),
                                   ).animate().shake(),
                                 ],
@@ -1150,19 +1189,19 @@ class _PedidoState extends State<Pedido> {
                                   Text(
                                     'Express',
                                     style: TextStyle(
-                                        fontSize: largoActual * 0.019,
-                                        fontWeight: FontWeight.w500,
+                                        fontSize: largoActual * 0.017,
+                                        fontWeight: FontWeight.w600,
                                         color: colorContenido),
                                   ),
                                   Text('+ S/. 4.00',
                                       style: TextStyle(
-                                          fontSize: largoActual * 0.013,
+                                          fontSize: largoActual * 0.0125,
                                           color: colorContenido)),
                                   Text(
-                                    "Recive tu producto más rapido y disfrútalo lo antes posible",
+                                    "Recibe tu producto más rapido. Solo hasta las 4:00 P.M.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: largoActual * 0.013,
+                                        fontSize: largoActual * 0.0125,
                                         color: colorContenido),
                                   ),
                                 ],
@@ -1203,35 +1242,173 @@ class _PedidoState extends State<Pedido> {
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: anchoActual * 0.62,
-                                    child: Text(
-                                      direccion,
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          fontSize: largoActual * 0.017,
-                                          color: colorDireccion),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: anchoActual * 0.013,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                      top: largoActual * 0.0013,
-                                      bottom: largoActual * 0.0013,
-                                    ),
-                                    height: largoActual * 0.061,
-                                    width: largoActual * 0.061,
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(0),
-                                    ),
-                                    child:
-                                        Lottie.asset('lib/imagenes/ubi4.json'),
-                                  ),
-                                ],
+                                children: hayUbicacion
+                                    ? [
+                                        SizedBox(
+                                          width: anchoActual * 0.62,
+                                          child: Text(
+                                            direccion,
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                                fontSize: largoActual * 0.017,
+                                                color: colorDireccion),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: anchoActual * 0.013,
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            top: largoActual * 0.0013,
+                                            bottom: largoActual * 0.0013,
+                                          ),
+                                          height: largoActual * 0.061,
+                                          width: largoActual * 0.061,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(0),
+                                          ),
+                                          child: Lottie.asset(
+                                              'lib/imagenes/ubi4.json'),
+                                        ),
+                                      ]
+                                    : [
+                                        Container(
+                                          width: anchoActual * 0.65,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 12, right: 5),
+                                            child: DropdownButton<String>(
+                                              iconEnabledColor: colorContenido,
+                                              hint: Text(
+                                                direccion,
+                                                style: TextStyle(
+                                                  color: colorDireccion,
+                                                  fontSize: largoActual * 0.017,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              style: TextStyle(
+                                                color: colorContenido,
+                                                fontSize: largoActual * 0.017,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              elevation: 20,
+                                              dropdownColor: Colors.white,
+                                              isExpanded: true,
+                                              value: _ubicacionSelected,
+                                              items: ubicacionesString
+                                                  .map((String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value),
+                                                );
+                                              }).toList(),
+                                              onChanged: (String? newValue) {
+                                                if (newValue is String) {
+                                                  if (direccionSeleccionada(
+                                                              newValue)
+                                                          .zonaID ==
+                                                      0) {
+                                                    setState(() {
+                                                      tituloUbicacion =
+                                                          'Lo sentimos :(';
+                                                      contenidoUbicacion =
+                                                          'Todavía no llegamos a tu zona, pero puedes revisar nuestros productos en la aplicación o elegir otra ubicación :D';
+                                                    });
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return AlertDialog(
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                          surfaceTintColor:
+                                                              Colors.white,
+                                                          title: Text(
+                                                            tituloUbicacion,
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    largoActual *
+                                                                        0.026,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          content: Text(
+                                                            contenidoUbicacion,
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    largoActual *
+                                                                        0.018,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400),
+                                                          ),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop(); // Cierra el AlertDialog
+                                                              },
+                                                              child: Text(
+                                                                'OK',
+                                                                style: TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        largoActual *
+                                                                            0.02,
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    setState(() {
+                                                      _ubicacionSelected =
+                                                          newValue;
+                                                      miUbicacion =
+                                                          direccionSeleccionada(
+                                                              newValue);
+                                                    });
+                                                  }
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            top: largoActual * 0.0013,
+                                            bottom: largoActual * 0.0013,
+                                          ),
+                                          height: largoActual * 0.061,
+                                          width: largoActual * 0.061,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(0),
+                                          ),
+                                          child: Lottie.asset(
+                                              'lib/imagenes/ubi4.json'),
+                                        ),
+                                      ],
                               ))),
                       //RESUMEN
                       Container(
@@ -1270,14 +1447,14 @@ class _PedidoState extends State<Pedido> {
                                     Text(
                                       'Productos',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
+                                          fontSize: largoActual * 0.017,
                                           fontWeight: FontWeight.w500,
                                           color: colorContenido),
                                     ),
                                     Text(
-                                      'S/.$totalProvider',
+                                      'S/.${totalProvider}0',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
+                                          fontSize: largoActual * 0.017,
                                           fontWeight: FontWeight.w500,
                                           color: colorContenido),
                                     )
@@ -1290,14 +1467,14 @@ class _PedidoState extends State<Pedido> {
                                     Text(
                                       'Envio',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
+                                          fontSize: largoActual * 0.017,
                                           fontWeight: FontWeight.w500,
                                           color: colorContenido),
                                     ),
                                     Text(
-                                      'S/.$envio',
+                                      'S/.${envio}0',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
+                                          fontSize: largoActual * 0.017,
                                           fontWeight: FontWeight.w500,
                                           color: colorContenido),
                                     )
@@ -1310,16 +1487,16 @@ class _PedidoState extends State<Pedido> {
                                     Text(
                                       'Ahorro',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: largoActual * 0.017,
+                                          fontWeight: FontWeight.w700,
                                           color: const Color.fromRGBO(
                                               234, 51, 98, 1.000)),
                                     ),
                                     Text(
-                                      'S/.$ahorro',
+                                      'S/.${ahorro}0',
                                       style: TextStyle(
-                                          fontSize: largoActual * (13 / 736),
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: largoActual * 0.017,
+                                          fontWeight: FontWeight.w700,
                                           color: const Color.fromRGBO(
                                               234, 51, 98, 1.000)),
                                     )

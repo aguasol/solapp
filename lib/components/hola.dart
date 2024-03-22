@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:appsol_final/components/navegador.dart';
 import 'package:appsol_final/components/pedido.dart';
+import 'package:appsol_final/models/ubicaciones_lista_model.dart';
+import 'package:appsol_final/provider/ubicaciones_list_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -338,6 +340,11 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
               ubicacionesString.add(listUbicacionesObjetos[i].direccion);
             });
           }
+          UbicacionListaModel listUbis = UbicacionListaModel(
+              listaUbisObjeto: listUbicacionesObjetos,
+              listaUbisString: ubicacionesString);
+          Provider.of<UbicacionListProvider>(context, listen: false)
+              .updateUbicacionList(listUbis);
         }
       }
     } catch (e) {
@@ -548,7 +555,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
             setState(() {
               zonaIDUbicacion = null;
             });
-            
           } else {
             setState(() {
               print('- Es una cantidad IMPAR, ESTA DENTRO');
@@ -558,7 +564,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
             //es impar ESTA AFUERA
             break;
           }
-          
         } else {
           print('No tiene intersecciones');
           setState(() {
@@ -665,14 +670,12 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
-
     final userProvider = context.watch<UserProvider>();
     String mensajeCodigoParaAmigos =
         'Hola!,\nTe presento la *app 💧 Sol Market 💧* usa mi codigo para tu primera compra de un *BIDÓN DE AGUA DE 20L (bidon + agua)* y te lo podrás llevar *a solo S/.23.00 ~(Precio regular: S/.35.00)~*.\n¡Solo usando mi código!.\nAdemás puedes referir a tus contactos con tu codigo y _*beneficiarte con S/. 3.00 💸*_ por las compras que realicen. \n✅ USA MI CODIGO DE REFERENCIA: ${userProvider.user?.codigocliente}\n❓ Más detalles AQUÍ: $urlExplicacion \n⏬ Descarga la APP AQUÍ: $urlPreview';
     final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final pedidoProvider = context.watch<PedidoProvider>();
-
     fechaLimite = mesyAnio(userProvider.user?.fechaCreacionCuenta)
         .add(const Duration(days: (30 * 3)));
     direccionesVacias();
@@ -698,9 +701,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                         //CONTAINER DE UBICACION Y CARRITO
                         Container(
                           width: anchoActual,
-                          margin: EdgeInsets.only(
-                              left: anchoActual * 0.028,
-                              right: anchoActual * 0.028),
+
                           //color: Colors.red,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -708,13 +709,146 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                             children: [
                               //LOCATION
                               Container(
-                                width: MediaQuery.of(context).size.width / 1.4,
+                                width: MediaQuery.of(context).size.width / 1.3,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15)),
                                 child: Row(
                                   children: [
+                                    //BOTON DE AGREGAR UBI
                                     Container(
-                                      width: anchoActual * 0.7,
+                                      width: anchoActual * 0.13,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromRGBO(
+                                            83, 176, 68, 1.000),
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            backgroundColor:
+                                                const Color.fromRGBO(
+                                                    0, 106, 252, 1.000),
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return Container(
+                                                margin: EdgeInsets.only(
+                                                    top: largoActual * 0.041,
+                                                    left: anchoActual * 0.055,
+                                                    right: anchoActual * 0.055),
+                                                height: largoActual * 0.17,
+                                                width: anchoActual,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              left: 10),
+                                                      child: Text(
+                                                        'Agregar Ubicación',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize:
+                                                              largoActual *
+                                                                  0.023,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                        height: largoActual *
+                                                            0.013),
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        await currentLocation();
+
+                                                        // ignore: use_build_context_synchronously
+                                                        Navigator.pop(
+                                                            // ignore: use_build_context_synchronously
+                                                            context);
+                                                        // ignore: use_build_context_synchronously
+                                                        Navigator.pop(
+                                                            // ignore: use_build_context_synchronously
+                                                            context);
+                                                      },
+                                                      style: ButtonStyle(
+                                                        surfaceTintColor:
+                                                            MaterialStateProperty
+                                                                .all(Colors
+                                                                    .white),
+                                                        elevation:
+                                                            MaterialStateProperty
+                                                                .all(8),
+                                                        minimumSize:
+                                                            MaterialStatePropertyAll(
+                                                                Size(
+                                                                    anchoActual *
+                                                                        0.28,
+                                                                    largoActual *
+                                                                        0.054)),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all(Colors
+                                                                    .white),
+                                                      ),
+                                                      child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .add_location_alt_rounded,
+                                                              color: const Color
+                                                                  .fromRGBO(
+                                                                  0,
+                                                                  106,
+                                                                  252,
+                                                                  1.000),
+                                                              size:
+                                                                  largoActual *
+                                                                      0.034,
+                                                            ),
+                                                            Text(
+                                                              ' Agregar ubicación actual',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      largoActual *
+                                                                          0.021,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: const Color
+                                                                      .fromRGBO(
+                                                                      0,
+                                                                      106,
+                                                                      252,
+                                                                      1.000)),
+                                                            ),
+                                                          ]),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: Icon(
+                                            Icons.add_location_alt_rounded,
+                                            size: largoActual * 0.031,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: anchoActual * 0.005,
+                                    ),
+                                    //BOTON DE LISTA DE UBIS
+                                    Container(
+                                      width: anchoActual * 0.63,
                                       decoration: BoxDecoration(
                                         color: const Color.fromRGBO(
                                             83, 176, 68, 1.000),
@@ -731,134 +865,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                 color: Colors.white,
                                                 fontSize: largoActual * 0.018,
                                                 fontWeight: FontWeight.w500),
-                                          ),
-                                          icon: IconButton(
-                                            onPressed: () {
-                                              showModalBottomSheet(
-                                                backgroundColor:
-                                                    const Color.fromRGBO(
-                                                        0, 106, 252, 1.000),
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return Container(
-                                                    margin: EdgeInsets.only(
-                                                        top:
-                                                            largoActual * 0.041,
-                                                        left:
-                                                            anchoActual * 0.055,
-                                                        right: anchoActual *
-                                                            0.055),
-                                                    height: largoActual * 0.17,
-                                                    width: anchoActual,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Container(
-                                                          margin:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  left: 10),
-                                                          child: Text(
-                                                            'Agregar Ubicación',
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize:
-                                                                  largoActual *
-                                                                      0.023,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                            height:
-                                                                largoActual *
-                                                                    0.013),
-                                                        ElevatedButton(
-                                                          onPressed: () async {
-                                                            await currentLocation();
-
-                                                            // ignore: use_build_context_synchronously
-                                                            Navigator.pop(
-                                                                // ignore: use_build_context_synchronously
-                                                                context);
-                                                            // ignore: use_build_context_synchronously
-                                                            Navigator.pop(
-                                                                // ignore: use_build_context_synchronously
-                                                                context);
-                                                          },
-                                                          style: ButtonStyle(
-                                                            surfaceTintColor:
-                                                                MaterialStateProperty
-                                                                    .all(Colors
-                                                                        .white),
-                                                            elevation:
-                                                                MaterialStateProperty
-                                                                    .all(8),
-                                                            minimumSize:
-                                                                MaterialStatePropertyAll(Size(
-                                                                    anchoActual *
-                                                                        0.28,
-                                                                    largoActual *
-                                                                        0.054)),
-                                                            backgroundColor:
-                                                                MaterialStateProperty
-                                                                    .all(Colors
-                                                                        .white),
-                                                          ),
-                                                          child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons
-                                                                      .add_location_alt_rounded,
-                                                                  color: const Color
-                                                                      .fromRGBO(
-                                                                      0,
-                                                                      106,
-                                                                      252,
-                                                                      1.000),
-                                                                  size:
-                                                                      largoActual *
-                                                                          0.034,
-                                                                ),
-                                                                Text(
-                                                                  ' Agregar ubicación actual',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          largoActual *
-                                                                              0.021,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      color: const Color
-                                                                          .fromRGBO(
-                                                                          0,
-                                                                          106,
-                                                                          252,
-                                                                          1.000)),
-                                                                ),
-                                                              ]),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            icon: Icon(
-                                                Icons.add_location_alt_rounded,
-                                                size: largoActual * 0.031,
-                                                color: Colors.white),
                                           ),
                                           style: TextStyle(
                                               color: Colors.white,
@@ -1352,11 +1358,11 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w800)),
-                                                              
                                                             ])),
-                                                            SizedBox(
-                                                              height: largoActual*0.007,
-                                                            ),
+                                                        SizedBox(
+                                                          height: largoActual *
+                                                              0.007,
+                                                        ),
                                                         RichText(
                                                             text: TextSpan(
                                                                 style: TextStyle(
@@ -1371,13 +1377,11 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400),
-                                                                children:const  [
-                                                              
-                                                              
-                                                             
-                                                               TextSpan(
-                                                                  text:
-                                                                      'Recuerda que tu código tiene una válidez de ',),
+                                                                children: const [
+                                                              TextSpan(
+                                                                text:
+                                                                    'Recuerda que tu código tiene una válidez de ',
+                                                              ),
                                                               TextSpan(
                                                                   text:
                                                                       '3 meses ',
@@ -1392,151 +1396,170 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                                   text:
                                                                       'desde que creaste tu cuenta.'),
                                                             ])),
-                                                        
-//ESPACIOOO   
+
+//ESPACIOOO
                                                         SizedBox(
                                                             height:
                                                                 largoActual *
                                                                     0.04),
                                                         Column(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
-
-                                                                      children: [
-                                                                        SizedBox(
-                                                          height: largoActual *
-                                                              (17 / 740),
-                                                          child: ElevatedButton(
-                                                              style:
-                                                                  const ButtonStyle(
-                                                                    elevation: MaterialStatePropertyAll(10),
-                                                                    surfaceTintColor: MaterialStatePropertyAll(Colors.white),
-                                                                    backgroundColor: MaterialStatePropertyAll(Colors.white),
-                                                                      shape:
-                                                                          MaterialStatePropertyAll(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            SizedBox(
+                                                              height:
+                                                                  largoActual *
+                                                                      (17 /
+                                                                          740),
+                                                              child: ElevatedButton(
+                                                                  style: const ButtonStyle(
+                                                                      elevation: MaterialStatePropertyAll(10),
+                                                                      surfaceTintColor: MaterialStatePropertyAll(Colors.white),
+                                                                      backgroundColor: MaterialStatePropertyAll(Colors.white),
+                                                                      shape: MaterialStatePropertyAll(
                                                                         RoundedRectangleBorder(
                                                                             borderRadius:
                                                                                 BorderRadius.all(Radius.circular(10))),
                                                                       ),
-                                                                      side: MaterialStatePropertyAll(
-                                                                          BorderSide
-                                                                              .none)),
-                                                              onPressed:
-                                                                  () async {
-                                                                await Share.share(
-                                                                    mensajeCodigoParaAmigos +
-                                                                        urlPreview);
-                                                              },
-                                                              child: Row(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                  Icon(Icons.share, size: largoActual*0.02,color: colorTextos),
-                                                                  SizedBox(width: anchoActual*0.02),
-                                                                  Text(
-                                                                    'COMPARTE TU CÓDIGO',
-                                                                    style: TextStyle(
-                                                                        fontStyle:
-                                                                            FontStyle
+                                                                      side: MaterialStatePropertyAll(BorderSide.none)),
+                                                                  onPressed: () async {
+                                                                    await Share.share(
+                                                                        mensajeCodigoParaAmigos +
+                                                                            urlPreview);
+                                                                  },
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Icon(
+                                                                          Icons
+                                                                              .share,
+                                                                          size: largoActual *
+                                                                              0.02,
+                                                                          color:
+                                                                              colorTextos),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              anchoActual * 0.02),
+                                                                      Text(
+                                                                        'COMPARTE TU CÓDIGO',
+                                                                        style: TextStyle(
+                                                                            fontStyle: FontStyle
                                                                                 .normal,
-                                                                        color:
-                                                                            colorTextos,
-                                                                        fontSize:
-                                                                            largoActual *
+                                                                            color:
+                                                                                colorTextos,
+                                                                            fontSize: largoActual *
                                                                                 0.015,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500),
-                                                                  ),
-                                                                ],
-                                                              )),
-                                                        ),
-SizedBox(
-                                                            height:
-                                                                largoActual *
-                                                                    0.01),
-                                                        //BOTON PARA PUBLICARLO EN TU ESTADO
-                                                        SizedBox(
-                                                          height: largoActual *
-                                                              (17 / 760),
-                                                          child: ElevatedButton(
-                                                              style:
-                                                                  const ButtonStyle(
-                                                                    elevation: MaterialStatePropertyAll(10),
-                                                                    surfaceTintColor: MaterialStatePropertyAll(Colors.white),
-                                                                    backgroundColor: MaterialStatePropertyAll(Colors.white),
-                                                                      shape:
-                                                                          MaterialStatePropertyAll(
-                                                                        RoundedRectangleBorder(
-                                                                            borderRadius:
-                                                                                BorderRadius.all(Radius.circular(10))),
+                                                                            fontWeight:
+                                                                                FontWeight.w500),
                                                                       ),
-                                                                      side: MaterialStatePropertyAll(
-                                                                          BorderSide
-                                                                              .none)),
-                                                              onPressed:
-                                                                  () async {
-                                                                final image =
-                                                                    await rootBundle
-                                                                        .load(
-                                                                            direccionImagenParaEstados);
-                                                                final buffer =
-                                                                    image
-                                                                        .buffer;
-                                                                final temp =
-                                                                    await getTemporaryDirectory();
-                                                                final path =
-                                                                    '${temp.path}/image.jpg';
+                                                                    ],
+                                                                  )),
+                                                            ),
+                                                            SizedBox(
+                                                                height:
+                                                                    largoActual *
+                                                                        0.01),
+                                                            //BOTON PARA PUBLICARLO EN TU ESTADO
+                                                            SizedBox(
+                                                              height:
+                                                                  largoActual *
+                                                                      (17 /
+                                                                          760),
+                                                              child:
+                                                                  ElevatedButton(
+                                                                style:
+                                                                    const ButtonStyle(
+                                                                        elevation: MaterialStatePropertyAll(
+                                                                            10),
+                                                                        surfaceTintColor:
+                                                                            MaterialStatePropertyAll(Colors
+                                                                                .white),
+                                                                        backgroundColor:
+                                                                            MaterialStatePropertyAll(Colors
+                                                                                .white),
+                                                                        shape:
+                                                                            MaterialStatePropertyAll(
+                                                                          RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(10))),
+                                                                        ),
+                                                                        side: MaterialStatePropertyAll(
+                                                                            BorderSide.none)),
+                                                                onPressed:
+                                                                    () async {
+                                                                  final image =
+                                                                      await rootBundle
+                                                                          .load(
+                                                                              direccionImagenParaEstados);
+                                                                  final buffer =
+                                                                      image
+                                                                          .buffer;
+                                                                  final temp =
+                                                                      await getTemporaryDirectory();
+                                                                  final path =
+                                                                      '${temp.path}/image.jpg';
 
-                                                                await Share
-                                                                    .shareXFiles(
-                                                                  [
-                                                                    XFile
-                                                                        .fromData(
-                                                                      buffer
-                                                                          .asUint8List(
-                                                                        image
-                                                                            .offsetInBytes,
-                                                                        image
-                                                                            .lengthInBytes,
-                                                                      ),
-                                                                      mimeType:
-                                                                          'jpg',
-                                                                      name:
-                                                                          'usaMiCodigo',
-                                                                    )
-                                                                  ],
-                                                                  subject:
-                                                                      'mi codigo',
-                                                                );
-                                                              },
-                                                              child: Row(
-                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                children: [
-                                                                  Icon(Icons.share, size: largoActual*0.02,color: colorTextos,),
-                                                                  SizedBox(width: anchoActual*0.02,),
-                                                                  Text(
-                                                                    'PUBLÍCALO EN TU ESTADO',
-                                                                    style: TextStyle(
-                                                                        fontStyle:
-                                                                            FontStyle
-                                                                                .normal,
-                                                                        color:
-                                                                            colorTextos,
-                                                                        fontSize:
-                                                                            largoActual *
-                                                                                0.015,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w500),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              ),
-                                                        ),
-                                                     
-                                                                      ],
+                                                                  await Share
+                                                                      .shareXFiles(
+                                                                    [
+                                                                      XFile
+                                                                          .fromData(
+                                                                        buffer
+                                                                            .asUint8List(
+                                                                          image
+                                                                              .offsetInBytes,
+                                                                          image
+                                                                              .lengthInBytes,
+                                                                        ),
+                                                                        mimeType:
+                                                                            'jpg',
+                                                                        name:
+                                                                            'usaMiCodigo',
+                                                                      )
+                                                                    ],
+                                                                    subject:
+                                                                        'mi codigo',
+                                                                  );
+                                                                },
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons
+                                                                          .share,
+                                                                      size: largoActual *
+                                                                          0.02,
+                                                                      color:
+                                                                          colorTextos,
                                                                     ),
+                                                                    SizedBox(
+                                                                      width: anchoActual *
+                                                                          0.02,
+                                                                    ),
+                                                                    Text(
+                                                                      'PUBLÍCALO EN TU ESTADO',
+                                                                      style: TextStyle(
+                                                                          fontStyle: FontStyle
+                                                                              .normal,
+                                                                          color:
+                                                                              colorTextos,
+                                                                          fontSize: largoActual *
+                                                                              0.015,
+                                                                          fontWeight:
+                                                                              FontWeight.w500),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
 //BOTON COMPARTE
-                                                         ],
+                                                      ],
                                                     ),
                                                   ),
                                                 ),

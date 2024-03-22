@@ -3,6 +3,7 @@ import 'package:appsol_final/models/promocion_model.dart';
 import 'package:appsol_final/models/producto_model.dart';
 import 'package:appsol_final/provider/pedido_provider.dart';
 import 'package:appsol_final/models/pedido_model.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -165,46 +166,64 @@ class _ProductosState extends State<Productos> {
     final pedidoProvider = context.watch<PedidoProvider>();
     esVacio(pedidoProvider.pedido);
 
-
-    
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           toolbarHeight: largoActual * 0.08,
           actions: [
-            Text('CARRITO',style: TextStyle(color: colorTextos),),
-            SizedBox(width: anchoActual*0.01,),
-            Container(
-              margin: EdgeInsets.only(
-                  top: largoActual * 0.018, right: anchoActual * 0.045),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: const Color.fromRGBO(0, 106, 252, 1.000),
-                  borderRadius: BorderRadius.circular(50)),
-              height: largoActual * 0.059,
-              width: largoActual * 0.059,
-              child: Badge(
-                largeSize: 18,
-                backgroundColor: colorCantidadCarrito,
-                label: Text(cantCarrito.toString(),
-                    style: const TextStyle(fontSize: 12)),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Pedido()
-                          //const Promos()
-                          ),
-                    );
-                  },
-                  icon: const Icon(Icons.shopping_cart_rounded),
-                  color: Colors.white,
-                  iconSize: largoActual * 0.030,
-                ).animate().shakeY(
-                      duration: Duration(milliseconds: 300),
-                    ),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: anchoActual * 0.15,
+                  margin: EdgeInsets.only(top: largoActual * 0.018),
+                  child: Text(
+                    'VER CARRITO',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                        color: colorTextos,
+                        fontSize: largoActual * 0.015,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+                SizedBox(
+                  width: anchoActual * 0.02,
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                      top: largoActual * 0.018, right: anchoActual * 0.045),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(0, 106, 252, 1.000),
+                      borderRadius: BorderRadius.circular(50)),
+                  height: largoActual * 0.059,
+                  width: largoActual * 0.059,
+                  child: Badge(
+                    largeSize: 18,
+                    backgroundColor: colorCantidadCarrito,
+                    label: Text(cantCarrito.toString(),
+                        style: const TextStyle(fontSize: 12)),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Pedido()
+                              //const Promos()
+                              ),
+                        );
+                      },
+                      icon: const Icon(Icons.shopping_cart_rounded),
+                      color: Colors.white,
+                      iconSize: largoActual * 0.030,
+                    ).animate().shakeY(
+                          duration: Duration(milliseconds: 300),
+                        ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -215,23 +234,22 @@ class _ProductosState extends State<Productos> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(
+                      height: largoActual * 0.01,
+                    ),
                     Container(
-                      margin:
-                          EdgeInsets.only(top: 0, left: anchoActual * 0.055),
+                      margin: EdgeInsets.only(left: anchoActual * 0.055),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             children: [
-                              Container(
-                                child: Text(
-                                  "Nuestros Productos",
-                                  style: TextStyle(
-                                      color:
-                                          const Color.fromARGB(255, 1, 42, 76),
-                                      fontWeight: FontWeight.w200,
-                                      fontSize: largoActual * 0.027),
-                                ),
+                              Text(
+                                "Nuestros Productos",
+                                style: TextStyle(
+                                    color: const Color.fromARGB(255, 1, 42, 76),
+                                    fontWeight: FontWeight.w200,
+                                    fontSize: largoActual * 0.026),
                               ),
                               Container(
                                 margin:
@@ -243,7 +261,7 @@ class _ProductosState extends State<Productos> {
                                   style: TextStyle(
                                       color:
                                           const Color.fromARGB(255, 1, 46, 84),
-                                      fontSize: largoActual * 0.026,
+                                      fontSize: largoActual * 0.025,
                                       fontWeight: FontWeight.w500),
                                 ),
                               ),
@@ -317,11 +335,12 @@ class _ProductosState extends State<Productos> {
                                                       255, 4, 62, 107)),
                                             ),
                                             Text(
-                                              producto.descripcion,
+                                              producto.descripcion
+                                                  .toUpperCase(),
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w300,
-                                                  fontSize: largoActual * 0.018,
+                                                  fontSize: largoActual * 0.017,
                                                   color: const Color.fromARGB(
                                                       255, 4, 62, 107)),
                                             ),
@@ -397,7 +416,7 @@ class _ProductosState extends State<Productos> {
                                 "Subtotal:",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w300,
-                                    fontSize: largoActual * 0.022,
+                                    fontSize: largoActual * 0.021,
                                     color:
                                         const Color.fromARGB(255, 1, 25, 44)),
                               ),
@@ -406,9 +425,9 @@ class _ProductosState extends State<Productos> {
                               margin:
                                   EdgeInsets.only(left: anchoActual * 0.055),
                               child: Text(
-                                "S/.$total",
+                                "S/.${total}0",
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w500,
                                     fontSize: largoActual * 0.027,
                                     color:
                                         const Color.fromARGB(255, 4, 62, 107)),
@@ -426,7 +445,7 @@ class _ProductosState extends State<Productos> {
                                 "Agregar al carrito",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w300,
-                                    fontSize: largoActual * 0.022,
+                                    fontSize: largoActual * 0.021,
                                     color:
                                         const Color.fromARGB(255, 1, 32, 56)),
                               ),
