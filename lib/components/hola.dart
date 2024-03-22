@@ -951,17 +951,17 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                                                   },
                                                 );
                                               } else {
-                                                Provider.of<UbicacionProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .updateUbicacion(
-                                                        miUbicacion);
                                                 setState(() {
                                                   _ubicacionSelected = newValue;
                                                   miUbicacion =
                                                       direccionSeleccionada(
                                                           newValue);
                                                 });
+                                                Provider.of<UbicacionProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .updateUbicacion(
+                                                        miUbicacion);
                                               }
                                             }
                                           },

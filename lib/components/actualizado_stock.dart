@@ -9,7 +9,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:appsol_final/provider/user_provider.dart';
-//import 'package:lottie/lottie.dart';
 import 'package:appsol_final/models/producto_model.dart';
 import 'package:appsol_final/models/pedido_detalle_model.dart';
 import 'package:appsol_final/models/pedido_conductor_model.dart';
@@ -65,6 +64,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
       throw Exception('$e');
     }
   }
+
 //ghgererge
 //tyhtyhty
 //rtgty

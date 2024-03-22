@@ -1,7 +1,6 @@
 import 'package:appsol_final/components/formulario.dart';
 import 'package:appsol_final/components/holaconductor.dart';
 import 'package:appsol_final/components/navegador.dart';
-import 'package:appsol_final/components/prueba.dart';
 import 'package:appsol_final/components/ubicacion.dart';
 import 'package:appsol_final/models/user_model.dart';
 import 'package:appsol_final/provider/user_provider.dart';
@@ -503,11 +502,7 @@ class _LoginState extends State<Login> {
 
                                   //SI ES GERENTE
                                 } else if (rol == 3) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const Prueba()),
-                                  );
+                                  //por cmabiar
                                 }
                                 //SI NO ESTA REGISTRADO
                               } else if (status == 401) {
