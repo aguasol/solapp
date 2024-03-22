@@ -28,6 +28,7 @@ class _ProductosState extends State<Productos> {
   double totalProvider = 0.0;
   int cantCarrito = 0;
   Color colorCantidadCarrito = Colors.black;
+  Color colorTextos = const Color.fromARGB(255, 1, 42, 76);
   double envio = 0.0;
   //EL AHORRO ES IGUAL A 4 SOLES POR CADA BIDON NUEVO
 
@@ -163,12 +164,17 @@ class _ProductosState extends State<Productos> {
     final largoActual = MediaQuery.of(context).size.height;
     final pedidoProvider = context.watch<PedidoProvider>();
     esVacio(pedidoProvider.pedido);
+
+
+    
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           toolbarHeight: largoActual * 0.08,
           actions: [
+            Text('CARRITO',style: TextStyle(color: colorTextos),),
+            SizedBox(width: anchoActual*0.01,),
             Container(
               margin: EdgeInsets.only(
                   top: largoActual * 0.018, right: anchoActual * 0.045),
