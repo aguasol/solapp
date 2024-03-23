@@ -1113,7 +1113,7 @@ class _PedidoState extends State<Pedido> {
                                         color: colorContenido),
                                   ),
                                   Text(
-                                    "Si lo pides después de la 1:00 P.M se agenda para mañana.",
+                                    "Si lo pides después de la 4:00 P.M se agenda para mañana.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                         fontSize: largoActual * 0.0125,
