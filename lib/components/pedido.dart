@@ -65,6 +65,7 @@ class _PedidoState extends State<Pedido> {
   String apiPedido = '/api/pedido';
   String apiDetallePedido = '/api/detallepedido';
   int? beneficiadoID;
+  String? codigoBeneficio;
   bool existe = false;
   bool buscandoCodigo = false;
   bool hayBidon = false;
@@ -117,9 +118,8 @@ class _PedidoState extends State<Pedido> {
           "tipo": tipo,
           "estado": estado,
           "ubicacion_id": ubicacionID,
-          "codigo": codigo,
-          "cantidad_bidones": cantidadBidon,
-          "observacion": notas
+          "observacion": notas,
+          "beneficiado_id": beneficiadoID
         }));
   }
 
@@ -265,6 +265,7 @@ class _PedidoState extends State<Pedido> {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
         setState(() {
+          beneficiadoID = data['beneficiado_id'];
           existe = data['existe'];
           fechaLimiteString = data['fecha_creacion_cuenta'];
           print('CORRIO EL COSO');
@@ -921,7 +922,6 @@ class _PedidoState extends State<Pedido> {
                                   print(fechaLimite);
                                   if (existe) {
                                     //EXISTE EL CODIGO
-
                                     print("codigo válido");
                                     setState(() {
                                       fechaLimite = mesyAnio(fechaLimiteString)
