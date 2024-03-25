@@ -257,7 +257,7 @@ class _PedidoState extends State<Pedido> {
   }
 
   Future<dynamic> cuponExist(cupon) async {
-    print('entro a cupon Exists');
+    print('----------------------entro a cupon Exists');
     var res = await http.post(Uri.parse(apiUrl + codigoverify),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({"codigo": cupon}));
@@ -265,11 +265,11 @@ class _PedidoState extends State<Pedido> {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
         setState(() {
-          beneficiadoID = data['beneficiado_id'];
+          beneficiadoID = data['id'];
           existe = data['existe'];
           fechaLimiteString = data['fecha_creacion_cuenta'];
           print('CORRIO EL COSO');
-          print(existe);
+          print("++++++++++++++ ESTE ES EL EXISTE $existe");
         });
       }
     } catch (e) {
@@ -1386,6 +1386,8 @@ class _PedidoState extends State<Pedido> {
                                                       miUbicacion =
                                                           direccionSeleccionada(
                                                               newValue);
+                                                      ubicacionSelectID =
+                                                          miUbicacion.id;
                                                     });
                                                   }
                                                 }

@@ -23,7 +23,6 @@ import 'package:appsol_final/models/ubicacion_model.dart';
 import 'package:lottie/lottie.dart';
 import 'package:appsol_final/models/zona_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:appsol_final/models/promocion_model.dart';
 
 class Producto {
   final String nombre;
@@ -135,7 +134,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
             return Dialog(
               child: Container(
                 height: 500,
-                width: 500,
+                width: 400,
                 decoration: BoxDecoration(
                     border: Border.all(width: 4, color: Colors.white),
                     color: const Color.fromARGB(255, 130, 219, 133),

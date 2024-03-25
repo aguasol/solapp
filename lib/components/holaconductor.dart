@@ -132,16 +132,21 @@ class _HolaConductorState extends State<HolaConductor> {
     }
     if (fechaFinalizado.getString("fecha") != null) {
       setState(() {
+        print('Es de prvider :)))))');
         fechaFinalizadoPref = mesyAnio(fechaFinalizado.getString("fecha"));
       });
     } else {
       setState(() {
-        fechaFinalizadoPref = DateTime.now().subtract(const Duration(hours: 24));;
+        fechaFinalizadoPref =
+            DateTime.now().subtract(const Duration(hours: 50));
+        ;
       });
     }
-    fechaFinalizado.setString("fecha", DateTime.now().toString());
     print('4) esta es mi ruta Preferencia ------- $rutaIDpref');
     print('4) esta es mi COND Preferencia ------- $conductorIDpref');
+    print('4) estes es mi bool actualizado ------- $yaSeActualizoStockPref');
+    print('4) estes es mi bool FINALIZADO ------- $rutaTerminadaPref');
+    print('4) esta es mi fecha finalizado ------- $fechaFinalizadoPref');
   }
 
   Future<void> _initialize() async {
@@ -189,28 +194,25 @@ class _HolaConductorState extends State<HolaConductor> {
           vehiculoPreference.setInt("carID", tempRutaModel.vehiculoID);
           if (fechaCreacion.day == fechaFinalizadoPref.day &&
               fechaCreacion.month == fechaFinalizadoPref.month &&
-              fechaCreacion.year == fechaFinalizadoPref.year 
-              ) {
-                if(
-              fechaCreacion.hour == fechaFinalizadoPref.hour){
-                if(fechaCreacion.minute<fechaFinalizadoPref.minute){
-setState(() {
-              mensaje =
-                  'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
-              comenzarOaqui = '¡ Aqui !';
-              tengoruta = true;
-            });
-                }
-              }else if(fechaCreacion.hour < fechaFinalizadoPref.hour){
-setState(() {
-              mensaje =
-                  'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
-              comenzarOaqui = '¡ Aqui !';
-              tengoruta = true;
-            });
+              fechaCreacion.year == fechaFinalizadoPref.year) {
+            if (fechaCreacion.hour == fechaFinalizadoPref.hour) {
+              if (fechaCreacion.minute < fechaFinalizadoPref.minute) {
+                setState(() {
+                  mensaje =
+                      'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
+                  comenzarOaqui = '¡ Aqui !';
+                  tengoruta = true;
+                });
               }
+            } else if (fechaCreacion.hour < fechaFinalizadoPref.hour) {
+              setState(() {
+                mensaje =
+                    'La ruta Nº $rutaID ya se completó, puedes revisar el informe de la ruta';
+                comenzarOaqui = '¡ Aqui !';
+                tengoruta = true;
+              });
+            }
             //SIGNIFICA QUE LA RUTA YA SE TERMINO HOY
-            
           } else {
             //la ruta no se ha terminado hoyyyy
             setState(() {
@@ -318,6 +320,7 @@ setState(() {
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
     final userProvider = context.watch<UserProvider>();
+
     conductorIDpref = userProvider.user?.id;
     //final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(

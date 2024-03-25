@@ -14,6 +14,7 @@ class Pedido {
   final double latitud;
   final double longitud;
   final String direccion;
+  int? beneficiadoID;
   String comentario;
 
   Pedido({
@@ -31,5 +32,6 @@ class Pedido {
     this.estado = 'en proceso',
     this.comentario = '',
     this.tipoPago,
+    required beneficiadoID,
   });
 }

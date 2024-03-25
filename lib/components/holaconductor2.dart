@@ -75,6 +75,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
       longitud: 0.0,
       direccion: '',
       tipoPago: '',
+      beneficiadoID: null,
       comentario: '');
   int rutaID = 0;
   int? rutaIDpref = 0;
@@ -210,6 +211,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
               telefono: mapa['telefono'],
               direccion: mapa['direccion'],
               tipoPago: mapa['tipo_pago'],
+              beneficiadoID: mapa['beneficiado_id'],
               comentario: mapa['observacion'] ?? 'sin comentarios');
         }).toList();
         print('7) Esta es la lista temporal ${listTemporal.length}');
@@ -407,7 +409,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
   }
 
   Future<dynamic> updateEstadoPedido(
-      estadoNuevo, foto, observacion, tipoPago, pedidoID) async {
+      estadoNuevo, foto, observacion, tipoPago, pedidoID, beneficiado) async {
     if (pedidoID != 0) {
       await http.put(Uri.parse("$apiUrl$apiPedidosConductor$pedidoID"),
           headers: {"Content-type": "application/json"},
@@ -415,7 +417,8 @@ class _HolaConductor2State extends State<HolaConductor2> {
             "estado": estadoNuevo,
             "foto": foto,
             "observacion": observacion,
-            "tipo_pago": tipoPago
+            "tipo_pago": tipoPago,
+            "beneficiado_id": beneficiado,
           }));
     } else {
       print('papas fritas');
@@ -1327,7 +1330,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                               width: anchoActual * 0.83,
                                                                               child: ElevatedButton(
                                                                                   onPressed: () {
-                                                                                    updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
+                                                                                    updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id, pedidoTrabajo.beneficiadoID);
                                                                                     Navigator.push(
                                                                                       context,
                                                                                       //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
@@ -1452,7 +1455,8 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                             null,
                                                                             "",
                                                                             'efectivo',
-                                                                            pedidoTrabajo.id);
+                                                                            pedidoTrabajo.id,
+                                                                            pedidoTrabajo.beneficiadoID);
                                                                         setState(
                                                                             () {
                                                                           listProducto =
@@ -1639,7 +1643,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                               anchoActual * 0.83,
                                                                           child: ElevatedButton(
                                                                               onPressed: () {
-                                                                                updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id);
+                                                                                updateEstadoPedido(estadoNuevo, null, comentarioConductor.text, tipoPago, pedidoTrabajo.id, null);
                                                                                 Navigator.push(
                                                                                   context,
                                                                                   //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
