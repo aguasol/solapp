@@ -139,25 +139,15 @@ class _PromosState extends State<Promos> {
             listPromociones = tempPromocion;
           });
           for (var i = 0; i < listPromociones.length; i++) {
-            print(
-                "--------------------------------------------------------------");
-            print(
-                "la promocion ID[${listPromociones[i].id}] ${listPromociones[i].nombre}");
-            print(
-                "longitud de la lista producto promocion: ${listProdProm.length}");
             for (var j = 0; j < listProdProm.length; j++) {
               if (listPromociones[i].id == listProdProm[j].promocionId) {
                 for (var t = 0; t < listProducto.length; t++) {
                   if (listProdProm[j].productoId == listProducto[t].id) {
-                    print(
-                        "* el producto ID[${listProducto[t].id}] ${listProducto[t].nombre} esta dentro de la prom");
                     setState(() {
                       listProducto[t].promoID = listProdProm[j].promocionId;
                       listProducto[t].cantidad = listProdProm[j].cantidadProd;
                       listPromociones[i].listaProductos.add(listProducto[t]);
                     });
-                    print(
-                        "* lista de productos de la prom: ${listPromociones[i].listaProductos}");
                   }
                 }
               }

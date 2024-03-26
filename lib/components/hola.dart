@@ -103,10 +103,8 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
 
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
-      print('es string');
       return DateTime.parse(fecha);
     } else {
-      print('no es string');
       return DateTime.now();
     }
   }
@@ -150,10 +148,8 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   }
 
   _cargarPreferencias() async {
-    print('3) CARGAR PREFERENCIAS-------');
     SharedPreferences yasemostroPubli = await SharedPreferences.getInstance();
     if (yasemostroPubli.getBool("ya") != null) {
-      print('3.a)  EMTRO A los IFS------- ');
       setState(() {
         yaSeMostro = yasemostroPubli.getBool("ya");
       });
@@ -186,7 +182,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   }
 
   Future<dynamic> getZonas() async {
-    print('1) obteniendo las zonas de trabajo');
     var res = await http.get(
       Uri.parse(apiUrl + apiZona),
       headers: {"Content-type": "application/json"},
@@ -206,59 +201,49 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         if (mounted) {
           setState(() {
             listZonas = tempZona;
-            print('2) esta es la lista de zonas de trabajo');
-            print(listZonas);
           });
-          print('-----------------------------------');
-          print('3) Revisando zona por zona');
           for (var i = 0; i < listZonas.length; i++) {
-            print('zona Nª $i');
             setState(() {
               tempString = listZonas[i].poligono.split(',');
             });
-
-            print(tempString);
             //el string 'poligono', se separa en strings por las comas en la lista
             //temString
             for (var j = 0; j < tempString.length; j++) {
               //luego se recorre la lista y se hacen puntos con cada dos numeros
               if (j % 2 == 0) {
-                print('es par');
+
                 //es multiplo de dos
                 //SI ES PAR
                 double x = double.parse(tempString[j]);
                 double y = double.parse(tempString[j + 1]);
-                print('$x y $y');
+                //print('$x y $y');
                 setState(() {
-                  print('entro al set Statw');
+                  //print('entro al set Statw');
                   listZonas[i].puntos.add(Point(x, y));
                 });
               }
             }
-            print('se llenaron los puntos de esta zona');
-            print(listZonas[i].puntos);
+            //print('se llenaron los puntos de esta zona');
+            //print(listZonas[i].puntos);
           }
 
           //AHORA DE ACUERDO A LA CANTIDAD DE PUTNOS QUE HAY EN LA LISTA DE PUNTOS SE CALCULA LA CANTIDAD
           //DE LINEAS CON LAS QUE S ETRABAJA
           for (var i = 0; i < listZonas.length; i++) {
-            print('entro al for que revisa zona por zona');
+            //print('entro al for que revisa zona por zona');
             var zonaID = listZonas[i].id;
-            print('esta en la ubicación = $i, con zona ID = $zonaID');
+            //print('esta en la ubicación = $i, con zona ID = $zonaID');
             setState(() {
-              print(
-                  'se crea la key zon ID, con un valor igual a un mapa vacio');
+              //print(
+                //  'se crea la key zon ID, con un valor igual a un mapa vacio');
               mapaLineasZonas[zonaID] = {};
             });
 
             for (var j = 0; j < listZonas[i].puntos.length; j++) {
-              print(
-                  'revisa punto por punto en la lista de puntos de cada zona');
-              print('zonaID = $zonaID y punto Nº = $j');
+              
               //ingresa a un for en el que se obtienen los datos de todas la lineas que forman los puntos del polígono
               if (j == listZonas[i].puntos.length - 1) {
-                print('-- esta en el ultimo punto');
-                print('se hallan las propiedades de la linea');
+                
                 Point punto1 = listZonas[i].puntos[j];
                 Point punto2 = listZonas[i].puntos[0];
                 var maxX = max(punto1.x, punto2.x);
@@ -275,13 +260,13 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                   "pendiente": pendiente,
                   "constante": constante
                 };
-                print('$lineaTemporal');
+          
 
                 setState(() {
                   mapaLineasZonas[zonaID][j] = lineaTemporal;
                 });
               } else {
-                print('se hallan las propiedades de la linea');
+               
                 Point punto1 = listZonas[i].puntos[j];
                 Point punto2 = listZonas[i].puntos[j + 1];
                 var maxX = max(punto1.x, punto2.x);
@@ -298,7 +283,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
                   "pendiente": pendiente,
                   "constante": constante
                 };
-                print('$lineaTemporal');
+           
                 setState(() {
                   mapaLineasZonas[zonaID][j] = lineaTemporal;
                 });
@@ -308,7 +293,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
+
       throw Exception('Error en la solicitud: $e');
     }
   }
@@ -318,8 +303,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       listUbicacionesObjetos = [];
       ubicacionesString = [];
     });
-    print("1) get ubicaciones---------");
-    print("$apiUrl/api/ubicacion/$clienteID");
     var res = await http.get(
       Uri.parse("$apiUrl/api/ubicacion/$clienteID"),
       headers: {"Content-type": "application/json"},
@@ -342,7 +325,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         if (mounted) {
           setState(() {
             listUbicacionesObjetos = tempUbicacion;
-            print(listUbicacionesObjetos);
           });
           for (var i = 0; i < listUbicacionesObjetos.length; i++) {
             setState(() {
@@ -357,13 +339,11 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
       throw Exception('Error en la solicitud: $e');
     }
   }
 
   Future<dynamic> getPromociones() async {
-    print("---------------get promos ----------------");
     var res = await http.get(
       Uri.parse('$apiUrl/api/promocion'),
       headers: {"Content-type": "application/json"},
@@ -382,7 +362,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
       throw Exception('Error en la solicitud: $e');
     }
   }
@@ -402,7 +381,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   }
 
   Future<void> obtenerDireccion(x, y) async {
-    print("¡¡Entro a obtenerDireccion!!");
     List<Placemark> placemark = await placemarkFromCoordinates(x, y);
     try {
       if (placemark.isNotEmpty) {
@@ -417,8 +395,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       } else {
         direccionNueva = "Default";
       }
-      print("x-----y");
-      print("${x},${y}");
       await puntoEnPoligono(x, y);
     } catch (e) {
       //throw Exception("Error ${e}");
@@ -432,7 +408,7 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
               'Error de Ubicación',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
             ),
-            content: Text(
+            content: const Text(
               'Hubo un problema al obtener la ubicación. Por favor, inténtelo de nuevo.',
               style: TextStyle(fontSize: 16),
             ),
@@ -455,7 +431,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       setState(() {
         latitudUser = x;
         longitudUser = y;
-        print('esta es la zonaID $zonaIDUbicacion');
         int suma = 0;
         for (UbicacionModel ubi in listUbicacionesObjetos) {
           if (ubi.direccion != direccionNueva) {
@@ -521,9 +496,9 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       //updateLocation(locationData);
       await obtenerDireccion(locationData.latitude, locationData.longitude);
 
-      print("ubicación - $locationData");
-      print("latitud - $latitudUser");
-      print("longitud - $longitudUser");
+      //print("ubicación - $locationData");
+      //print("latitud - $latitudUser");
+      //print("longitud - $longitudUser");
 
       // Aquí puedes utilizar la ubicación obtenida (locationData)
     } catch (e) {
@@ -533,34 +508,31 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
   }
 
   Future puntoEnPoligono(double? xA, double? yA) async {
-    print('----------------------------------------');
-    print('----------------------------------------');
-    print('¡¡ENTRO A PUNTO EN POLIGONO!!');
     if (xA is double && yA is double) {
-      print('1) son double, se recorre las zonas');
+      //print('1) son double, se recorre las zonas');
       for (var i = 0; i < listZonas.length; i++) {
         var zonaID = listZonas[i].id;
-        print('zonaID = $zonaID');
+        //print('zonaID = $zonaID');
         mapaLineasZonas[zonaID].forEach((value, mapaLinea) {
-          print('Ingreso a recorrer las lineas de la zona $zonaID');
+          //print('Ingreso a recorrer las lineas de la zona $zonaID');
           if (xA <= mapaLinea["maxX"] &&
               mapaLinea['minY'] <= yA &&
               yA <= mapaLinea['maxY']) {
-            print('- Cumple todas estas');
-            print('- $xA <= ${mapaLinea["maxX"]}');
-            print('- ${mapaLinea['minY']} <= $yA');
-            print('- $yA<= ${mapaLinea['maxY']}');
-            print('');
+            //print('- Cumple todas estas');
+            //print('- $xA <= ${mapaLinea["maxX"]}');
+            //print('- ${mapaLinea['minY']} <= $yA');
+            //print('- $yA<= ${mapaLinea['maxY']}');
+            //print('');
             var xInterseccion =
                 (yA - mapaLinea['constante']) / mapaLinea['pendiente'];
-            print('Se calcula la xInterseccion');
+            /*print('Se calcula la xInterseccion');
             print(
-                'xI = ($yA - ${mapaLinea['constante']})/${mapaLinea['pendiente']} = $xInterseccion');
+                'xI = ($yA - ${mapaLinea['constante']})/${mapaLinea['pendiente']} = $xInterseccion');*/
             if (xA <= xInterseccion) {
               //EL PUNTO INTERSECTA A LA LINEA
-              print('- el punto intersecta la linea hacia la deresha');
+              /*print('- el punto intersecta la linea hacia la deresha');
               print('- $xA <= $xInterseccion');
-              print('');
+              print('');*/
               setState(() {
                 mapaLinea['intersecciones'] = 1;
               });
@@ -571,11 +543,11 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
       //SE CUENTA LA CANTIDAD DE INTERSECCIONES EN CADA ZONA
       for (var i = 0; i < listZonas.length; i++) {
         //se revisa para cada zona
+        /*print('');
         print('');
-        print('');
-        print('Ahora se cuenta la cantidad de intersecciones');
+        print('Ahora se cuenta la cantidad de intersecciones');*/
         var zonaID = listZonas[i].id;
-        print('Primero en la zona $zonaID');
+        //print('Primero en la zona $zonaID');
         int intersecciones = 0;
         mapaLineasZonas[zonaID].forEach((key, mapaLinea) {
           if (mapaLinea['intersecciones'] == 1) {
@@ -583,34 +555,32 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
           }
         });
         if (intersecciones > 0) {
-          print('Nª intersecciones = $intersecciones en la Zona $zonaID');
+          //print('Nª intersecciones = $intersecciones en la Zona $zonaID');
           if (intersecciones % 2 == 0) {
-            print('- Es una cantidad PAR, ESTA AFUERA');
+            //print('- Es una cantidad PAR, ESTA AFUERA');
             setState(() {
               zonaIDUbicacion = null;
             });
           } else {
             setState(() {
-              print('- Es una cantidad IMPAR, ESTA DENTRO');
+              //print('- Es una cantidad IMPAR, ESTA DENTRO');
               zonaIDUbicacion = zonaID;
-              print(zonaIDUbicacion);
+              //print(zonaIDUbicacion);
             });
             //es impar ESTA AFUERA
             break;
           }
         } else {
-          print('No tiene intersecciones');
           setState(() {
             zonaIDUbicacion = null;
           });
-          print('');
+     
         }
       }
     }
   }
 
   Future<dynamic> getProducts() async {
-    print("3) get products---------");
     var res = await http.get(
       Uri.parse("$apiUrl/api/products"),
       headers: {"Content-type": "application/json"},
@@ -634,19 +604,14 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
             //conductores = tempConductor;
           });
         }
-
-        print("4) ....lista productos");
-        //print(listProducto[0].foto);
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
       throw Exception('Error en la solicitud: $e');
     }
   }
 
   void esVacio(PedidoModel? pedido) {
     if (pedido is PedidoModel) {
-      print('ES PEDIDOOO');
       cantCarrito = pedido.cantidadProd;
       if (pedido.cantidadProd > 0) {
         setState(() {
@@ -658,7 +623,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         });
       }
     } else {
-      print('no es pedido');
       setState(() {
         cantCarrito = 0;
         colorCantidadCarrito = Colors.grey;
@@ -714,8 +678,6 @@ class _HolaState extends State<Hola2> with TickerProviderStateMixin {
         .add(const Duration(days: (30 * 3)));
     direccionesVacias();
     esVacio(pedidoProvider.pedido);
-    print("ya esta corriendo el widget");
-    print(listUbicacionesObjetos);
     return Scaffold(
         backgroundColor: Colors.white,
         body: PopScope(

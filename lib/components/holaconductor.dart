@@ -72,7 +72,6 @@ class _HolaConductorState extends State<HolaConductor> {
   }
 
   _cargarPreferencias() async {
-    print('3) CARGAR PREFERENCIAS-------');
     SharedPreferences rutaPreference = await SharedPreferences.getInstance();
     SharedPreferences userPreference = await SharedPreferences.getInstance();
     SharedPreferences actualizadoStock = await SharedPreferences.getInstance();
@@ -80,7 +79,6 @@ class _HolaConductorState extends State<HolaConductor> {
     SharedPreferences fechaFinalizado = await SharedPreferences.getInstance();
 
     if (rutaPreference.getInt("Ruta") != null) {
-      print('3.a)  EMTRO A los IFS------- ');
       setState(() {
         rutaIDpref = rutaPreference.getInt("Ruta");
       });
@@ -132,7 +130,6 @@ class _HolaConductorState extends State<HolaConductor> {
     }
     if (fechaFinalizado.getString("fecha") != null) {
       setState(() {
-        print('Es de prvider :)))))');
         fechaFinalizadoPref = mesyAnio(fechaFinalizado.getString("fecha"));
       });
     } else {
@@ -142,19 +139,11 @@ class _HolaConductorState extends State<HolaConductor> {
         ;
       });
     }
-    print('4) esta es mi ruta Preferencia ------- $rutaIDpref');
-    print('4) esta es mi COND Preferencia ------- $conductorIDpref');
-    print('4) estes es mi bool actualizado ------- $yaSeActualizoStockPref');
-    print('4) estes es mi bool FINALIZADO ------- $rutaTerminadaPref');
-    print('4) esta es mi fecha finalizado ------- $fechaFinalizadoPref');
   }
 
   Future<void> _initialize() async {
-    print('1) INITIALIZE-------------');
-    print('2) esta es mi ruta Preferencia ------- $rutaIDpref');
     await _cargarPreferencias();
     await getRutas();
-    print('5) esta es mi ruta Preferencia ACT---- $rutaIDpref');
   }
 
   Future<dynamic> getRutas() async {
@@ -165,7 +154,6 @@ class _HolaConductorState extends State<HolaConductor> {
     try {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
-        print("ESTA ES LA DATA !!!! $data");
         RutaModel tempRutaModel = RutaModel(
             id: data['id'],
             conductorID: data['conductor_id'],
@@ -173,7 +161,6 @@ class _HolaConductorState extends State<HolaConductor> {
             fechaCreacion: data['fecha_creacion'],
             nombreVehiculo: data['nombre_modelo'],
             placaVehiculo: data['placa']);
-        print("ESTA ES LA FECHA DE CREACION ${tempRutaModel.fechaCreacion}");
         DateTime fechaCreacion = DateTime.parse(tempRutaModel.fechaCreacion);
         if (fechaCreacion.day == fechaHoy.day &&
             fechaCreacion.month == fechaHoy.month &&
@@ -216,8 +203,6 @@ class _HolaConductorState extends State<HolaConductor> {
           } else {
             //la ruta no se ha terminado hoyyyy
             setState(() {
-              print('esta es la FEHCA DE CREACION DE LA RUTA $fechaCreacion');
-              print('esta es la FEHCA DE FIN DE LA RUTA $fechaFinalizadoPref');
               rutaTerminadaPref = false;
               rutaFinalizada.setBool("finalizado", false);
               rutaFinalizada.setBool("finalizado", rutaTerminadaPref);
@@ -235,7 +220,6 @@ class _HolaConductorState extends State<HolaConductor> {
   }
 
   void connectToServer() async {
-    print("3.1) Dentro de connectToServer");
     // Reemplaza la URL con la URL de tu servidor Socket.io
     socket = io.io(apiUrl, <String, dynamic>{
       'transports': ['websocket'],
@@ -265,10 +249,6 @@ class _HolaConductorState extends State<HolaConductor> {
     socket.on(
       'creadoRuta',
       (data) {
-        print("------esta es lA RUTA");
-        print(data['id']);
-        //ca
-
         setState(() {
           rutaID = data['id'];
           rutaPreference.setInt("Ruta", rutaID);
@@ -283,14 +263,12 @@ class _HolaConductorState extends State<HolaConductor> {
     socket.on(
       'ruteando',
       (data) {
-        print("------este es el pedido nuevo");
         if (data == true) {
           _initialize();
         }
       },
     );
     socket.on('Llama tus Pedidos :)', (data) {
-      print('Puedo llamar a mis pedidos $data');
       setState(() {
         puedoLlamar = true;
       });

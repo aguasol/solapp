@@ -49,24 +49,19 @@ class _EstadoPedido extends State<EstadoPedido> with TickerProviderStateMixin {
 
   DateTime mesyAnio(String? fecha) {
     if (fecha is String) {
-      print('es string');
       return DateTime.parse(fecha);
     } else {
-      print('no es string');
       return DateTime.now();
     }
   }
 
   Future<dynamic> getPedidos(clienteID) async {
-    print("1) get pedidosss---------");
-    print(apiUrl + apiPedidosCliente + clienteID.toString());
     var res = await http.get(
       Uri.parse(apiUrl + apiPedidosCliente + clienteID.toString()),
       headers: {"Content-type": "application/json"},
     );
     try {
       if (res.statusCode == 200) {
-        print("2) entro al try de pedidosss---------");
         var data = json.decode(res.body);
         List<PedidoCliente> tempPedidos = data.map<PedidoCliente>((mapa) {
           return PedidoCliente(
@@ -126,22 +121,18 @@ class _EstadoPedido extends State<EstadoPedido> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
       throw Exception('Error en la solicitud: $e');
     }
   }
 
   Future<dynamic> getProductos(
       pedidoID, List<ProductoPedidoCliente> listaProductos) async {
-    print("1) get productos---------");
-    print(apiUrl + apiProductosPedido + pedidoID.toString());
     var res = await http.get(
       Uri.parse(apiUrl + apiProductosPedido + pedidoID.toString()),
       headers: {"Content-type": "application/json"},
     );
     try {
       if (res.statusCode == 200) {
-        print("2) entro al try de get Productos---------");
         var data = json.decode(res.body);
         List<ProductoPedidoCliente> tempoProductos =
             data.map<ProductoPedidoCliente>((mapa) {
@@ -158,8 +149,6 @@ class _EstadoPedido extends State<EstadoPedido> with TickerProviderStateMixin {
         // Verificar si el widget está montado antes de llamar a setState
         if (mounted) {
           setState(() {
-            print("es lista producto");
-            print(tempoProductos);
             listaProductos.addAll(tempoProductos);
           });
         }
@@ -186,7 +175,6 @@ class _EstadoPedido extends State<EstadoPedido> with TickerProviderStateMixin {
     final TabController tabController = TabController(length: 2, vsync: this);
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
-    print(listPedidosPendientes);
     return Scaffold(
       backgroundColor: Colors.white,
       /*appBar: AppBar(

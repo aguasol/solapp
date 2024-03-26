@@ -115,11 +115,9 @@ class _HolaConductor2State extends State<HolaConductor2> {
   }
 
   _cargarPreferencias() async {
-    print('3) CARGAR PREFERENCIAS-------');
     SharedPreferences rutaPreference = await SharedPreferences.getInstance();
     SharedPreferences userPreference = await SharedPreferences.getInstance();
     if (rutaPreference.getInt("Ruta") != null) {
-      print('3.a)  EMTRO A los IFS------- ');
       setState(() {
         rutaIDpref = rutaPreference.getInt("Ruta");
       });
@@ -137,9 +135,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
         conductorIDpref = 3;
       });
     }
-
-    print('4) esta es mi ruta Preferencia ------- $rutaIDpref');
-    print('4) esta es mi COND Preferencia ------- $conductorIDpref');
   }
 
   Future<dynamic> getProducts() async {
@@ -165,8 +160,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
           listProducto = tempProducto;
           //conductores = tempConductor;
         });
-        print("....lista productos");
-        print(listProducto);
       }
     } catch (e) {
       print('Error en la solicitud: $e');
@@ -175,26 +168,19 @@ class _HolaConductor2State extends State<HolaConductor2> {
   }
 
   Future<void> _initialize() async {
-    print('1) INITIALIZE-------------');
-    print('2) esta es mi ruta Preferencia ------- $rutaIDpref');
     await getProducts();
     await _cargarPreferencias();
-    print('5) esta es mi ruta Preferencia ACT---- $rutaIDpref');
     await getPedidosConductor(rutaIDpref, conductorIDpref);
     await getDetalleXUnPedido(pedidoIDActual);
   }
 
   Future<dynamic> getPedidosConductor(rutaIDpref, conductorID) async {
-    print("6) entro al get PEDIDOS con RUTA $rutaIDpref y COND $conductorID");
     var res = await http.get(
       Uri.parse(
           "$apiUrl$apiPedidosConductor${rutaIDpref.toString()}/${conductorID.toString()}"),
       headers: {"Content-type": "application/json"},
     );
-    print(
-        "que fue chamooo: $apiPedidosConductor${rutaIDpref.toString()}/${conductorID.toString()}");
     try {
-      print("flag");
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
         List<Pedido> listTemporal = data.map<Pedido>((mapa) {
@@ -214,18 +200,15 @@ class _HolaConductor2State extends State<HolaConductor2> {
               beneficiadoID: mapa['beneficiado_id'],
               comentario: mapa['observacion'] ?? 'sin comentarios');
         }).toList();
-        print('7) Esta es la lista temporal ${listTemporal.length}');
         //SE SETEA EL VALOR DE PEDIDOS BY RUTA
         setState(() {
           listPedidosbyRuta = listTemporal;
         });
         //SE CALCULA LA LONGITUD DE PEDIDOS BY RUTA PARA SABER CUANTOS SON
         //EXPRESS Y CUANTOS SON NORMALES
-        print('7.5) Monto total de lista temporal');
         for (var i = 0; i < listPedidosbyRuta.length; i++) {
           setState(() {
             totalMonto += listPedidosbyRuta[i].montoTotal;
-            print('tipo: ${listPedidosbyRuta[i].tipoPago}');
             idpedidos.add(listPedidosbyRuta[i].id);
           });
 
@@ -275,15 +258,11 @@ class _HolaConductor2State extends State<HolaConductor2> {
             default:
           }
         }
-        print(
-            '---precio total de los pedidos: $totalMonto \n yape: $totalYape \n plin:$totalPlin \n efectivo:$totalEfectivo \n #pendientes: $totalPendiente \n #procesos: $totalProceso');
         setState(() {
           cantidad = listPedidosbyRuta.length;
           numerodePedidosExpress = 0;
           numPedidoActual = 0;
         });
-        print('8) Longitud de pedidos recibidos: $cantidad');
-        print('9) Calculando pedidos express');
 
         for (var i = 0; i < listPedidosbyRuta.length; i++) {
           if (listPedidosbyRuta[i].tipo == 'express') {
@@ -298,35 +277,29 @@ class _HolaConductor2State extends State<HolaConductor2> {
             });
           }
         }
-
-        print("---- numerp de Pedido Actual $numPedidoActual");
         if (numPedidoActual > 0 && cantidad > 0) {
           setState(() {
             decimalProgreso = ((numPedidoActual) / cantidad);
-            print("-------$numPedidoActual/$cantidad = $decimalProgreso");
             porcentajeProgreso = (decimalProgreso * 100).round();
           });
         }
         if (porcentajeProgreso < 33.4) {
           setState(() {
-            colorProgreso = Color.fromRGBO(255, 0, 93, 1.000);
+            colorProgreso = const Color.fromRGBO(255, 0, 93, 1.000);
           });
         } else if (porcentajeProgreso < 66.6) {
           setState(() {
-            colorProgreso = Color.fromRGBO(244, 183, 87, 1.000);
+            colorProgreso = const Color.fromRGBO(244, 183, 87, 1.000);
           });
         } else {
           setState(() {
-            colorProgreso = Color.fromRGBO(120, 251, 99, 1.000);
+            colorProgreso = const Color.fromRGBO(120, 251, 99, 1.000);
           });
         }
-        print('10) Cantidad de Pedidos express: $numerodePedidosExpress');
 
         //CALCULA EL PEDIDO SIGUIENTE QUE SE ENCUENTRA "EN PROCESO"
         for (var i = 0; i < listPedidosbyRuta.length; i++) {
           if (listPedidosbyRuta[i].estado == 'en proceso') {
-            print('----------------------------------');
-            print('11) Este es i $i');
             setState(() {
               pedidoIDActual = listPedidosbyRuta[i].id;
               pedidoTrabajo = listPedidosbyRuta[i];
@@ -336,7 +309,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
               nombreCliente = listPedidosbyRuta[i].nombre.capitalize();
               apellidoCliente = listPedidosbyRuta[i].apellidos.capitalize();
               observacionCliente = listPedidosbyRuta[i].comentario.capitalize();
-              print('12) Este es el pedidoIDactual $pedidoIDActual');
             });
             break;
           }
@@ -350,7 +322,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
   }
 
   void connectToServer() async {
-    print("3.1) Dentro de connectToServer");
     // Reemplaza la URL con la URL de tu servidor Socket.io
     socket = io.io(apiUrl, <String, dynamic>{
       'transports': ['websocket'],
@@ -390,14 +361,12 @@ class _HolaConductor2State extends State<HolaConductor2> {
     socket.on(
       'ruteando',
       (data) {
-        print("------este es el pedido nuevo");
         if (data == true) {
           _initialize();
         }
       },
     );
     socket.on('Llama tus Pedidos :)', (data) {
-      print('Puedo llamar a mis pedidos $data');
       setState(() {
         puedoLlamar = true;
       });
@@ -426,9 +395,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
   }
 
   Future<dynamic> getDetalleXUnPedido(pedidoID) async {
-    print('----------------------------------');
-    print('14) Dentro de Detalles');
-    print('pedido ID: $pedidoID');
     if (pedidoID != 0) {
       var res = await http.get(
         Uri.parse(apiUrl + apiDetallePedido + pedidoID.toString()),
@@ -473,7 +439,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
                         "$productosYCantidades $salto${listProducto[i].nombre.capitalize()} x ${listProducto[i].cantidad.toString()} uds.";
                   });
                 }
-                print('15) Estas son los prods. $productosYCantidades');
               }
             }
           });
@@ -630,11 +595,6 @@ class _HolaConductor2State extends State<HolaConductor2> {
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
     int numeroTotalPedidos = listPedidosbyRuta.length;
-    print('16) Esta es la longitud de Pedidos $numeroTotalPedidos');
-    print('17) Este es el pedido actual $numPedidoActual');
-    print('18) Este es el pedido id actual $pedidoIDActual');
-    print('18) LATII $latitudPedido');
-    print('18) LONGIII $longitudPedido');
     final userProvider = context.watch<UserProvider>();
     conductorIDpref = userProvider.user?.id;
     esDouble(latitudPedido, longitudPedido);
@@ -1446,8 +1406,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                                                   ElevatedButton(
                                                                       onPressed:
                                                                           () async {
-                                                                        print(
-                                                                            "print CHIIIII");
+                                                                      
                                                                         print(pedidoTrabajo
                                                                             .id);
                                                                         await updateEstadoPedido(
@@ -1728,8 +1687,7 @@ class _HolaConductor2State extends State<HolaConductor2> {
                                   });
                             }
                           },
-                          child: const Icon(Icons.info_rounded,
-                              color: Colors.white),
+                          
                           style: ButtonStyle(
                             elevation: MaterialStateProperty.all(8),
                             minimumSize: MaterialStatePropertyAll(
@@ -1737,6 +1695,8 @@ class _HolaConductor2State extends State<HolaConductor2> {
                             backgroundColor: MaterialStateProperty.all(
                                 const Color.fromRGBO(0, 106, 252, 1.000)),
                           ),
+                          child: const Icon(Icons.info_rounded,
+                              color: Colors.white),
                         ),
                       ),
                     ),

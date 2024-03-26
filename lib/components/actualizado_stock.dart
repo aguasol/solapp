@@ -65,13 +65,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
     }
   }
 
-//ghgererge
-//tyhtyhty
-//rtgty
   Future<dynamic> getProductosVehiculo() async {
-    print('----------------------------------');
-    print('4) Dentro de detalle de Vehiculo');
-    print('vehiculo ID: $vehiculoIDpref');
     if (vehiculoIDpref != 0) {
       var res = await http.get(
         Uri.parse(apiUrl + apiDetalleVehiculo + vehiculoIDpref.toString()),
@@ -107,14 +101,10 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                       listProducto[j].cantidadActual;
             });
           }
-          print('4.1) esta es la lista de con cantidad actualllll');
-          print(listProducto);
           setState(() {
             listProducto.sort((element2, element1) => (element1.cantidadFaltante
                 .compareTo(element2.cantidadFaltante)));
           });
-          print('4.2) esta es la lista sorteada');
-          print(listProducto);
           for (var j = 0; j < listProducto.length; j++) {
             if (listProducto[j].cantidadFaltante <= 0) {
               //sobran  productos
@@ -130,7 +120,6 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
           }
         }
       } catch (e) {
-        print('Error en la solicitud: $e');
         throw Exception('Error en la solicitud: $e');
       }
     } else {
@@ -139,9 +128,9 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
   }
 
   Future<dynamic> getProductosRuta() async {
-    print('----------------------------------');
-    print('3) Dentro de productos rutaaaaaa');
-    print('ruta ID: $rutaIDpref');
+    //print('----------------------------------');
+    //print('3) Dentro de productos rutaaaaaa');
+    //print('ruta ID: $rutaIDpref');
     if (rutaIDpref != 0) {
       var res = await http.get(
         Uri.parse(apiUrl + apiDetallePedido + rutaIDpref.toString()),
@@ -173,11 +162,8 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
               }
             }
           });
-          print('3.1) esta es la lista de productos de la ruta');
-          print(listTemporal);
         }
       } catch (e) {
-        print('Error en la solicitud: $e');
         throw Exception('Error en la solicitud: $e');
       }
     } else {
@@ -216,19 +202,16 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
         }
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
       throw Exception('Error en la solicitud: $e');
     }
   }
 
   _cargarPreferencias() async {
-    print('3) CARGAR PREFERENCIAS-------');
     SharedPreferences rutaPreference = await SharedPreferences.getInstance();
     SharedPreferences userPreference = await SharedPreferences.getInstance();
     SharedPreferences vehiculoPreference =
         await SharedPreferences.getInstance();
     if (rutaPreference.getInt("Ruta") != null) {
-      print('3.a)  EMTRO A los IFS------- ');
       setState(() {
         rutaIDpref = rutaPreference.getInt("Ruta");
       });
@@ -255,17 +238,11 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
         vehiculoIDpref = 1;
       });
     }
-
-    print('4) esta es mi ruta Preferencia ------- $rutaIDpref');
-    print('4) esta es mi COND Preferencia ------- $conductorIDpref');
-    print('4) esta es mi vehiculo de Preferencia ------- $vehiculoIDpref');
   }
 
   Future<void> _initialize() async {
-    print('1) INITIALIZE-------------');
     await _cargarPreferencias();
     await getProducts();
-    print('2) esta es mi ruta Preferencia ------- $rutaIDpref');
     await getProductosRuta();
     await getProductosVehiculo();
   }
@@ -520,8 +497,6 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                         enableInteractiveSelection: false,
                                         textAlign: TextAlign.center,
                                         onChanged: (value) {
-                                          print("valor detectado: $value");
-                                          print('tipo ${value.runtimeType}');
                                           // SETEAR DE LA LISTA MIXTA(PROD Y PROMO)
                                           setState(() {
                                             producto.cantidadStock.text = value;
@@ -560,6 +535,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                       SizedBox(
                           child: ElevatedButton(
                               onPressed: () async {
+                                print("YAAAAAAAAAAAAAAAAA");
                                 for (var i = 0; i < listProducto.length; i++) {
                                   var cantidad =
                                       listProducto[i].cantidadStock.text;
@@ -583,28 +559,12 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                   }
                                 }
                                 if (puedoPasarAHola2) {
-                                  print(
-                                      ".........................................");
-                                  print(listProducto);
                                   for (var j = 0;
                                       j < listProducto.length;
                                       j++) {
                                     Producto producto = listProducto[j];
 
-                                    print("");
-                                    print("");
-                                    print(
-                                        ".........................................");
-                                    print(
-                                        "El producto ${producto.nombre} id ${producto.id}");
-
                                     if (producto.cantidad > 0) {
-                                      print(
-                                          "Tiene un stock adicional de  TEXT${producto.cantidadStock.text}");
-                                      print(
-                                          "Tiene un stock adicional de  INT${producto.cantidad}");
-                                      print(
-                                          "Tiene un stock nuevo de ${producto.cantidad + producto.cantidadActual}");
                                       await updateStock(
                                           producto.cantidad +
                                               producto.cantidadActual,
@@ -615,6 +575,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                           "actualizado", true);
                                     }
                                   }
+                                  print("PASARRRR");
                                   Navigator.push(
                                     // ignore: use_build_context_synchronously
                                     context,
@@ -636,7 +597,7 @@ class _ActualizadoStockState extends State<ActualizadoStock> {
                                     Color.fromRGBO(83, 176, 68, 1.000)),
                               ),
                               child: Text(
-                                'Listo!',
+                                '¡Listo!',
                                 style: TextStyle(
                                     fontSize: largoActual * 0.021,
                                     fontWeight: FontWeight.w800,

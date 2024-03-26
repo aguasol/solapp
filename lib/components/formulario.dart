@@ -33,6 +33,17 @@ class _FormuState extends State<Formu> {
 
   Future<dynamic> registrar(nombre, apellidos, dni, sexo, fecha, fechaAct,
       nickname, contrasena, email, telefono, ruc) async {
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
+        });
     try {
       // Parsear la fecha de nacimiento a DateTime
       DateTime fechaNacimiento = DateFormat('d/M/yyyy').parse(fecha);
@@ -468,33 +479,14 @@ class _FormuState extends State<Formu> {
                     SizedBox(
                       height: largoActual * 0.031,
                     ),
-                    Container(
+                    SizedBox(
                       //margin: EdgeInsets.only(left: anchoActual * 0.055),
                       height: largoActual * 0.06,
                       width: anchoActual * 0.42,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text(
-                                    'Gracias por registrar',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: Color.fromARGB(255, 4, 80, 143)),
-                                  ),
-                                  content: Text(
-                                    'Te esparamos!',
-                                    style: TextStyle(
-                                        fontSize: largoActual * 0.027,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () async {
-                                        await registrar(
+                         await registrar(
                                             _nombres.text,
                                             _apellidos.text,
                                             _dni.text,
@@ -506,28 +498,13 @@ class _FormuState extends State<Formu> {
                                             _email.text,
                                             _telefono.text,
                                             _ruc.text);
-                                        print("registrado-....");
+                                     
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   const Login()),
-                                        ); // Cierra el AlertDialog
-                                      },
-                                      child: const Text(
-                                        'OK',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 12,
-                                            color: Color.fromARGB(
-                                                255, 13, 58, 94)),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
+                                        );   }
                         },
                         style: ButtonStyle(
                           elevation: MaterialStateProperty.all(8),

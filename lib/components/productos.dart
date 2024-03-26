@@ -73,8 +73,6 @@ class _ProductosState extends State<Productos> {
   }
 
   void obtenerProductos() async {
-    print("-------------------------");
-    print("obtiene PRODUCTOS");
     List<Producto> listTemp = productosProvider +
         listProducto.where((product) => product.cantidad > 0).toList();
     var seen = <String>{};
@@ -355,8 +353,6 @@ class _ProductosState extends State<Productos> {
                                               onPressed: () {
                                                 setState(() {
                                                   disminuir(index);
-                                                  print(
-                                                      "disminuir ${producto.cantidad}");
                                                 });
                                               },
                                               iconSize: largoActual * 0.041,
@@ -380,8 +376,6 @@ class _ProductosState extends State<Productos> {
                                               onPressed: () {
                                                 setState(() {
                                                   incrementar(index);
-                                                  print(
-                                                      "incrementar ${producto.cantidad}");
                                                 });
                                               },
                                               iconSize: largoActual * 0.041,
@@ -457,7 +451,6 @@ class _ProductosState extends State<Productos> {
                                   onPressed: almenosUno
                                       ? () {
                                           obtenerProductos();
-                                          print("Agregar al carrito");
                                           pedidoMio = PedidoModel(
                                             seleccionados: productosProvider,
                                             seleccionadosPromo: promosProvider,
